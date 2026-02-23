@@ -45,5 +45,10 @@ Accept: */*
 | Content-Length | Taille du corps de la requête (pour POST).                                       |
 | Connection     | Indique si la connexion doit être fermée après la réponse (ex : keep-alive).     |
 
+#  Ressources pour approfondir
+
+- **[Beej's Guide to Network Programming](https://beej.us/guide/bgnet/html/)** : Explications sur les sockets et HTTP.
+- **[HTTP Request Parsing in C (GitHub)](https://github.com/)** : Chercher des projets comme `tinyhttpd`.
+- **[MDN Web Docs : Anatomy of an HTTP Request](https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages)** : Explication visuelle des requêtes HTTP.
 
 >[!important] _ lien pour retourner a indexObs:_ [**index**](indexObs_WebServe)
