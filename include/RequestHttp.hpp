@@ -6,7 +6,7 @@
 /*   By: ton_utilisateur_42 <ton_email@student.42.  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/23 17:27:34 by ton_utilisate     #+#    #+#             */
-/*   Updated: 2026/02/23 17:49:37 by ton_utilisate    ###   ########.fr       */
+/*   Updated: 2026/02/25 18:10:39 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,12 +30,7 @@ class RequestHttp {
     std::string _contentType;
     ssize_t     _contentLength;
     std::string _connection;
-}
-
-
-
-
-
+};
 
 
 
