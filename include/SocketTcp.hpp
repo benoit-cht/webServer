@@ -6,11 +6,11 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:42:34 by bchallat          #+#    #+#             */
-/*   Updated: 2026/02/25 18:36:36 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/02/25 18:46:41 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# ifndef SOKETTCP_HPP
+# ifndef SOCKETTCP_HPP
 # define SOCKETTCP_HPP
 
 #include <exception>
@@ -22,16 +22,16 @@ class SocketTcp {
   public :
     SocketTcp ( void );
     virtual ~SocketTcp ( void );
-    SocketTcp (const& other);
-    SocketTcp operator=(const& other);
+    SocketTcp (const SocketTcp& other);
+    SocketTcp operator=(const SocketTcp& other);
 
   public :
     int         getServer_fd ( void )const;
-    Sockadd_int getServer_addr ( void )const;
+    sockaddr_in getServer_addr ( void )const;
 
   public :
     void setServer_fd (int domain, int type, int protocol);
-    void setServer_addr (sin_family, sin_port, s_addr);
+    void setServer_addr (sa_family_t sin_family, in_port_t sin_port, struct in_addr  s_addr);
 
   public :
     class ErrorServerFdException : public std::exception {
@@ -44,9 +44,9 @@ class SocketTcp {
       const char* what() const throw();
     };
 
-    class ErrorListenException : public exception {
+    class ErrorListenException : public std::exception {
     public:
-      const cha* what() const throw();
+      const char* what() const throw();
     };
   
   private :
