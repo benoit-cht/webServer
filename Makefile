@@ -6,7 +6,7 @@
 #    By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/20 09:10:14 by bchallat          #+#    #+#              #
-#    Updated: 2026/02/23 17:27:28 by ton_utilisate    ###   ########.fr        #
+#    Updated: 2026/02/25 17:36:32 by bchallat         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -42,12 +42,12 @@ NAME = webserv
 #                                                                       #
 #=======================================================================#
 
-SRC	=	philosophers.c \
+SRC	=	webserver.cpp
 
 SRCS = ${addprefix ${SRCDIR}/, ${SRC}}
-OBJS = ${addprefix ${OBJDIR}/, $(SRC:.c=.o)}
+OBJS = ${addprefix ${OBJDIR}/, $(SRC:.cpp=.o)}
 
-object/%.o:sources/%.c | $(OBJDIR)
+object/%.o:sources/%.cpp | $(OBJDIR)
 	@echo  "$(GREEN)[OK]       	🛠️ $(YELLOW)Compaling ... $(BLUE)$< $(RESET)"
 	@$(CCFLAG) -c $< -o $@
 
@@ -80,9 +80,5 @@ re: fclean all
 ${OBJDIR}:
 	@echo "${GREEN}[->]		${YELLOW}📂 Creating directory ${OBJ_DIR}$(BLUE)object/..$(RESET)\n"
 	@mkdir -p ${OBJDIR}
-	@mkdir -p ${OBJDIR}/
-	@mkdir -p ${OBJDIR}/
-	@mkdir -p ${OBJDIR}/
-	@mkdir -p ${OBJDIR}/
-	@mkdir -p ${OBJDIR}/
-	@mkdir -p ${OBJDIR}/
+#	@mkdir -p ${OBJDIR}/
+
