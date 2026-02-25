@@ -6,9 +6,12 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:39:42 by bchallat          #+#    #+#             */
-/*   Updated: 2026/02/25 17:42:57 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/02/25 18:39:33 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+# ifndef WEBSERVER_HPP
+# define WEBSERVER_HPP
 
 #include <sys/socket.h>  // Pour les sockets
 #include <netinet/in.h>  // Pour sockaddr_in
@@ -25,6 +28,8 @@
 #define PORT 8080        // Port d'écoute du serveur
 #define MAX_CLIENTS 10   // Nombre max de clients simultanés
 #define BUFFER_SIZE 4096  // Taille du buffer pour lire les requêtes
+
+# endif 
 
 /* ************************************************************************** */
 /*                                                                            */

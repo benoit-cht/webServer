@@ -6,9 +6,12 @@
 /*   By: ton_utilisateur_42 <ton_email@student.42.  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/23 17:27:34 by ton_utilisate     #+#    #+#             */
-/*   Updated: 2026/02/25 18:10:39 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/02/25 18:37:49 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+# ifndef REQUESTHTTP_HPP
+# define REQUESTHTTP_HPP
 
 class RequestHttp {
 
@@ -32,7 +35,7 @@ class RequestHttp {
     std::string _connection;
 };
 
-
+# endif
 
 /* ************************************************************************** */
 /*                                                                            */

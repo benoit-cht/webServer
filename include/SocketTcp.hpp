@@ -6,11 +6,14 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:42:34 by bchallat          #+#    #+#             */
-/*   Updated: 2026/02/25 18:21:13 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/02/25 18:36:36 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <exception.hpp>
+# ifndef SOKETTCP_HPP
+# define SOCKETTCP_HPP
+
+#include <exception>
 
 #include "webserver.hpp"
 
@@ -52,6 +55,7 @@ class SocketTcp {
 
 };
 
+# endif
 
 /* ************************************************************************** */
 /*                                                                            */
