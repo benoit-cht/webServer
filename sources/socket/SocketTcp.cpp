@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   SocketTcp.cpp                                      :+:      :+:    :+:   */
+/*   Socket.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -14,7 +14,7 @@
 
 /*=========================================================================== */
 
-SocketTcp::SocketTcp ( void ) 
+Socket::Socket ( void ) 
 {
   try {
     setServer_fd(AF_INET, SOCK_STREAM, 0);  
@@ -26,24 +26,24 @@ SocketTcp::SocketTcp ( void )
 
   if(bind(_server_fd, (struct sockaddr *)&_server_addr, sizeof(_server_addr)) == -1)
   {
-    throw SocketTcp::ErrorBindException();
+    //throw Socket::ErrorBindException();
   }
   if(listen(_server_fd, MAX_CLIENTS) == -1)
   {
-    throw SocketTcp::ErrorListenException();
+    throw Socket::ErrorListenException();
   }
 
   std::cout << "Serveur démarré sur le port " << _server_addr.sin_port << std::endl;
 }
 
-SocketTcp::~SocketTcp ( void )
+Socket::~Socket ( void )
 { 
   close(_server_fd);
 }
 
-SocketTcp::SocketTcp (const SocketTcp& other): _server_fd(other._server_fd), _server_addr(other._server_addr){}
+Socket::Socket (const Socket& other): _server_fd(other._server_fd), _server_addr(other._server_addr){}
 
-SocketTcp&  SocketTcp::operator=(const SocketTcp& other)
+Socket&  Socket::operator=(const Socket& other)
 {
   if( this != &other )
   {
@@ -55,21 +55,21 @@ SocketTcp&  SocketTcp::operator=(const SocketTcp& other)
 
 /*=========================================================================== */
 
-int         SocketTcp::getServer_fd ( void )const { return (_server_fd);}
-sockaddr_in SocketTcp::getServer_addr ( void )const { return(_server_addr);}
+int         Socket::getServer_fd ( void )const { return (_server_fd);}
+sockaddr_in Socket::getServer_addr ( void )const { return(_server_addr);}
 
 /*=========================================================================== */
 
-void SocketTcp::setServer_fd (int domain, int type, int protocol)
+void Socket::setServer_fd (int domain, int type, int protocol)
 {
   this->_server_fd = socket(domain, type, protocol);
   if (_server_fd == -1) 
   {
-    throw SocketTcp::ErrorServerFdException(); 
+    throw Socket::ErrorServerFdException(); 
   }
 }
 
-void SocketTcp::setServer_addr (sa_family_t sin_family, in_port_t sin_port, in_addr_t  s_addr)
+void Socket::setServer_addr (sa_family_t sin_family, in_port_t sin_port, in_addr_t  s_addr)
 {
   _server_addr.sin_family = sin_family;
   _server_addr.sin_addr.s_addr = s_addr;  // Écouter sur toutes les interfaces
@@ -78,17 +78,17 @@ void SocketTcp::setServer_addr (sa_family_t sin_family, in_port_t sin_port, in_a
 
 /*=========================================================================== */
 
-const char* SocketTcp::ErrorServerFdException::what() const throw()
+const char* Socket::ErrorServerFdException::what() const throw()
 {
   return( "Error: exeption to lift socket cannot be created " );
 }
 
-const char* SocketTcp::ErrorBindException::what() const throw()
+const char* Socket::ErrorBindException::what() const throw()
 {
   return ("Error: exception to lift the association failure");
 }
 
-const char* SocketTcp::ErrorListenException::what() const throw()
+const char* Socket::ErrorListenException::what() const throw()
 {
   return ("Error: exception to lift port listenting failed");
 }

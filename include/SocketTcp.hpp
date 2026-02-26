@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:42:34 by bchallat          #+#    #+#             */
-/*   Updated: 2026/02/26 15:10:19 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/02/26 15:42:01 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,15 @@
 
 #include "webserver.hpp"
 
-class SocketTcp {
+//================================== SOCKET ===============================
+
+class Socket {
 
   public :
-    SocketTcp ( void );
-    virtual ~SocketTcp ( void );
-    SocketTcp (const SocketTcp& other);
-    SocketTcp& operator=(const SocketTcp& other);
+    Socket ( void );
+    virtual ~Socket ( void );
+    Socket (const Socket& other);
+    Socket& operator=(const Socket& other);
 
   public :
     int         getServer_fd ( void )const;
@@ -55,13 +57,15 @@ class SocketTcp {
 
 };
 
-class Client: public SocketTcp {
+//================================== CLIENTS ===============================
+
+class Clients: public Socket {
 
   public:
-    Client( void );
-    virtual ~Client( void );
-    Client(const Client& other);
-    Client& operator=(const Client& other);
+    Clients( void );
+    virtual ~Clients( void );
+    Clients(const Clients& other);
+    Clients& operator=(const Clients& other);
 
   public:
     void  setClient_fd(int server_fd, struct sockaddr addr, socklen_t _client_addr_len);
@@ -75,7 +79,9 @@ class Client: public SocketTcp {
     socklen_t           _client_addr_len;
 };
 
-class EventsLoop: public Client {
+//================================== LOOP ================================
+
+class EventsLoop: public Clients {
 
   private :
     EventsLoop( void );
