@@ -6,16 +6,17 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/02/25 18:32:30 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/02/26 13:57:32 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "../include/webserver.hpp"
+# include "../include/SocketTcp.hpp"
 
-int main (int av, char *ag[])
+//int main (int av, char *ag[])
+int main()
 {
-  if (av != 1 || ag[0] != '\0')
-    return 1;
+    SocketTcp sock;
 
   return 0;
 }
