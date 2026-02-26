@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:42:34 by bchallat          #+#    #+#             */
-/*   Updated: 2026/02/25 18:46:41 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/02/26 13:41:39 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ class SocketTcp {
     SocketTcp ( void );
     virtual ~SocketTcp ( void );
     SocketTcp (const SocketTcp& other);
-    SocketTcp operator=(const SocketTcp& other);
+    SocketTcp& operator=(const SocketTcp& other);
 
   public :
     int         getServer_fd ( void )const;
@@ -31,7 +31,7 @@ class SocketTcp {
 
   public :
     void setServer_fd (int domain, int type, int protocol);
-    void setServer_addr (sa_family_t sin_family, in_port_t sin_port, struct in_addr  s_addr);
+    void setServer_addr (sa_family_t sin_family, in_port_t sin_port, in_addr_t  s_addr);
 
   public :
     class ErrorServerFdException : public std::exception {
