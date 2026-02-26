@@ -68,9 +68,9 @@ class Clients: public Socket {
     Clients& operator=(const Clients& other);
 
   public:
-    void  setClient_fd(int server_fd, struct sockaddr addr, socklen_t _client_addr_len);
+    void  setClient_fd(int server_fd, struct sockaddr_in  client_addr, socklen_t client_addr_len);
     void  setArray_fd(int server_fd);
-    void  setClient_addr_len(int len);
+    void  setClients_addr_len( void );
 
   private :
     int                 _client_fd;
