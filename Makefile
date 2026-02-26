@@ -6,7 +6,7 @@
 #    By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/20 09:10:14 by bchallat          #+#    #+#              #
-#    Updated: 2026/02/25 17:36:32 by bchallat         ###   ########.fr        #
+#    Updated: 2026/02/26 13:19:33 by bchallat         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -42,7 +42,8 @@ NAME = webserv
 #                                                                       #
 #=======================================================================#
 
-SRC	=	webserver.cpp
+SRC	=	webserver.cpp \
+			socket/SocketTcp.cpp
 
 SRCS = ${addprefix ${SRCDIR}/, ${SRC}}
 OBJS = ${addprefix ${OBJDIR}/, $(SRC:.cpp=.o)}
@@ -80,5 +81,5 @@ re: fclean all
 ${OBJDIR}:
 	@echo "${GREEN}[->]		${YELLOW}📂 Creating directory ${OBJ_DIR}$(BLUE)object/..$(RESET)\n"
 	@mkdir -p ${OBJDIR}
-#	@mkdir -p ${OBJDIR}/
+	@mkdir -p ${OBJDIR}/socket 
 
