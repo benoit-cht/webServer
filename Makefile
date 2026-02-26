@@ -43,7 +43,7 @@ NAME = webserv
 #=======================================================================#
 
 SRC	=	webserver.cpp \
-			socket/SocketTcp.cpp \
+			socket/Socket.cpp \
 			socket/Clients.cpp
 
 SRCS = ${addprefix ${SRCDIR}/, ${SRC}}
