@@ -34,7 +34,13 @@ class Socket {
   public :
     void  setServer_fd(int domain, int type, int protocol);
     void  setServer_addr(sa_family_t sin_family, in_port_t sin_port, in_addr_t  s_addr);
+  
+  private :
+    int                 _server_fd;
+    struct sockaddr_in  _server_addr;
 
+};
+/*
   public :
     class ErrorServerFdException : public std::exception {
     public:
@@ -50,13 +56,7 @@ class Socket {
     public:
       const char* what() const throw();
     };
-  
-  private :
-    int                 _server_fd;
-    struct sockaddr_in  _server_addr;
-
-};
-
+*/
 //================================== CLIENTS ===============================
 
 class Clients: public Socket {

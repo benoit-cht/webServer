@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Socket.cpp                                      :+:      :+:    :+:   */
+/*   Socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 18:59:46 by bchallat          #+#    #+#             */
-/*   Updated: 2026/02/26 14:02:55 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/02/26 22:00:27 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,21 +16,23 @@
 
 Socket::Socket ( void ) 
 {
-  try {
-    setServer_fd(AF_INET, SOCK_STREAM, 0);  
-    setServer_addr(AF_INET, htons(PORT), INADDR_ANY);
-  }
-  catch (const std::exception& e) {
-    std::cerr << e.what() << std::endl;
-  }
+  
+  setServer_fd(AF_INET, SOCK_STREAM, 0);  
+  if (getServer_fd() == -1)
+    exit(EXIT_FAILURE);
+  setServer_addr(AF_INET, htons(PORT), INADDR_ANY);
 
   if(bind(_server_fd, (struct sockaddr *)&_server_addr, sizeof(_server_addr)) == -1)
   {
     //throw Socket::ErrorBindException();
+    perror("bind() failed");
+    exit(EXIT_FAILURE);
   }
   if(listen(_server_fd, MAX_CLIENTS) == -1)
   {
-    throw Socket::ErrorListenException();
+   // throw Socket::ErrorListenException();
+    perror("listen() failed");
+    exit(EXIT_FAILURE);
   }
 
   std::cout << "Serveur démarré sur le port " << _server_addr.sin_port << std::endl;
@@ -65,7 +67,7 @@ void Socket::setServer_fd (int domain, int type, int protocol)
   this->_server_fd = socket(domain, type, protocol);
   if (_server_fd == -1) 
   {
-    throw Socket::ErrorServerFdException(); 
+    //throw Socket::ErrorServerFdException(); 
   }
 }
 
@@ -78,7 +80,7 @@ void Socket::setServer_addr (sa_family_t sin_family, in_port_t sin_port, in_addr
 
 /*=========================================================================== */
 
-const char* Socket::ErrorServerFdException::what() const throw()
+/*const char* Socket::ErrorServerFdException::what() const throw()
 {
   return( "Error: exeption to lift socket cannot be created " );
 }
@@ -91,7 +93,7 @@ const char* Socket::ErrorBindException::what() const throw()
 const char* Socket::ErrorListenException::what() const throw()
 {
   return ("Error: exception to lift port listenting failed");
-}
+}*/
 
 /* ************************************************************************** */
 /*                                                                            */
