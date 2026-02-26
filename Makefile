@@ -6,7 +6,7 @@
 #    By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/20 09:10:14 by bchallat          #+#    #+#              #
-#    Updated: 2026/02/26 13:19:33 by bchallat         ###   ########.fr        #
+#    Updated: 2026/02/26 15:30:56 by bchallat         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -43,7 +43,8 @@ NAME = webserv
 #=======================================================================#
 
 SRC	=	webserver.cpp \
-			socket/SocketTcp.cpp
+			socket/SocketTcp.cpp \
+			socket/Clients.cpp
 
 SRCS = ${addprefix ${SRCDIR}/, ${SRC}}
 OBJS = ${addprefix ${OBJDIR}/, $(SRC:.cpp=.o)}
