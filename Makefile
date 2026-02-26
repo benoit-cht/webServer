@@ -49,10 +49,6 @@ SRC	=	webserver.cpp \
 SRCS = ${addprefix ${SRCDIR}/, ${SRC}}
 OBJS = ${addprefix ${OBJDIR}/, $(SRC:.cpp=.o)}
 
-object/%.o:sources/%.cpp | $(OBJDIR)
-	@echo  "$(GREEN)[OK]       	🛠️ $(YELLOW)Compaling ... $(BLUE)$< $(RESET)"
-	@$(CCFLAG) -c $< -o $@
-
 #=======================================================================#
 #                                                                       #
 #=======================================================================#
@@ -60,7 +56,8 @@ object/%.o:sources/%.cpp | $(OBJDIR)
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	@echo  "$(GREEN)[OK]       	✅ $(YELLOW)CREATED   EXE$(BLUE) -- philosopher --\n $(RESET)" 
+	@echo "$(GREEN)[OK]       	✅ $(YELLOW)Compiling END$(BLUE) - all file obj -$(RESET)"
+	@echo "$(GREEN)[OK]       	✅ $(YELLOW)CREATED   EXE$(BLUE) -- webserv.exe --\n $(RESET)" 
 	@$(CCFLAG) -g3 $(OBJS) -o $(NAME)
 
 clean:
@@ -79,8 +76,12 @@ re: fclean all
 #                                                               #
 #===============================================================#
 
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)
+	@echo "$(BLUE)[..]       	🛠️ $(YELLOW)Compiling ... $(BLUE)$<$(RESET)"
+	@$(CCFLAG) -c $< -o $@ >/dev/null 2>&1
+
 ${OBJDIR}:
-	@echo "${GREEN}[->]		${YELLOW}📂 Creating directory ${OBJ_DIR}$(BLUE)object/..$(RESET)\n"
+	@echo "${GREEN}[->]		${YELLOW}📂 Creating directory ${OBJ_DIR}$(BLUE)object/..$(RESET)"
 	@mkdir -p ${OBJDIR}
 	@mkdir -p ${OBJDIR}/socket 
 
