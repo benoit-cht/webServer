@@ -16,12 +16,12 @@
 
 Clients::Clients( void )
 { 
-  std::cout << "Call constructor clients"<< std::endl;
+  std::cout << "[log] Call constructor clients"<< std::endl;
 }
 
 Clients::~Clients( void )
 { 
-  std::cout << "Call destructor clients"<< std::endl;
+  std::cout << "[log] Call destructor clients"<< std::endl;
 }
 
 Clients::Clients(const Clients& other): _client_fd(other._client_fd){}
