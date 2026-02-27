@@ -13,11 +13,14 @@
 # ifndef SOCKETTCP_HPP
 # define SOCKETTCP_HPP
 
+#include <iostream>
+#include <cstring>
 #include <exception>
+#include <sys/socket.h>
 
 #include "webserver.hpp"
 
-//================================== SOCKET ===============================
+// ================================= SOCKET ================================= //
 
 class Socket {
 
@@ -53,7 +56,7 @@ class Socket {
 };
 
   
-//================================== CLIENTS ===============================
+// ================================== CLIENTS =============================== //
 
 class Clients: public Socket {
 
@@ -74,7 +77,7 @@ class Clients: public Socket {
     //socklen_t           _client_addr_len;
 };
 
-//================================== LOOP ================================
+// ================================== LOOP ================================== //
 
 class EventsLoop: public Clients {
 
