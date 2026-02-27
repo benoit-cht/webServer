@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:42:34 by bchallat          #+#    #+#             */
-/*   Updated: 2026/02/26 15:42:01 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/02/27 14:15:40 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,17 +75,6 @@ class Clients: public Socket {
     struct pollfd       _array_fd[MAX_CLIENTS + 1];
     //struct sockaddr_in  _client_addr;
     //socklen_t           _client_addr_len;
-};
-
-// ================================== LOOP ================================== //
-
-class EventsLoop: public Clients {
-
-  private :
-    EventsLoop( void );
-    virtual ~EventsLoop( void );
-    EventsLoop(const EventsLoop& other);
-    EventsLoop& operator=(const EventsLoop& other);
 };
 
 # endif

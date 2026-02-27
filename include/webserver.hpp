@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:39:42 by bchallat          #+#    #+#             */
-/*   Updated: 2026/02/26 15:25:30 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/02/27 14:13:23 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 
 #include "RequestHttp.hpp"
 #include "SocketTcp.hpp"
+#include "EventsLoop.hpp"
 
 # endif 
 
