@@ -64,15 +64,14 @@ class Clients: public Socket {
     Clients& operator=(const Clients& other);
 
   public:
-    void  setClient_fd(int server_fd, struct sockaddr_in  client_addr, socklen_t client_addr_len);
-    void  setArray_fd(int server_fd);
-    void  setClients_addr_len( void );
+    //void  setClient_fd(int server_fd, struct sockaddr_in  client_addr, socklen_t client_addr_len);
+    void  setInitArray_fd(int server_fd);
 
   private :
     int                 _client_fd;
     struct pollfd       _array_fd[MAX_CLIENTS + 1];
-    struct sockaddr_in  _client_addr;
-    socklen_t           _client_addr_len;
+    //struct sockaddr_in  _client_addr;
+    //socklen_t           _client_addr_len;
 };
 
 //================================== LOOP ================================
