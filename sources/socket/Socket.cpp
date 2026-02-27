@@ -16,31 +16,27 @@
 
 Socket::Socket ( void ) 
 {
+  std::cout << "[log] Call constructor socket " << std::endl;
   
   setServer_fd(AF_INET, SOCK_STREAM, 0);  
-  if (getServer_fd() == -1)
-    exit(EXIT_FAILURE);
   setServer_addr(AF_INET, htons(PORT), INADDR_ANY);
 
-  if(bind(_server_fd, (struct sockaddr *)&_server_addr, sizeof(_server_addr)) == -1)
-  {
-    //throw Socket::ErrorBindException();
-    perror("bind() failed");
-    exit(EXIT_FAILURE);
-  }
-  if(listen(_server_fd, MAX_CLIENTS) == -1)
-  {
-   // throw Socket::ErrorListenException();
-    perror("listen() failed");
-    exit(EXIT_FAILURE);
-  }
+  if (getServer_fd() == -1)
+    throw Socket::ErrorServerFdException(); 
 
-  std::cout << "Serveur démarré sur le port " << _server_addr.sin_port << std::endl;
+  if(bind(_server_fd, (struct sockaddr *)&_server_addr, sizeof(_server_addr)) == -1)
+    throw Socket::ErrorBindException();
+
+  if(listen(_server_fd, MAX_CLIENTS) == -1)
+    throw Socket::ErrorListenException();
+
+  std::cout << "[log] Serveur démarré sur le port " << _server_addr.sin_port << std::endl;
 }
 
 Socket::~Socket ( void )
 { 
   close(_server_fd);
+  std::cout << "[log] Call destructor socket " << std::endl;
 }
 
 Socket::Socket (const Socket& other): _server_fd(other._server_fd), _server_addr(other._server_addr){}
@@ -65,10 +61,6 @@ sockaddr_in Socket::getServer_addr ( void )const { return(_server_addr);}
 void Socket::setServer_fd (int domain, int type, int protocol)
 {
   this->_server_fd = socket(domain, type, protocol);
-  if (_server_fd == -1) 
-  {
-    //throw Socket::ErrorServerFdException(); 
-  }
 }
 
 void Socket::setServer_addr (sa_family_t sin_family, in_port_t sin_port, in_addr_t  s_addr)
@@ -80,7 +72,7 @@ void Socket::setServer_addr (sa_family_t sin_family, in_port_t sin_port, in_addr
 
 /*=========================================================================== */
 
-/*const char* Socket::ErrorServerFdException::what() const throw()
+const char* Socket::ErrorServerFdException::what() const throw()
 {
   return( "Error: exeption to lift socket cannot be created " );
 }
@@ -93,7 +85,7 @@ const char* Socket::ErrorBindException::what() const throw()
 const char* Socket::ErrorListenException::what() const throw()
 {
   return ("Error: exception to lift port listenting failed");
-}*/
+}
 
 /* ************************************************************************** */
 /*                                                                            */
