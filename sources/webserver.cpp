@@ -16,8 +16,11 @@
 //int main (int av, char *ag[])
 int main()
 {
-    //SocketTcp sock;
+    try{
     Clients    clients;
+    }catch(const std::exception& e){
+      std::cerr << "Error: " << e.what() << std::endl;
+    }
 
   return 0;
 }
