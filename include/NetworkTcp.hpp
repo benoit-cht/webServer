@@ -21,10 +21,11 @@
 #include <cerrno>
 #include <cstring>
 #include <iostream>
+#include <vector>
 
 #include "webserver.hpp"
 
-// ========================================================================== //
+// ============================== Class NetworkTcp ========================== //
 
 class NetworkTcp {
 
@@ -46,7 +47,7 @@ class NetworkTcp {
 
 };
 
-// ========================================================================== //
+// =========================== Class Socket ================================= //
 
 class Socket: public NetworkTcp{
 
@@ -79,7 +80,7 @@ class Socket: public NetworkTcp{
 
 };
 
-// ========================================================================== //
+// ============================ Class Clients =============================== //
 
 class Clients: public NetworkTcp{
 
@@ -97,18 +98,15 @@ class Clients: public NetworkTcp{
     Socket& _socket;
 };
 
-// ========================================================================== //
+// =============================== Class EventsLoop ========================= //
 
 class EventsLoop: public NetworkTcp{
 
   private :
-    EventsLoop( void );
+    EventsLoop(Socket& soket);
     virtual ~EventsLoop( void );
-    EventsLoop(const EventsLoop& other);
-    EventsLoop& operator=(const EventsLoop& other);
-
-  public:
-    void  runLoopEvents();
+//    EventsLoop(const EventsLoop& other);
+//    EventsLoop& operator=(const EventsLoop& other);
 
   private:
     void  acceptNewConnection();               // Accepter une nouvelle connexion
@@ -116,11 +114,10 @@ class EventsLoop: public NetworkTcp{
     void  closeClient(int client_fd);          // Fermer une connexion client
 
   private:
-/*
-    Socket _socket;                           // Socket serveur
+    Socket& _socket;                           // Socket serveur
     std::vector<struct pollfd> _poll_fds;     // Liste des descripteurs à surveiller
-    std::vector<Client*> _clients;            // Liste des clients connectés
-*/
+    std::vector<Clients*> _clients;            // Liste des clients connectés
+
 };
 
 // ========================================================================== //

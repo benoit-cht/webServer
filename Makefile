@@ -46,6 +46,7 @@ SRC	=	webserver.cpp \
 			network/Socket.cpp \
 			network/NetworkTcp.cpp \
 			network/Clients.cpp \
+			network/EventsLoop.cpp \
 
 SRCS = ${addprefix ${SRCDIR}/, ${SRC}}
 OBJS = ${addprefix ${OBJDIR}/, $(SRC:.cpp=.o)}
@@ -66,11 +67,11 @@ $(NAME): $(OBJS)
 	@$(CCFLAG) -g3 $(OBJS) -o $(NAME)
 
 clean:
-	@echo "$(RED)[DELETE]	🧹$(BLUE) Delete file obj $(RESET)\n" 
+	@echo -n "$(RED)[DELETE]	🧹$(BLUE) Delete file obj $(RESET)\n" 
 	@$(RMF) $(OBJDIR) $(OBJS)
 
 fclean:
-	@echo "$(RED)[DELETE]	🧹$(BLUE) Delete all file obj and .exe $(RESET)\n"
+	@echo -n "$(RED)[DELETE]	🧹$(BLUE) Delete all file obj and .exe $(RESET)\n"
 	@$(RMF) $(OBJDIR) $(OBJS) $(NAME)
 
 re: fclean all
@@ -85,4 +86,7 @@ ${OBJDIR}:
 	@echo "${GREEN}[->]		${YELLOW}📂 Creating directory ${OBJ_DIR}$(BLUE)object/..$(RESET)\n"
 	@mkdir -p ${OBJDIR}
 	@mkdir -p ${OBJDIR}/network 
+	@mkdir -p ${OBJDIR}/cgi 
+	@mkdir -p ${OBJDIR}/request
+	@mkdir -p ${OBJDIR}/routing
 
