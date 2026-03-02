@@ -11,16 +11,11 @@
 /* ************************************************************************** */
 
 # include "../include/webserver.hpp"
-# include "../include/SocketTcp.hpp"
+//# include "../include/SocketTcp.hpp"
 
 //int main (int av, char *ag[])
 int main()
 {
-    try{
-    Clients    clients;
-    }catch(const std::exception& e){
-      std::cerr << "Error: " << e.what() << std::endl;
-    }
-
+  Socket sok;
   return 0;
 }
