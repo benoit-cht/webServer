@@ -45,7 +45,7 @@ NAME = webserv
 SRC	=	webserver.cpp \
 			network/Socket.cpp \
 			network/NetworkTcp.cpp \
-#			network/Clients.cpp
+			network/Clients.cpp \
 
 SRCS = ${addprefix ${SRCDIR}/, ${SRC}}
 OBJS = ${addprefix ${OBJDIR}/, $(SRC:.cpp=.o)}

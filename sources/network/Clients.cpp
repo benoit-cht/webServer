@@ -10,14 +10,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/SocketTcp.hpp"
+#include "../../include/NetworkTcp.hpp"
 
 /* ========================================================================== */
 
-Clients::Clients( void )
+Clients::Clients(Socket& socket) : _socket(socket)
 { 
-  setInitArray_fd(getServer_fd());
-  std::cout << "[log] Call constructor clients"<< std::endl;
+  std::cout << "[log] Call constructor clients with socket"<< std::endl;
 }
 
 Clients::~Clients( void )
@@ -25,7 +24,7 @@ Clients::~Clients( void )
   std::cout << "[log] Call destructor clients"<< std::endl;
 }
 
-Clients::Clients(const Clients& other): _client_fd(other._client_fd){}
+/*Clients::Clients(const Clients& other): _client_fd(other._client_fd){}
 
 Clients& Clients::operator=(const Clients& other)
 {
@@ -34,7 +33,7 @@ Clients& Clients::operator=(const Clients& other)
     
   }
   return ( *this );
-}
+}*/
 
 
 /* ========================================================================== */
@@ -46,7 +45,7 @@ Clients& Clients::operator=(const Clients& other)
     std::cerr << "Error: failed accept new connexion" << std::endl;
   else 
     std::cout << "New connexion " << inet_ntoa(client_addr.sin_addr) << std::endl;
-}*/
+}
 
 void  Clients::setInitArray_fd(int server_fd)
 {
@@ -61,6 +60,18 @@ void  Clients::setInitArray_fd(int server_fd)
     _array_fd[index].fd = -1;
     index++;
   }
+}*/
+
+/* ========================================================================== */
+
+ssize_t Clients::read(char* buffer, size_t size)
+{
+  return ::read(_socket.getServerFd(), buffer, size);
+}
+
+ssize_t Clients::write(const char* buffer, size_t size)
+{
+  return ::write(_socket.getServerFd(), buffer, size);
 }
 
 /* ========================================================================== */

@@ -57,9 +57,11 @@ class Socket: public NetworkTcp{
     Socket& operator=(const Socket& other);
 
   public :
-    int   getServerFd( void ) const;
-    void  setServerFd(int fd);
-    void  setSocket( void );
+    int     getServerFd( void ) const;
+  
+  public :
+    void    setServerFd(int fd);
+    void    setSocket( void );
 
   public :
     class ErrorServerFdException : public std::exception {
@@ -73,7 +75,7 @@ class Socket: public NetworkTcp{
     };
 
   private :
-    int                 _server_fd;
+    int   _server_fd;
 
 };
 
@@ -82,11 +84,16 @@ class Socket: public NetworkTcp{
 class Clients: public NetworkTcp{
 
   public:
-    Clients( void );
+    Clients(Socket& socket);
     virtual ~Clients( void );
-    Clients(const Clients& other);
-    Clients& operator=(const Clients& other);
+//    Clients(const Clients& other);
+//    Clients& operator=(const Clients& other);
+  public:
+    ssize_t   read(char* buffer, size_t size);          // Lire les données du client
+    ssize_t   write(const char* buffer, size_t size);   // Écrire des données au client
 
+  private:
+    Socket& _socket;
 };
 
 // ========================================================================== //
@@ -98,6 +105,21 @@ class EventsLoop: public NetworkTcp{
     virtual ~EventsLoop( void );
     EventsLoop(const EventsLoop& other);
     EventsLoop& operator=(const EventsLoop& other);
+
+  public:
+    void  runLoopEvents();
+
+  private:
+    void  acceptNewConnection();               // Accepter une nouvelle connexion
+    void  handleClientRequest(int client_fd);  // Traiter une requête client
+    void  closeClient(int client_fd);          // Fermer une connexion client
+
+  private:
+/*
+    Socket _socket;                           // Socket serveur
+    std::vector<struct pollfd> _poll_fds;     // Liste des descripteurs à surveiller
+    std::vector<Client*> _clients;            // Liste des clients connectés
+*/
 };
 
 // ========================================================================== //
