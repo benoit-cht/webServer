@@ -88,6 +88,7 @@ class Clients: public NetworkTcp{
     virtual ~Clients( void );
 //    Clients(const Clients& other);
 //    Clients& operator=(const Clients& other);
+
   public:
     ssize_t   read(char* buffer, size_t size);          // Lire les données du client
     ssize_t   write(const char* buffer, size_t size);   // Écrire des données au client

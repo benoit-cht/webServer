@@ -24,13 +24,27 @@ Clients::~Clients( void )
   std::cout << "[log] Call destructor clients"<< std::endl;
 }
 
+/* ========================================================================== */
+
+ssize_t Clients::read(char* buffer, size_t size)
+{
+  return ::read(_socket.getServerFd(), buffer, size);
+}
+
+ssize_t Clients::write(const char* buffer, size_t size)
+{
+  return ::write(_socket.getServerFd(), buffer, size);
+}
+
+/* ========================================================================== */
+
 /*Clients::Clients(const Clients& other): _client_fd(other._client_fd){}
 
 Clients& Clients::operator=(const Clients& other)
 {
   if( this != &other )
   {
-    
+
   }
   return ( *this );
 }*/
@@ -60,21 +74,8 @@ void  Clients::setInitArray_fd(int server_fd)
     _array_fd[index].fd = -1;
     index++;
   }
-}*/
-
-/* ========================================================================== */
-
-ssize_t Clients::read(char* buffer, size_t size)
-{
-  return ::read(_socket.getServerFd(), buffer, size);
 }
-
-ssize_t Clients::write(const char* buffer, size_t size)
-{
-  return ::write(_socket.getServerFd(), buffer, size);
-}
-
-/* ========================================================================== */
+*/
 
 /* ************************************************************************** */
 /*                                                                            */
