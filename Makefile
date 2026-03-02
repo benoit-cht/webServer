@@ -43,8 +43,9 @@ NAME = webserv
 #=======================================================================#
 
 SRC	=	webserver.cpp \
-			socket/Socket.cpp \
-			socket/Clients.cpp
+			network/Socket.cpp \
+			network/NetworkTcp.cpp \
+#			network/Clients.cpp
 
 SRCS = ${addprefix ${SRCDIR}/, ${SRC}}
 OBJS = ${addprefix ${OBJDIR}/, $(SRC:.cpp=.o)}
@@ -83,5 +84,5 @@ re: fclean all
 ${OBJDIR}:
 	@echo "${GREEN}[->]		${YELLOW}📂 Creating directory ${OBJ_DIR}$(BLUE)object/..$(RESET)\n"
 	@mkdir -p ${OBJDIR}
-	@mkdir -p ${OBJDIR}/socket 
+	@mkdir -p ${OBJDIR}/network 
 
