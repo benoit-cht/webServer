@@ -67,11 +67,11 @@ $(NAME): $(OBJS)
 	@$(CCFLAG) -g3 $(OBJS) -o $(NAME)
 
 clean:
-	@echo -n "$(RED)[DELETE]	🧹$(BLUE) Delete file obj $(RESET)\n" 
+	@echo "$(RED)[DELETE]	🧹$(BLUE) Delete file obj $(RESET)\n" 
 	@$(RMF) $(OBJDIR) $(OBJS)
 
 fclean:
-	@echo -n "$(RED)[DELETE]	🧹$(BLUE) Delete all file obj and .exe $(RESET)\n"
+	@echo "$(RED)[DELETE]	🧹$(BLUE) Delete all file obj and .exe $(RESET)\n"
 	@$(RMF) $(OBJDIR) $(OBJS) $(NAME)
 
 re: fclean all
