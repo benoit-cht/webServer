@@ -13,14 +13,16 @@
 #ifndef NETWORKTCP_HPP
 #define NETWORKTCP_HPP
 
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>
-#include <arpa/inet.h>
-#include <string>
+#include <sys/socket.h>   // Pour les sockets
+#include <netinet/in.h>   // Pour sockaddr_in
+#include <unistd.h>       // Pour close(), read(), write()
+#include <poll.h>         // Pour poll()
+#include <fcntl.h>        // Pour fcntl() (non-blocking)
+#include <string>         // Pour memset, strerror
+#include <iostream>       // Pour les logs
+#include <arpa/inet.h>    // Pour inet_ntoa (affichage des IPs)
+
 #include <cerrno>
-#include <cstring>
-#include <iostream>
 #include <vector>
 
 #include "webserver.hpp"
