@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/27 14:12:23 by bchallat          #+#    #+#             */
-/*   Updated: 2026/02/27 14:15:10 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/03/17 11:28:51 by ton_utilisate    ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ class Client: public NetworkTcp{
 
 class EventsLoop: public NetworkTcp{
 
-  private :
+  public :
     EventsLoop(Socket& soket);
     virtual ~EventsLoop( void );
 //    EventsLoop(const EventsLoop& other);
