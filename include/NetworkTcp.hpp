@@ -80,15 +80,15 @@ class Socket: public NetworkTcp{
 
 };
 
-// ============================ Class Clients =============================== //
+// ============================ Class Client =============================== //
 
-class Clients: public NetworkTcp{
+class Client: public NetworkTcp{
 
   public:
-    Clients(Socket& socket);
-    virtual ~Clients( void );
-//    Clients(const Clients& other);
-//    Clients& operator=(const Clients& other);
+    Client(Socket& socket);
+    virtual ~Client( void );
+//    Client(const Client& other);
+//    Client& operator=(const Client& other);
 
   public:
     ssize_t   read(char* buffer, size_t size);          // Lire les données du client
@@ -116,7 +116,7 @@ class EventsLoop: public NetworkTcp{
   private:
     Socket& _socket;                           // Socket serveur
     std::vector<struct pollfd> _poll_fds;     // Liste des descripteurs à surveiller
-    std::vector<Clients*> _clients;            // Liste des clients connectés
+    std::vector<Client*> _clients;            // Liste des clients connectés
 
 };
 

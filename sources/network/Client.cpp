@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Clients.cpp                                        :+:      :+:    :+:   */
+/*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -14,33 +14,33 @@
 
 /* ========================================================================== */
 
-Clients::Clients(Socket& socket) : _socket(socket)
+Client::Client(Socket& socket) : _socket(socket)
 { 
   std::cout << "[log] Call constructor clients with socket"<< std::endl;
 }
 
-Clients::~Clients( void )
+Client::~Client( void )
 { 
   std::cout << "[log] Call destructor clients"<< std::endl;
 }
 
 /* ========================================================================== */
 
-ssize_t Clients::read(char* buffer, size_t size)
+ssize_t Client::read(char* buffer, size_t size)
 {
   return ::read(_socket.getServerFd(), buffer, size);
 }
 
-ssize_t Clients::write(const char* buffer, size_t size)
+ssize_t Client::write(const char* buffer, size_t size)
 {
   return ::write(_socket.getServerFd(), buffer, size);
 }
 
 /* ========================================================================== */
 
-/*Clients::Clients(const Clients& other): _client_fd(other._client_fd){}
+/*Client::Client(const Client& other): _client_fd(other._client_fd){}
 
-Clients& Clients::operator=(const Clients& other)
+Client& Client::operator=(const Client& other)
 {
   if( this != &other )
   {
@@ -52,7 +52,7 @@ Clients& Clients::operator=(const Clients& other)
 
 /* ========================================================================== */
 
-/*void  Clients::setClient_fd(int server_fd, struct sockaddr_in  client_addr, socklen_t client_addr_len)
+/*void  Client::setClient_fd(int server_fd, struct sockaddr_in  client_addr, socklen_t client_addr_len)
 {
   _client_fd = accept(server_fd, (struct sockaddr *)&client_addr, &client_addr_len);
   if (_client_fd == -1) 
@@ -61,7 +61,7 @@ Clients& Clients::operator=(const Clients& other)
     std::cout << "New connexion " << inet_ntoa(client_addr.sin_addr) << std::endl;
 }
 
-void  Clients::setInitArray_fd(int server_fd)
+void  Client::setInitArray_fd(int server_fd)
 {
   int index = 1;
 
