@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   EventsLoop.hcpp                                    :+:      :+:    :+:   */
+/*   EventsLoop.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/27 14:12:23 by bchallat          #+#    #+#             */
-/*   Updated: 2026/02/27 14:15:10 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/03/17 13:22:58 by ton_utilisate    ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ EventsLoop::~EventsLoop( void )
 
 // ========================================================================== //
 
-/*
+
 void EventsLoop::acceptNewConnection()
 {
   struct sockaddr_in client_addr;
@@ -48,11 +48,11 @@ void EventsLoop::acceptNewConnection()
   char ip_str[INET_ADDRSTRLEN];
   inet_ntop(AF_INET, &(client_addr.sin_addr), ip_str, INET_ADDRSTRLEN);
   std::string client_ip(ip_str);
-  int client_port = ntohs(client_addr.sin_port);
+  //int client_port = ntohs(client_addr.sin_port);
 
   // 3. Créer un nouvel objet Client
-  Clients* client = new Clients(const _socket);
-  _clients.push_back(client);
+  Client* clients = new Client(_socket);
+  _clients.push_back(clients);
 
   // 4. Ajouter le client à la liste des sockets à surveiller
   struct pollfd client_pollfd;
@@ -60,16 +60,16 @@ void EventsLoop::acceptNewConnection()
   client_pollfd.events = POLLIN;  // Surveiller les données entrantes
   _poll_fds.push_back(client_pollfd);
 }
-*/
 
-/*
+
+
 void EventsLoop::handleClientRequest(int client_fd) 
 {
   // 1. Trouver le client correspondant
-  Clients* client = nullptr;
+  Client* client = NULL;
   for (size_t i = 0; i < _clients.size(); i++)
   {
-    if (_clients[i]->getSocketFd() == client_fd) {
+    if (_socket.getServerFd() == client_fd) {
       client = _clients[i];
       break;
     }
@@ -92,23 +92,23 @@ void EventsLoop::handleClientRequest(int client_fd)
   }
 
   // 3. Afficher la requête brute (pour débogage)
-  std::cout << "Requête reçue de " << client->getIpAddress() << ":" << client->getPort() << ":\n" << buffer << std::endl;
+  //std::cout << "Requête reçue de " << client->getIpAddress() << ":" << client->getPort() << ":\n" << buffer << std::endl;
 
     // 4. Ici, tu pourrais appeler fonction pour parser la requête
     //    Pour l'instant, on se contente de lire les données.
 }
-*/
 
-/*
+
+
 void EventsLoop::closeClient(int client_fd)
 {
   // 1. Trouver le client correspondant
   for (size_t i = 0; i < _clients.size(); i++)
   {
-    if (_clients[i]->getSocketFd() == client_fd)
+    if (_socket.getServerFd() == client_fd)
     {
       // 2. Fermer le socket client
-      _clients[i]->closeSocket();
+      //_clients[i]->closeSocket();
 
       // 3. Retirer le client de la liste des sockets à surveiller
       for (size_t j = 1; j < _poll_fds.size(); j++)
@@ -127,7 +127,7 @@ void EventsLoop::closeClient(int client_fd)
     }
   }
 }
-*/
+
 
 
 // ========================================================================== //

@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/27 14:12:23 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/17 11:28:51 by ton_utilisate    ###   ########.fr       */
+/*   Updated: 2026/03/17 13:28:50 by ton_utilisate    ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ class EventsLoop: public NetworkTcp{
 //    EventsLoop(const EventsLoop& other);
 //    EventsLoop& operator=(const EventsLoop& other);
 
-  private:
+  public:
     void  acceptNewConnection();               // Accepter une nouvelle connexion
     void  handleClientRequest(int client_fd);  // Traiter une requête client
     void  closeClient(int client_fd);          // Fermer une connexion client
