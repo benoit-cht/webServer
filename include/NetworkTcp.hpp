@@ -35,16 +35,15 @@ class NetworkTcp {
 //    NetworkTcp(const NetworkTcp& other);
 //    NetworkTcp& operator=(const NetworkTcp& other);
 
-  protected :
-    int port;
-    int type;
-    int protocol;
+  public :
+    // Methode pour la gestion des socket;
 
+
+  protected :
+    std::vector<int>  vectorSocketFd;
 
   private :
   //  std::string       _linkConfigFile;
-  //  std::vector<int>  _arraySocket
-
 };
 
 // =========================== Class Socket ================================= //
@@ -52,34 +51,12 @@ class NetworkTcp {
 class Socket: public NetworkTcp{
 
   public :
-    Socket( void );
+    Socket(std::vector<int>  vectorSocketFd);
     virtual ~Socket ( void );
-    Socket(const Socket& other);
-    Socket& operator=(const Socket& other);
-
-  public :
-    int     getServerFd( void ) const;
-  
-  public :
-    void    setServerFd(int fd);
-    void    setSocket( void );
-
-  public :
-    class ErrorServerFdException : public std::exception {
-      const char* what() const throw();
-    };
-    class ErrorBindException : public std::exception {
-      const char* what() const throw();
-    };
-    class ErrorListenException : public std::exception {
-      const char* what() const throw();
-    };
 
   private :
-    int   _server_fd;
-
+    int   _socket_fd;
 };
-
 // ============================ Class Client =============================== //
 
 class Client: public NetworkTcp{
@@ -94,19 +71,11 @@ class Client: public NetworkTcp{
     ssize_t   read(char* buffer, size_t size);          // Lire les données du client
     ssize_t   write(const char* buffer, size_t size);   // Écrire des données au client
 
-  private:
-    Socket& _socket;
-};
+ };
 
 // =============================== Class EventsLoop ========================= //
 
 class EventsLoop: public NetworkTcp{
-
-  public :
-    EventsLoop(Socket& soket);
-    virtual ~EventsLoop( void );
-//    EventsLoop(const EventsLoop& other);
-//    EventsLoop& operator=(const EventsLoop& other);
 
   public:
     void  acceptNewConnection();               // Accepter une nouvelle connexion
@@ -118,6 +87,12 @@ class EventsLoop: public NetworkTcp{
     std::vector<struct pollfd> _poll_fds;     // Liste des descripteurs à surveiller
     std::vector<Client*> _clients;            // Liste des clients connectés
 
+/*  public :
+*    EventsLoop(Socket& soket);
+*    virtual ~EventsLoop( void );
+*    EventsLoop(const EventsLoop& other);
+*    EventsLoop& operator=(const EventsLoop& other);
+*/
 };
 
 // ========================================================================== //

@@ -14,19 +14,28 @@
 
 /*=========================================================================== */
 
-Socket::Socket ( void ) 
+Socket::Socket (std::vector<int> vectorSocketFd) 
 {
   std::cout << "[log] Call constructor socket " << std::endl;
-  try {
 
-    setSocket();
+  int _socket_fd = socket(AF_INET, SOCK_STREAM, 0);// [domain, type, protocol]
+  if (_socket_fd == -1)
+    //throw Socket::ErrorServerFdException(); 
+
+  struct sockaddr_in server_addr;
+  memset(&server_addr, 0, sizeof(server_addr));
+  server_addr.sin_family = AF_INET;          // 
+  server_addr.sin_addr.s_addr = INADDR_ANY;  // Écouter sur toutes les interfaces
+  server_addr.sin_port = htons(PORT);        // Convertir le port en network byte order
   
-  }catch (const std:: exception& e){
+  if(bind(_server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1)
+    //throw Socket::ErrorBindException();
 
-    std::cerr << "Error: " << e.what() << std:: endl;
-    close(_server_fd);
-    setServerFd(-1);
-  }
+  if(listen(_server_fd, MAX_CLIENTS) == -1)
+    //throw Socket::ErrorListenException();
+
+  std::cout << "[log] Serveur démarré sur le port " << PORT << std::endl;
+  vectorSocketFd.push_back(_socket_fd);
 }
 
 Socket::~Socket ( void )
@@ -35,56 +44,23 @@ Socket::~Socket ( void )
   std::cout << "[log] Call destructor socket " << std::endl;
 }
 
-Socket::Socket (const Socket& other): _server_fd(other._server_fd){}
-
-Socket&  Socket::operator=(const Socket& other)
-{
-  if( this != &other )
-  {
-    _server_fd = other._server_fd;
-    //_server_addr = other._server_addr;
-  }
-  return ( *this );
-}
 
 /*=========================================================================== */
 
-int         Socket::getServerFd( void )const { return (_server_fd);}
+/*
+  public :
+    class ErrorServerFdException : public std::exception {
+      const char* what() const throw();
+    };
+    class ErrorBindException : public std::exception {
+      const char* what() const throw();
+    };
+    class ErrorListenException : public std::exception {
+      const char* what() const throw();
+    };
+*/
 
-/*=========================================================================== */
-
-void        Socket::setSocket( void )
-{
-  int fd = socket(AF_INET, SOCK_STREAM, 0);// [domain, type, protocol]
-  setServerFd(fd);
-
-  struct sockaddr_in server_addr;
-  memset(&server_addr, 0, sizeof(server_addr));
-  server_addr.sin_family = AF_INET;          // 
-  server_addr.sin_addr.s_addr = INADDR_ANY;  // Écouter sur toutes les interfaces
-  server_addr.sin_port = htons(PORT);        // Convertir le port en network byte order
-                                             //
-  if (getServerFd() == -1)
-    throw Socket::ErrorServerFdException(); 
-
-  if(bind(_server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1)
-    throw Socket::ErrorBindException();
-
-  if(listen(_server_fd, MAX_CLIENTS) == -1)
-    throw Socket::ErrorListenException();
-
-  std::cout << "[log] Serveur démarré sur le port " << PORT << std::endl;
-}
-
-void      Socket::setServerFd(int port)
-{
-  this->_server_fd = port;
-}
-
-
-/*=========================================================================== */
-
-
+/*
 const char* Socket::ErrorServerFdException::what() const throw()
 {
   return( "exeption to lift socket cannot be created " );
@@ -99,6 +75,7 @@ const char* Socket::ErrorListenException::what() const throw()
 {
   return ("exception to lift port listenting failed");
 }
+*/
 
 /* ************************************************************************** */
 /*                                                                            */
