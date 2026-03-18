@@ -32,13 +32,29 @@
 
 # include "../include/webserver.hpp"
 //# include "../include/SocketTcp.hpp"
+#include <csignal>
+#include <cstdlib>
+#include <iostream>
+#include <unistd.h> // pour sleep()
 
+volatile sig_atomic_t g_should_exit = 0;
+
+void signal_handler(int signal) {
+    if (signal == SIGINT) {
+        std::cout << "\nReçu SIGINT (Ctrl+C), arrêt du serveur..." << std::endl;
+        g_should_exit = 1;
+    }
+}
 //int main (int av, char *ag[])
 int main()
 {
-  // init object NetworkTcp
-  while (true)
+  // Enregistrer le gestionnaire de signal
+  std::signal(SIGINT, signal_handler);
+  
+  std::vector<int>  Fd;
+  while (!g_should_exit)
   {
+    Socket sock(Fd);
     // 1. Attendre une activité sur les sockets
     // 2. Vérifier si une nouvelle connexion arrive
     // 3. Traiter les requêtes des clients existants
