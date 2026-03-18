@@ -40,10 +40,11 @@ class NetworkTcp {
 
 
   protected :
-    std::vector<int*>  vectorSocketFd;
+    std::vector<int>  vectorSocketFd;
 
   private :
   //  std::string       _linkConfigFile;
+
 };
 
 // =========================== Class Socket ================================= //
@@ -51,11 +52,12 @@ class NetworkTcp {
 class Socket: public NetworkTcp{
 
   public :
-    Socket(std::vector<int>  vectorSocketFd);
+    Socket(std::vector<int>&  vectorSocketFd);
     virtual ~Socket ( void );
 
   private :
     int   _socket_fd;
+
 };
 
 // ============================ Class Client =============================== //
@@ -63,7 +65,7 @@ class Socket: public NetworkTcp{
 class Client: public NetworkTcp{
 
   public:
-    Client(const int& socketFd);
+    Client(int socketFd);
     virtual ~Client( void );
 //    Client(const Client& other);
 //    Client& operator=(const Client& other);

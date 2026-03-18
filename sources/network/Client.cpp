@@ -14,7 +14,7 @@
 
 /* ========================================================================== */
 
-Client::Client(const int& socketFd) : _socket_fd(socketFd)
+Client::Client(int socketFd) : _socket_fd(socketFd)
 { 
   std::cout << "[log] Call constructor clients with socket"<< std::endl;
 }

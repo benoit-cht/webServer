@@ -14,7 +14,7 @@
 
 /*=========================================================================== */
 
-Socket::Socket (std::vector<int> vectorSocketFd) 
+Socket::Socket (std::vector<int>& vectorSocketFd) 
 {
   struct  sockaddr_in server_addr;
   int     _socket_fd = -1;
