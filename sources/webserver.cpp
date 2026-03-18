@@ -25,6 +25,29 @@ int main()
     return 0;
 }
 
+//================================================================================//
+
+/*
+ * createServerSocket
+ *    call fonction socket()
+ *    set struct sockaddr_in
+ *    call fonction bind
+ *    call fonction listen
+ *
+ * init struct pollfd
+ * set other slots to -1 value
+ * 
+ * start infini loop
+ *  call fonction poll attendre une activiter
+ *  check new conection is comming
+ *      accept new conection
+ *      find free slot in fd(fd in the struct pollfd)
+ *      
+ *    
+ * 
+*/
+
+//================================================================================//
 /*
 
     while (true) {
