@@ -67,8 +67,6 @@ class Client: public NetworkTcp{
   public:
     Client(int socketFd);
     virtual ~Client( void );
-//    Client(const Client& other);
-//    Client& operator=(const Client& other);
 
   public:
     ssize_t   read(char* buffer, size_t size);          // Lire les données du client
@@ -93,12 +91,6 @@ class EventsLoop: public NetworkTcp{
     std::vector<Client*>       _clients;       // Liste des clients connectés
     std::vector<struct pollfd> _poll_fds;      // Liste des descripteurs à surveiller
 
-/*  public :
-*    EventsLoop(Socket& soket);
-*    virtual ~EventsLoop( void );
-*    EventsLoop(const EventsLoop& other);
-*    EventsLoop& operator=(const EventsLoop& other);
-*/
 };
 
 // ========================================================================== //

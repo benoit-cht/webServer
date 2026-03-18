@@ -14,27 +14,35 @@
 
 /*=========================================================================== */
 
-Socket::Socket (std::vector<int>& vectorSocketFd) 
+Socket::Socket (std::vector<int>& vectorSocketFd) : _socket_fd(-1)
 {
-  struct  sockaddr_in server_addr;
-  int     _socket_fd = -1;
-  
   std::cout << "[log] Call constructor socket " << std::endl;
 
   _socket_fd = socket(AF_INET, SOCK_STREAM, 0);// [domain, type, protocol]
   if (_socket_fd == -1)
-    //throw Socket::ErrorServerFdException(); 
+  {
+    std::cout << "[ERR] Error in socket " << std::endl;
+    //throw Socket::ErrorServerFdException(); }
+  }
 
+  struct  sockaddr_in server_addr;
   memset(&server_addr, 0, sizeof(server_addr));
   server_addr.sin_family = AF_INET;          // 
   server_addr.sin_addr.s_addr = INADDR_ANY;  // Écouter sur toutes les interfaces
   server_addr.sin_port = htons(PORT);        // Convertir le port en network byte order
   
   if(bind(_socket_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1)
+  {
+    std::cout << "[ERR] Error in bind " << std::endl;
     //throw Socket::ErrorBindException();
+  }
 
   if(listen(_socket_fd, MAX_CLIENTS) == -1)
+  {    
+    std::cout << "[ERR] Error in socket " << std::endl;
     //throw Socket::ErrorListenException();
+  }
+
 
   std::cout << "[log] Serveur démarré sur le port " << PORT << std::endl;
   vectorSocketFd.push_back(_socket_fd);
