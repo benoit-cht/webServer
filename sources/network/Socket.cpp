@@ -16,13 +16,15 @@
 
 Socket::Socket (std::vector<int> vectorSocketFd) 
 {
+  struct  sockaddr_in server_addr;
+  int     _socket_fd = -1;
+  
   std::cout << "[log] Call constructor socket " << std::endl;
 
-  int _socket_fd = socket(AF_INET, SOCK_STREAM, 0);// [domain, type, protocol]
+  _socket_fd = socket(AF_INET, SOCK_STREAM, 0);// [domain, type, protocol]
   if (_socket_fd == -1)
     //throw Socket::ErrorServerFdException(); 
 
-  struct sockaddr_in server_addr;
   memset(&server_addr, 0, sizeof(server_addr));
   server_addr.sin_family = AF_INET;          // 
   server_addr.sin_addr.s_addr = INADDR_ANY;  // Écouter sur toutes les interfaces

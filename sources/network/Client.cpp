@@ -14,7 +14,7 @@
 
 /* ========================================================================== */
 
-Client::Client(Socket& socket) : _socket(socket)
+Client::Client(const int& socketFd) : _socket_fd(socketFd)
 { 
   std::cout << "[log] Call constructor clients with socket"<< std::endl;
 }
@@ -28,12 +28,12 @@ Client::~Client( void )
 
 ssize_t Client::read(char* buffer, size_t size)
 {
-  return ::read(_socket.getServerFd(), buffer, size);
+  return ::read(_socket_fd, buffer, size);
 }
 
 ssize_t Client::write(const char* buffer, size_t size)
 {
-  return ::write(_socket.getServerFd(), buffer, size);
+  return ::write(_socket_fd, buffer, size);
 }
 
 /* ========================================================================== */

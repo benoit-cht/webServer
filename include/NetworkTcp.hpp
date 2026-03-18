@@ -40,7 +40,7 @@ class NetworkTcp {
 
 
   protected :
-    std::vector<int>  vectorSocketFd;
+    std::vector<int*>  vectorSocketFd;
 
   private :
   //  std::string       _linkConfigFile;
@@ -57,12 +57,13 @@ class Socket: public NetworkTcp{
   private :
     int   _socket_fd;
 };
+
 // ============================ Class Client =============================== //
 
 class Client: public NetworkTcp{
 
   public:
-    Client(Socket& socket);
+    Client(const int& socketFd);
     virtual ~Client( void );
 //    Client(const Client& other);
 //    Client& operator=(const Client& other);
@@ -70,6 +71,9 @@ class Client: public NetworkTcp{
   public:
     ssize_t   read(char* buffer, size_t size);          // Lire les données du client
     ssize_t   write(const char* buffer, size_t size);   // Écrire des données au client
+  
+  protected :
+    int   _socket_fd;
 
  };
 
@@ -83,9 +87,9 @@ class EventsLoop: public NetworkTcp{
     void  closeClient(int client_fd);          // Fermer une connexion client
 
   private:
-    Socket& _socket;                           // Socket serveur
-    std::vector<struct pollfd> _poll_fds;     // Liste des descripteurs à surveiller
-    std::vector<Client*> _clients;            // Liste des clients connectés
+    int                        _socket_fd;     // Socket serveur
+    std::vector<Client*>       _clients;       // Liste des clients connectés
+    std::vector<struct pollfd> _poll_fds;      // Liste des descripteurs à surveiller
 
 /*  public :
 *    EventsLoop(Socket& soket);
