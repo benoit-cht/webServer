@@ -28,10 +28,10 @@ Socket::Socket (std::vector<int> vectorSocketFd)
   server_addr.sin_addr.s_addr = INADDR_ANY;  // Écouter sur toutes les interfaces
   server_addr.sin_port = htons(PORT);        // Convertir le port en network byte order
   
-  if(bind(_server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1)
+  if(bind(_socket_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1)
     //throw Socket::ErrorBindException();
 
-  if(listen(_server_fd, MAX_CLIENTS) == -1)
+  if(listen(_socket_fd, MAX_CLIENTS) == -1)
     //throw Socket::ErrorListenException();
 
   std::cout << "[log] Serveur démarré sur le port " << PORT << std::endl;
@@ -40,7 +40,7 @@ Socket::Socket (std::vector<int> vectorSocketFd)
 
 Socket::~Socket ( void )
 { 
-  close(_server_fd);
+  close(_socket_fd);
   std::cout << "[log] Call destructor socket " << std::endl;
 }
 
