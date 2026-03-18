@@ -52,13 +52,39 @@ int main()
   std::signal(SIGINT, signal_handler);
   
   std::vector<int>  Fd;
+  std::vector<struct pollfd> _poll_fds;      // Liste des descripteurs à surveiller
+
+  Socket sock(Fd);
+  struct pollfd server_pollfd;
+  server_pollfd.fd = Fd.front();
+  server_pollfd.events = POLLIN;  // Surveiller les nouvelles connexions
+  _poll_fds.push_back(server_pollfd);
+
   while (!g_should_exit)
   {
-    Socket sock(Fd);
     // 1. Attendre une activité sur les sockets
-    // 2. Vérifier si une nouvelle connexion arrive
-    // 3. Traiter les requêtes des clients existants
+    int ret = poll(&_poll_fds[0], _poll_fds.size(), -1);  // Timeout infini
+    if (ret == -1) {
+      std::cout << "[ERR] poll fonc fail "<< std::endl; //perror("poll() failed");
+      break;
+    }
 
+    // 2. Vérifier si une nouvelle connexion arrive
+    if (_poll_fds[0].revents)
+    {
+      std::cout << "[log] new conection " << std::endl;
+      //break ;
+      //EventsLoop::acceptNewConnection();
+    }
+
+    // 3. Traiter les requêtes des clients existants
+    for (size_t i = 1; i < _poll_fds.size(); i++) 
+    {
+      if (_poll_fds[i].fd != -1 && _poll_fds[i].revents & POLLIN)
+      {
+        //EventsLoop::handleClientRequest(_poll_fds[i].fd);
+      }
+    }
   }
   return 0;
 }

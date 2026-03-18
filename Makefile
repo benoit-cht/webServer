@@ -46,7 +46,7 @@ SRC	=	webserver.cpp \
 			network/Socket.cpp \
 			network/NetworkTcp.cpp \
 			network/Client.cpp \
-			network/EventsLoop.cpp \
+			#network/EventsLoop.cpp \
 
 SRCS = ${addprefix ${SRCDIR}/, ${SRC}}
 OBJS = ${addprefix ${OBJDIR}/, $(SRC:.cpp=.o)}
