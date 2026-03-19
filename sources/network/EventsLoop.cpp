@@ -14,10 +14,10 @@
 
 // ========================================================================== //
 
-EventsLoop::EventsLoop(Socket& socket): _socket(socket)
+EventsLoop::EventsLoop(int socketFd): _socket_fd(socketFd)
 {
   struct pollfd server_pollfd;
-  server_pollfd.fd = _socket.getServerFd();
+  server_pollfd.fd = _socket_fd;
   server_pollfd.events = POLLIN;  // Surveiller les nouvelles connexions
   _poll_fds.push_back(server_pollfd);
   std::cout << "[log] Call constructor EventsLoop " << std::endl;
@@ -37,7 +37,7 @@ void EventsLoop::acceptNewConnection()
   socklen_t client_addr_len = sizeof(client_addr);
 
   // 1. Accepter la nouvelle connexion
-  int client_fd = accept(_socket.getServerFd(), (struct sockaddr *)&client_addr, &client_addr_len);
+  int client_fd = accept(_socket_fd, (struct sockaddr *)&client_addr, &client_addr_len);
   if (client_fd == -1) // to do lift exception !!!
   {
     //perror("accept() failed");
@@ -51,7 +51,7 @@ void EventsLoop::acceptNewConnection()
   //int client_port = ntohs(client_addr.sin_port);
 
   // 3. Créer un nouvel objet Client
-  Client* clients = new Client(_socket);
+  Client* clients = new Client(_socket_fd);
   _clients.push_back(clients);
 
   // 4. Ajouter le client à la liste des sockets à surveiller
@@ -62,7 +62,7 @@ void EventsLoop::acceptNewConnection()
 }
 
 
-
+/*
 void EventsLoop::handleClientRequest(int client_fd) 
 {
   // 1. Trouver le client correspondant
@@ -127,7 +127,7 @@ void EventsLoop::closeClient(int client_fd)
     }
   }
 }
-
+*/
 
 
 // ========================================================================== //

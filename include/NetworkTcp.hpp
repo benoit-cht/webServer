@@ -82,6 +82,9 @@ class Client: public NetworkTcp{
 class EventsLoop: public NetworkTcp{
 
   public:
+    EventsLoop(int socketFd);
+    virtual ~EventsLoop( void );
+  public:
     void  acceptNewConnection();               // Accepter une nouvelle connexion
     void  handleClientRequest(int client_fd);  // Traiter une requête client
     void  closeClient(int client_fd);          // Fermer une connexion client
