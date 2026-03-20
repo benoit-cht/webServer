@@ -43,10 +43,10 @@ NAME = webserv
 #=======================================================================#
 
 SRC	=	webserver.cpp \
-			network/Socket.cpp \
-			network/NetworkTcp.cpp \
-			network/Client.cpp \
-			network/EventsLoop.cpp \
+			network/\
+			network/ \
+			network/ \
+			network/ \
 
 SRCS = ${addprefix ${SRCDIR}/, ${SRC}}
 OBJS = ${addprefix ${OBJDIR}/, $(SRC:.cpp=.o)}
