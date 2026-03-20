@@ -16,83 +16,100 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
-#include <arpa/inet.h>
-#include <string>
-#include <cerrno>
-#include <cstring>
-#include <iostream>
+#include <poll.h>
 #include <vector>
+#include <string>
+#include <map>
+#include <stdexcept>
+#include <cstring>
+#include <arpa/inet.h>
+#include <cerrno>
+#include <iostream>
 
 #include "webserver.hpp"
 
 // ============================== Class NetworkTcp ========================== //
 
-class NetworkTcp {
-
-  public :
-    NetworkTcp( void );
-    virtual ~NetworkTcp( void );
-//    NetworkTcp(const NetworkTcp& other);
-//    NetworkTcp& operator=(const NetworkTcp& other);
-
-  public :
-    // Methode pour la gestion des socket;
-
-
-  protected :
-    std::vector<int>  vectorSocketFd;
-
-  private :
-  //  std::string       _linkConfigFile;
+class SocketHandler {
+  
+  public:
+    SocketHandler( void );
+    virtual ~SocketHandler( void );
+  
+  public:
+    int createServerSocket(int port);
+    int acceptConnection(int server_fd, std::string& ip, int& port);
+  
+    ssize_t readFromSocket(int fd, char* buffer, size_t size);
+    ssize_t writeToSocket(int fd, const char* buffer, size_t size);
+    
+    void closeSocket(int fd);
 
 };
 
 // =========================== Class Socket ================================= //
 
-class Socket: public NetworkTcp{
+class ClientInfo {
+  
+  public:
+    ClientInfo(int fd, const std::string& ip, int port);
+    virtual ~ClientInfo( void );
 
-  public :
-    Socket(std::vector<int>&  vectorSocketFd);
-    virtual ~Socket ( void );
+  public:
+    int                 getFd() const;
+    const std::string&  getIp() const;
+    int                 getPort() const;
 
-  private :
-    int   _socket_fd;
+  private:
+    int           _fd;
+    std::string   _ip;
+    int           _port;
 
 };
 
 // ============================ Class Client =============================== //
 
-class Client: public NetworkTcp{
+class ClientManager {
 
   public:
-    Client(int socketFd);
-    virtual ~Client( void );
+    ClientManager( void );
+    virtual ~ClientManager( void );
 
   public:
-    ssize_t   read(char* buffer, size_t size);          // Lire les données du client
-    ssize_t   write(const char* buffer, size_t size);   // Écrire des données au client
-  
-  protected :
-    int   _socket_fd;
+    void                              addClient(int fd, const std::string& ip, int port);
+    void                              removeClient(int fd);
+    ClientInfo*                       getClient(int fd) const;
+    const std::vector<ClientInfo*>&   getClients() const;
 
- };
+  private:
+    std::vector<ClientInfo*>    _clients;
+    std::map<int, ClientInfo*>  _fd_to_client;
+
+};
 
 // =============================== Class EventsLoop ========================= //
 
-class EventsLoop: public NetworkTcp{
+class EventsLoop {
 
   public:
-    EventsLoop(int socketFd);
-    virtual ~EventsLoop( void );
+    EventLoop(int port);
+    virtual ~EventLoop( void );
+  
   public:
-    void  acceptNewConnection();               // Accepter une nouvelle connexion
-    void  handleClientRequest(int client_fd);  // Traiter une requête client
-    void  closeClient(int client_fd);          // Fermer une connexion client
+    void run();
 
   private:
-    int                        _socket_fd;     // Socket serveur
-    std::vector<Client*>       _clients;       // Liste des clients connectés
-    std::vector<struct pollfd> _poll_fds;      // Liste des descripteurs à surveiller
+    void  setupServerSocket(int port);
+    void  handleNewConnection();
+    void  handleClientRequest(int fd);
+    void  cleanup();
+
+  private:
+    int                         _server_fd;
+    SocketHandler               _socket_handler;
+    ClientManager               _client_manager;
+    std::vector<struct pollfd>  _poll_fds;
+
 
 };
 
@@ -103,4 +120,3 @@ class EventsLoop: public NetworkTcp{
 /* ************************************************************************** */
 /*                                                                            */
 /* ************************************************************************** */
-
