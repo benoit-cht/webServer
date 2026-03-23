@@ -6,7 +6,7 @@
 #    By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/20 09:10:14 by bchallat          #+#    #+#              #
-#    Updated: 2026/03/17 11:12:45 by ton_utilisate    ###   ########.fr        #
+#    Updated: 2026/03/23 14:21:24 by bchallat         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -43,7 +43,7 @@ NAME = webserv
 #=======================================================================#
 
 SRC	=	webserver.cpp \
-			network/\
+			network/socketHandler.cpp\
 			network/ \
 			network/ \
 			network/ \

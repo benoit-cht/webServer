@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/27 14:12:23 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/17 13:28:50 by ton_utilisate    ###   ########.fr       */
+/*   Updated: 2026/03/23 14:22:18 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,17 +36,24 @@ class SocketHandler {
     SocketHandler( void );
     virtual ~SocketHandler( void );
   
+  public :
+    //int     getPortFromFd(int fd) const;
+  
   public:
     int     createServerSocket(int port);
     int     acceptConnection(int server_fd, std::string& ip, int& port);
-  
-  public :
     ssize_t readFromSocket(int fd, char* buffer, size_t size);
     ssize_t writeToSocket(int fd, const char* buffer, size_t size);
   
   public :  
     void    closeSocket(int fd);
 
+  /*public :
+    std::vector<int> createServerSockets(const std::vector<int>& ports);
+  
+  private :
+    std::map<int, int> _tableFilePort;  // Associe un fd de socket serveur à son port
+*/
 };
 
 // =========================== Class ClientInfo ================================= //
@@ -93,7 +100,7 @@ class ClientManager {
 
 // =============================== Class EventsLoop ========================= //
 
-class EventsLoop {
+class EventLoop {
 
   public:
     EventLoop(int port);
