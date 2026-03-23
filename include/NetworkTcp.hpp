@@ -28,7 +28,7 @@
 
 #include "webserver.hpp"
 
-// ============================== Class NetworkTcp ========================== //
+// ============================== Class socketHandler ========================== //
 
 class SocketHandler {
   
@@ -37,17 +37,19 @@ class SocketHandler {
     virtual ~SocketHandler( void );
   
   public:
-    int createServerSocket(int port);
-    int acceptConnection(int server_fd, std::string& ip, int& port);
+    int     createServerSocket(int port);
+    int     acceptConnection(int server_fd, std::string& ip, int& port);
   
+  public :
     ssize_t readFromSocket(int fd, char* buffer, size_t size);
     ssize_t writeToSocket(int fd, const char* buffer, size_t size);
-    
-    void closeSocket(int fd);
+  
+  public :  
+    void    closeSocket(int fd);
 
 };
 
-// =========================== Class Socket ================================= //
+// =========================== Class ClientInfo ================================= //
 
 class ClientInfo {
   
@@ -56,18 +58,18 @@ class ClientInfo {
     virtual ~ClientInfo( void );
 
   public:
-    int                 getFd() const;
-    const std::string&  getIp() const;
-    int                 getPort() const;
+    int                 getFileDescriptor() const;
+    int                 getPortNumber() const;
+    const std::string&  getAdressIp() const;
 
   private:
-    int           _fd;
-    std::string   _ip;
-    int           _port;
+    int                 _fileDescriptor;
+    int                 _portNumber;
+    std::string         _adressIp;
 
 };
 
-// ============================ Class Client =============================== //
+// ========================== Class ClientManager =============================== //
 
 class ClientManager {
 
@@ -78,12 +80,14 @@ class ClientManager {
   public:
     void                              addClient(int fd, const std::string& ip, int port);
     void                              removeClient(int fd);
+  
+  public :
     ClientInfo*                       getClient(int fd) const;
     const std::vector<ClientInfo*>&   getClients() const;
 
   private:
-    std::vector<ClientInfo*>    _clients;
-    std::map<int, ClientInfo*>  _fd_to_client;
+    std::vector<ClientInfo*>          _clients;
+    std::map<int, ClientInfo*>        _fileDescriptorClient;
 
 };
 
@@ -96,20 +100,19 @@ class EventsLoop {
     virtual ~EventLoop( void );
   
   public:
-    void run();
+    void  run();
+    void  cleanup();
 
   private:
     void  setupServerSocket(int port);
-    void  handleNewConnection();
     void  handleClientRequest(int fd);
-    void  cleanup();
+    void  handleNewConnection();
 
   private:
     int                         _server_fd;
     SocketHandler               _socket_handler;
     ClientManager               _client_manager;
     std::vector<struct pollfd>  _poll_fds;
-
 
 };
 
