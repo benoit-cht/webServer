@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/17 14:14:30 by ton_utilisate    ###   ########.fr       */
+/*   Updated: 2026/03/23 14:23:01 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ int main()
   // Enregistrer le gestionnaire de signal
   std::signal(SIGINT, signal_handler);
   
-  std::vector<int>  Fd;
+  /*std::vector<int>  Fd;
   std::vector<struct pollfd> _poll_fds;      // Liste des descripteurs à surveiller
 
   Socket sock(Fd);
@@ -85,7 +85,7 @@ int main()
         //EventsLoop::handleClientRequest(_poll_fds[i].fd);
       }
     }
-  }
+  }*/
   return 0;
 }
 
