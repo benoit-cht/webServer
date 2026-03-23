@@ -43,9 +43,9 @@ NAME = webserv
 #=======================================================================#
 
 SRC	=	webserver.cpp \
-			network/socketHandler.cpp\
-			network/clientInfo.cpp \
-			network/clientManager.cpp \
+			network/SocketHandler.cpp\
+			network/ClientInfo.cpp \
+			network/ClientManager.cpp \
 			network/ \
 
 SRCS = ${addprefix ${SRCDIR}/, ${SRC}}
