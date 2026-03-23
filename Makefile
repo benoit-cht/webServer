@@ -6,7 +6,7 @@
 #    By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/20 09:10:14 by bchallat          #+#    #+#              #
-#    Updated: 2026/02/26 15:30:56 by bchallat         ###   ########.fr        #
+#    Updated: 2026/03/23 14:49:01 by bchallat         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -43,10 +43,10 @@ NAME = webserv
 #=======================================================================#
 
 SRC	=	webserver.cpp \
-			network/Socket.cpp \
-			network/NetworkTcp.cpp \
-			network/Clients.cpp \
-			network/EventsLoop.cpp \
+			network/SocketHandler.cpp\
+			network/ClientInfo.cpp \
+			network/ClientManager.cpp \
+			network/ \
 
 SRCS = ${addprefix ${SRCDIR}/, ${SRC}}
 OBJS = ${addprefix ${OBJDIR}/, $(SRC:.cpp=.o)}

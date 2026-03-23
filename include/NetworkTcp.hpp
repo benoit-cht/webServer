@@ -6,119 +6,120 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/27 14:12:23 by bchallat          #+#    #+#             */
-/*   Updated: 2026/02/27 14:15:10 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/03/23 14:22:18 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef NETWORKTCP_HPP
 #define NETWORKTCP_HPP
 
-#include <sys/socket.h>   // Pour les sockets
-#include <netinet/in.h>   // Pour sockaddr_in
-#include <unistd.h>       // Pour close(), read(), write()
-#include <poll.h>         // Pour poll()
-#include <fcntl.h>        // Pour fcntl() (non-blocking)
-#include <string>         // Pour memset, strerror
-#include <iostream>       // Pour les logs
-#include <arpa/inet.h>    // Pour inet_ntoa (affichage des IPs)
-
-#include <cerrno>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <unistd.h>
+#include <poll.h>
 #include <vector>
+#include <string>
+#include <map>
+#include <stdexcept>
+#include <cstring>
+#include <arpa/inet.h>
+#include <cerrno>
+#include <iostream>
 
 #include "webserver.hpp"
 
-// ============================== Class NetworkTcp ========================== //
+// ============================== Class socketHandler ========================== //
 
-class NetworkTcp {
-
-  public :
-    NetworkTcp( void );
-    virtual ~NetworkTcp( void );
-//    NetworkTcp(const NetworkTcp& other);
-//    NetworkTcp& operator=(const NetworkTcp& other);
-
-  protected :
-    int port;
-    int type;
-    int protocol;
-
-
-  private :
-  //  std::string       _linkConfigFile;
-  //  std::vector<int>  _arraySocket
-
-};
-
-// =========================== Class Socket ================================= //
-
-class Socket: public NetworkTcp{
-
-  public :
-    Socket( void );
-    virtual ~Socket ( void );
-    Socket(const Socket& other);
-    Socket& operator=(const Socket& other);
-
-  public :
-    int     getServerFd( void ) const;
+class SocketHandler {
+  
+  public:
+    SocketHandler( void );
+    virtual ~SocketHandler( void );
   
   public :
-    void    setServerFd(int fd);
-    void    setSocket( void );
+    //int     getPortFromFd(int fd) const;
+  
+  public:
+    int     createServerSocket(int port);
+    int     acceptConnection(int server_fd, std::string& ip, int& port);
+    ssize_t readFromSocket(int fd, char* buffer, size_t size);
+    ssize_t writeToSocket(int fd, const char* buffer, size_t size);
+  
+  public :  
+    void    closeSocket(int fd);
 
-  public :
-    class ErrorServerFdException : public std::exception {
-      const char* what() const throw();
-    };
-    class ErrorBindException : public std::exception {
-      const char* what() const throw();
-    };
-    class ErrorListenException : public std::exception {
-      const char* what() const throw();
-    };
-
+  /*public :
+    std::vector<int> createServerSockets(const std::vector<int>& ports);
+  
   private :
-    int   _server_fd;
+    std::map<int, int> _tableFilePort;  // Associe un fd de socket serveur à son port
+*/
+};
+
+// =========================== Class ClientInfo ================================= //
+
+class ClientInfo {
+  
+  public:
+    ClientInfo(int fd, const std::string& ip, int port);
+    virtual ~ClientInfo( void );
+
+  public:
+    int                 getFileDescriptor() const;
+    int                 getPortNumber() const;
+    const std::string&  getAdressIp() const;
+
+  private:
+    int                 _fileDescriptor;
+    int                 _portNumber;
+    std::string         _adressIp;
 
 };
 
-// ============================ Class Clients =============================== //
+// ========================== Class ClientManager =============================== //
 
-class Clients: public NetworkTcp{
-
-  public:
-    Clients(Socket& socket);
-    virtual ~Clients( void );
-//    Clients(const Clients& other);
-//    Clients& operator=(const Clients& other);
+class ClientManager {
 
   public:
-    ssize_t   read(char* buffer, size_t size);          // Lire les données du client
-    ssize_t   write(const char* buffer, size_t size);   // Écrire des données au client
+    ClientManager( void );
+    virtual ~ClientManager( void );
+
+  public:
+    void                              addClient(int fd, const std::string& ip, int port);
+    void                              removeClient(int fd);
+  
+  public :
+    ClientInfo*                       getClient(int fd) const;
+    const std::vector<ClientInfo*>&   getClients() const;
 
   private:
-    Socket& _socket;
+    std::vector<ClientInfo*>          _clients;
+    std::map<int, ClientInfo*>        _fileDescriptorClient;
+
 };
 
 // =============================== Class EventsLoop ========================= //
 
-class EventsLoop: public NetworkTcp{
+class EventLoop {
 
-  private :
-    EventsLoop(Socket& soket);
-    virtual ~EventsLoop( void );
-//    EventsLoop(const EventsLoop& other);
-//    EventsLoop& operator=(const EventsLoop& other);
-
-  private:
-    void  acceptNewConnection();               // Accepter une nouvelle connexion
-    void  handleClientRequest(int client_fd);  // Traiter une requête client
-    void  closeClient(int client_fd);          // Fermer une connexion client
+  public:
+    EventLoop(int port);
+    virtual ~EventLoop( void );
+  
+  public:
+    void  run();
+    void  cleanup();
 
   private:
-    Socket& _socket;                           // Socket serveur
-    std::vector<struct pollfd> _poll_fds;     // Liste des descripteurs à surveiller
-    std::vector<Clients*> _clients;            // Liste des clients connectés
+    void  setupServerSocket(int port);
+    void  handleClientRequest(int fd);
+    void  handleNewConnection();
+
+  private:
+    int                         _server_fd;
+    SocketHandler               _socket_handler;
+    ClientManager               _client_manager;
+    std::vector<struct pollfd>  _poll_fds;
 
 };
 
@@ -129,4 +130,3 @@ class EventsLoop: public NetworkTcp{
 /* ************************************************************************** */
 /*                                                                            */
 /* ************************************************************************** */
-

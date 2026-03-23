@@ -26,7 +26,7 @@
 #include <iostream>      // Pour les logs
 #include <arpa/inet.h>   // Pour inet_ntoa (affichage des IPs)
 
-#include "RequestHttp.hpp"
+//#include "RequestHttp.hpp"
 #include "NetworkTcp.hpp"
 //#include "SocketTcp.hpp"
 //#include "EventsLoop.hpp"
