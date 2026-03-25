@@ -6,13 +6,14 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:32:48 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/25 06:40:45 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/03/25 06:48:26 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SOCKET_HANDLER_HPP
 #define SOCKET_HANDLER_HPP
 
+#include <iostream>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>

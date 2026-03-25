@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:29:31 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/25 06:43:31 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/03/25 06:46:02 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ private:
     void cleanup();                                         // Nettoie les ressources (fermeture des sockets)
 };
 
-# ifndef
+# endif
 
 /* ************************************************************************** */
 /*                                                                            */

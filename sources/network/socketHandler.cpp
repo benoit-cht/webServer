@@ -6,11 +6,11 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/23 13:33:39 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/25 06:15:53 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/03/25 06:47:14 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../../include/NetworkTcp.hpp"
+# include "../../include/network/SocketHandler.hpp"
 
 SocketHandler::SocketHandler() {}
 SocketHandler::~SocketHandler() {}

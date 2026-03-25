@@ -6,14 +6,14 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/23 14:46:05 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/23 17:17:16 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/03/25 06:49:15 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 // ClientManager.cpp
-//#include "ClientManager.hpp"
+#include "../../include/network/ClientManager.hpp"
 //#include <algorithm>  // Pour std::find
-#include "../../include/NetworkTcp.hpp"
+//#include "../../include/NetworkTcp.hpp"
 
 ClientManager::ClientManager(void) {}
 

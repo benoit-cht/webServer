@@ -6,13 +6,13 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:01:32 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/25 06:22:16 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/03/25 06:49:39 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 // EventLoop.cpp
 //#include "EventLoop.hpp"
-#include "../../include/NetworkTcp.hpp"
+#include "../../include/network/EventLoop.hpp"
 #include <iostream>
 #include <cstring>  // Pour memset
 

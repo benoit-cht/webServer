@@ -6,12 +6,12 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/23 14:33:18 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/23 17:17:22 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/03/25 06:45:12 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-//#include "ClientInfo.hpp"
-#include "../../include/NetworkTcp.hpp"
+#include "../../include/network/ClientInfo.hpp"
+//#include "../../include/NetworkTcp.hpp"
 
 // Constructeur : Initialise les membres avec les valeurs passées en paramètre
 ClientInfo::ClientInfo(int fd, const std::string& ip, int port)

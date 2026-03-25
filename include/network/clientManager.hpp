@@ -6,13 +6,14 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:30:07 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/25 06:42:27 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/03/25 06:50:11 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CLIENT_MANAGER_HPP
 #define CLIENT_MANAGER_HPP
 
+#include <iostream>
 #include <vector>
 #include <map>
 #include <string>
@@ -38,7 +39,7 @@ class ClientManager {
 
 };
 
-# ifndef
+# endif 
 /* ************************************************************************** */
 /*                                                                            */
 /* ************************************************************************** */
