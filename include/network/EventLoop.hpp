@@ -1,0 +1,45 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   EventLoop.hpp                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/03/25 06:29:31 by bchallat          #+#    #+#             */
+/*   Updated: 2026/03/25 06:43:31 by bchallat         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef EVENT_LOOP_HPP
+#define EVENT_LOOP_HPP
+
+#include <vector>
+#include <poll.h>
+#include "SocketHandler.hpp"
+#include "ClientManager.hpp"
+
+class EventLoop {
+public:
+    EventLoop(const std::vector<int>& ports);  // Prend une liste de ports à écouter
+    ~EventLoop();
+
+    void run();  // Boucle principale du serveur
+
+private:
+    std::vector<int> _server_fds;          // Liste des descripteurs de socket serveur (un par port)
+    SocketHandler _socket_handler;         // Gère les opérations bas niveau sur les sockets
+    ClientManager _client_manager;         // Gère la liste des clients connectés
+    std::vector<struct pollfd> _poll_fds;    // Liste des descripteurs à surveiller avec poll()
+
+    void setupServerSockets(const std::vector<int>& ports);  // Configure les sockets serveur
+    void handleNewConnection(int server_fd);               // Accepte une nouvelle connexion
+    void handleClientRequest(int fd);                      // Traite une requête client
+    void cleanup();                                         // Nettoie les ressources (fermeture des sockets)
+};
+
+# ifndef
+
+/* ************************************************************************** */
+/*                                                                            */
+/* ************************************************************************** */
+
