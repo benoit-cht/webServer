@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/23 14:23:01 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/03/25 06:24:30 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,20 @@ int main()
       }
     }
   }*/
+
+  std::vector<int> ports;
+  ports.push_back(8080);
+  //ports.push_back(8081);
+  //ports.push_back(8082);
+
+  try {
+      EventLoop loop(ports);  // Créer une instance de EventLoop
+      loop.run();             // Lancer la boucle d'événements
+  } catch (const std::exception& e) {
+      std::cerr << "Erreur : " << e.what() << std::endl;
+      return 1;
+  }
+
   return 0;
 }
 

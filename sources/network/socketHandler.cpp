@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/23 13:33:39 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/23 17:17:10 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/03/25 06:15:53 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,16 @@ SocketHandler::SocketHandler() {}
 SocketHandler::~SocketHandler() {}
 
 /* ========================================================================== */
+
+std::vector<int> SocketHandler::createServerSockets(const std::vector<int>& ports)
+{
+    std::vector<int> server_fds;
+    for (size_t i = 0; i < ports.size(); i++) {
+        int fd = createServerSocket(ports[i]);  // Appelle la méthode pour un seul port
+        server_fds.push_back(fd);
+    }
+    return server_fds;
+}
 
 int SocketHandler::createServerSocket(int port) 
 {

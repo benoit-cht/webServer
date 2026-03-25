@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/27 14:12:23 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/23 14:22:18 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/03/25 06:17:51 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ class SocketHandler {
   
   public:
     int     createServerSocket(int port);
+    std::vector<int> createServerSockets(const std::vector<int>& ports);
     int     acceptConnection(int server_fd, std::string& ip, int& port);
     ssize_t readFromSocket(int fd, char* buffer, size_t size);
     ssize_t writeToSocket(int fd, const char* buffer, size_t size);
@@ -99,7 +100,7 @@ class ClientManager {
 };
 
 // =============================== Class EventsLoop ========================= //
-
+/*
 class EventLoop {
 
   public:
@@ -121,6 +122,26 @@ class EventLoop {
     ClientManager               _client_manager;
     std::vector<struct pollfd>  _poll_fds;
 
+};
+*/
+
+class EventLoop {
+public:
+    EventLoop(const std::vector<int>& ports);  // Prend une liste de ports à écouter
+    ~EventLoop();
+
+    void run();  // Boucle principale du serveur
+
+private:
+    std::vector<int> _server_fds;          // Liste des descripteurs de socket serveur (un par port)
+    SocketHandler _socket_handler;         // Gère les opérations bas niveau sur les sockets
+    ClientManager _client_manager;         // Gère la liste des clients connectés
+    std::vector<struct pollfd> _poll_fds;    // Liste des descripteurs à surveiller avec poll()
+
+    void setupServerSockets(const std::vector<int>& ports);  // Configure les sockets serveur
+    void handleNewConnection(int server_fd);               // Accepte une nouvelle connexion
+    void handleClientRequest(int fd);                      // Traite une requête client
+    void cleanup();                                         // Nettoie les ressources (fermeture des sockets)
 };
 
 // ========================================================================== //
