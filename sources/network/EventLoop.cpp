@@ -24,48 +24,59 @@ EventLoop::~EventLoop() {
     cleanup();
 }
 
+/* ************************************************************************** */
+
 void EventLoop::setupServerSockets(const std::vector<int>& ports) {
     // Créer un socket serveur pour chaque port
     _server_fds = _socket_handler.createServerSockets(ports);
 
     // Ajouter chaque socket serveur à _poll_fds pour surveillance
-    for (size_t i = 0; i < _server_fds.size(); i++) {
+    for (size_t i = 0; i < _server_fds.size(); i++) 
+    {
         struct pollfd pfd;
         pfd.fd = _server_fds[i];
-        pfd.events = POLLIN;  // Surveiller les nouvelles connexions
+        pfd.events = POLLIN;      // Surveiller les nouvelles connexions
         _poll_fds.push_back(pfd);
     }
 }
 
-void EventLoop::run() {
-    std::cout << "Démarrage de la boucle d'événements..." << std::endl;
-
-    while (true) {
+void EventLoop::run() 
+{
+    std::cout << "[log] start event loop..." << std::endl;
+    while (true) 
+    {
         // Attendre une activité sur les sockets (timeout infini)
         int ret = poll(&_poll_fds[0], _poll_fds.size(), -1);
-        if (ret == -1) {
+        if (ret == -1) 
+        {
             perror("poll() failed");
             break;
         }
 
         // Parcourir tous les descripteurs surveillés
-        for (size_t i = 0; i < _poll_fds.size(); i++) {
-            if (_poll_fds[i].revents & POLLIN) {
-                // Vérifier si c'est un socket serveur (nouvelle connexion)
-                bool is_server_fd = false;
-                for (size_t j = 0; j < _server_fds.size(); j++) {
-                    if (_poll_fds[i].fd == _server_fds[j]) {
-                        handleNewConnection(_poll_fds[i].fd);
-                        is_server_fd = true;
-                        break;
-                    }
+        for (size_t i = 0; i < _poll_fds.size(); i++)
+        {
+          if (_poll_fds[i].revents & POLLIN)
+          {
+              // Vérifier si c'est un socket serveur (nouvelle connexion)
+              bool is_server_fd = false;
+                
+              for (size_t j = 0; j < _server_fds.size(); j++) 
+              {
+                if (_poll_fds[i].fd == _server_fds[j])
+                {
+                  handleNewConnection(_poll_fds[i].fd);
+                  is_server_fd = true;
+                  break;
                 }
+              }
 
                 // Sinon, c'est un client existant (données à lire)
-                if (!is_server_fd) {
-                    handleClientRequest(_poll_fds[i].fd);
-                }
-            }
+              if (!is_server_fd)
+              {
+                handleClientRequest(_poll_fds[i].fd);
+              }
+          }
         }
     }
 }
@@ -78,7 +89,8 @@ void EventLoop::handleNewConnection(int server_fd) {
     std::string client_ip;
     int client_port;
     int client_fd = _socket_handler.acceptConnection(server_fd, client_ip, client_port);
-    if (client_fd == -1) {
+    if (client_fd == -1)
+    {
         std::cerr << "Erreur lors de l'acceptation de la connexion." << std::endl;
         return;
     }
@@ -92,7 +104,7 @@ void EventLoop::handleNewConnection(int server_fd) {
     client_pollfd.events = POLLIN;
     _poll_fds.push_back(client_pollfd);
 
-    std::cout << "Nouvelle connexion acceptée (fd=" << client_fd
+    std::cout << "[log] new conection accept (fd=" << client_fd
               << ", IP=" << client_ip
               << ", Port=" << client_port << ")" << std::endl;
 }
@@ -100,7 +112,8 @@ void EventLoop::handleNewConnection(int server_fd) {
 void EventLoop::handleClientRequest(int fd) {
     // 1. Récupérer le client
     ClientInfo* client = _client_manager.getClient(fd);
-    if (!client) {
+    if (!client)
+    {
         std::cerr << "Client non trouvé (fd=" << fd << ")." << std::endl;
         _socket_handler.closeSocket(fd);
         return;
@@ -116,8 +129,10 @@ void EventLoop::handleClientRequest(int fd) {
         _client_manager.removeClient(fd);
 
         // Retirer le fd de _poll_fds
-        for (size_t i = 0; i < _poll_fds.size(); i++) {
-            if (_poll_fds[i].fd == fd) {
+        for (size_t i = 0; i < _poll_fds.size(); i++)
+        {
+            if (_poll_fds[i].fd == fd)
+            {
                 _poll_fds.erase(_poll_fds.begin() + i);
                 break;
             }
@@ -134,15 +149,18 @@ void EventLoop::handleClientRequest(int fd) {
     //    Pour l'instant, on se contente d'afficher les données brutes.
 }
 
-void EventLoop::cleanup() {
+void EventLoop::cleanup()
+{
     // Fermer tous les sockets serveur
-    for (size_t i = 0; i < _server_fds.size(); i++) {
+    for (size_t i = 0; i < _server_fds.size(); i++) 
+    {
         _socket_handler.closeSocket(_server_fds[i]);
     }
 
     // Fermer tous les sockets clients (via ClientManager)
     const std::vector<ClientInfo*>& clients = _client_manager.getClients();
-    for (size_t i = 0; i < clients.size(); i++) {
+    for (size_t i = 0; i < clients.size(); i++) 
+    {
         _socket_handler.closeSocket(clients[i]->getFileDescriptor());
     }
 }
