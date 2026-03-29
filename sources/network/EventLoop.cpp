@@ -173,5 +173,17 @@ void EventLoop::cleanup()
 
 /* ************************************************************************** */
 /*                                                                            */
+/* Constructor: Prend une liste de ports à écouter                            */
+/* Destructor: nettoye les vector des attribue proprement                     */
+/*                                                                            */
+/* Methode public                                                             */
+/*   run : boucle d'evennement                                                */
+/*                                                                            */
+/* Methode priver                                                             */
+/*   cleanup : Nettoie les ressources (fermeture des sockets)                 */
+/*   handleNewConnection : Accepte une nouvelle connexion                     */
+/*   handleClientRequest: Traite une requête client                           */
+/*   setupServerSockets:  Configure les sockets serveur                       */
+/*                                                                            */
 /* ************************************************************************** */
 
