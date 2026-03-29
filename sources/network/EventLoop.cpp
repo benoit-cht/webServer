@@ -16,17 +16,20 @@
 #include <iostream>
 #include <cstring>  // Pour memset
 
-EventLoop::EventLoop(const std::vector<int>& ports) {
+EventLoop::EventLoop(const std::vector<int>& ports)
+{
     setupServerSockets(ports);
 }
 
-EventLoop::~EventLoop() {
+EventLoop::~EventLoop()
+{
     cleanup();
 }
 
 /* ************************************************************************** */
 
-void EventLoop::setupServerSockets(const std::vector<int>& ports) {
+void EventLoop::setupServerSockets(const std::vector<int>& ports) 
+{
     // Créer un socket serveur pour chaque port
     _server_fds = _socket_handler.createServerSockets(ports);
 
@@ -81,7 +84,8 @@ void EventLoop::run()
     }
 }
 
-void EventLoop::handleNewConnection(int server_fd) {
+void EventLoop::handleNewConnection(int server_fd)
+{
     //struct sockaddr_in client_addr;
     //socklen_t client_addr_len = sizeof(client_addr);
 
@@ -109,7 +113,8 @@ void EventLoop::handleNewConnection(int server_fd) {
               << ", Port=" << client_port << ")" << std::endl;
 }
 
-void EventLoop::handleClientRequest(int fd) {
+void EventLoop::handleClientRequest(int fd)
+{
     // 1. Récupérer le client
     ClientInfo* client = _client_manager.getClient(fd);
     if (!client)
@@ -123,7 +128,8 @@ void EventLoop::handleClientRequest(int fd) {
     char buffer[4096];
     memset(buffer, 0, sizeof(buffer));
     ssize_t bytes_read = _socket_handler.readFromSocket(fd, buffer, sizeof(buffer) - 1);
-    if (bytes_read <= 0) {
+    if (bytes_read <= 0)
+    {
         // Client déconnecté ou erreur de lecture
         std::cout << "Client déconnecté (fd=" << fd << ")." << std::endl;
         _client_manager.removeClient(fd);
