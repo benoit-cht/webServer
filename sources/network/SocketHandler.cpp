@@ -17,7 +17,7 @@ SocketHandler::~SocketHandler() {}
 
 /* ************************************************************************** */
 
-std::vector<int> SocketHandler::createSocketWitchPort(const std::vector<int>& ports)
+std::vector<int> SocketHandler::createSocketWithPort(const std::vector<int>& ports)
 {
     std::vector<int> server_fds;
     for (size_t i = 0; i < ports.size(); i++) 

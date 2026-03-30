@@ -34,7 +34,7 @@ class SocketHandler {
   public:
     int               createServerSocket(int port);
     int               acceptConnection(int server_fd, std::string& ip, int& port);
-    std::vector<int>  createSocketWitchPort(const std::vector<int>& ports);
+    std::vector<int>  createSocketWithPort(const std::vector<int>& ports);
   
   public:
     ssize_t           readFromSocket(int fd, char* buffer, size_t size);

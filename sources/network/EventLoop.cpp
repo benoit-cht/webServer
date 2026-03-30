@@ -144,7 +144,7 @@ void EventLoop::handleClientRequest(int fd)
 void EventLoop::setupServerSockets(const std::vector<int>& ports) 
 {
     // Créer un socket serveur pour chaque port
-    _server_fds = _socket_handler.createSocketWitchPort(ports);
+    _server_fds = _socket_handler.createSocketWithPort(ports);
 
     // Ajouter chaque socket serveur à _poll_fds pour surveillance
     for (size_t i = 0; i < _server_fds.size(); i++) 
