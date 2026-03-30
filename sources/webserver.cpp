@@ -10,32 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-/*
- * createServerSocket
- *    call fonction socket()
- *    set struct sockaddr_in
- *    call fonction bind
- *    call fonction listen
- *
- * init struct pollfd
- * set other slots to -1 value
- * 
- * start infini loop
- *  call fonction poll attendre une activiter
- *  check new conection is comming
- *      accept new conection
- *      find free slot in fd(fd in the struct pollfd)
- *      
- *    
- * 
-*/
-
-# include "../include/webserver.hpp"
-//# include "../include/SocketTcp.hpp"
 #include <csignal>
 #include <cstdlib>
 #include <iostream>
-#include <unistd.h> // pour sleep()
+
+# include "../include/webserver.hpp"
 
 volatile sig_atomic_t g_should_exit = 0;
 
