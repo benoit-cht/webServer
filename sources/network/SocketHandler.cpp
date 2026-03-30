@@ -17,15 +17,14 @@ SocketHandler::~SocketHandler() {}
 
 /* ************************************************************************** */
 
-std::vector<int> SocketHandler::createServerSockets(const std::vector<int>& ports)
+std::vector<int> SocketHandler::createSocketWitchPort(const std::vector<int>& ports)
 {
     std::vector<int> server_fds;
     for (size_t i = 0; i < ports.size(); i++) 
     {
-        int fd = createServerSocket(ports[i]);  // Appelle la méthode pour un seul port
+        int fd = createServerSocket(ports[i]);
         server_fds.push_back(fd);
     }
-    
     return server_fds;
 }
 

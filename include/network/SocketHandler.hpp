@@ -30,14 +30,11 @@ class SocketHandler {
   public:
     SocketHandler( void );
     virtual ~SocketHandler( void );
-  
-  public :
-    //int     getPortFromFd(int fd) const;
-  
+ 
   public:
     int               createServerSocket(int port);
     int               acceptConnection(int server_fd, std::string& ip, int& port);
-    std::vector<int>  createServerSockets(const std::vector<int>& ports);
+    std::vector<int>  createSocketWitchPort(const std::vector<int>& ports);
   
   public:
     ssize_t           readFromSocket(int fd, char* buffer, size_t size);
@@ -45,10 +42,9 @@ class SocketHandler {
   
   public :  
     void              closeSocket(int fd);
-
-  /*public :
-    std::vector<int> createServerSockets(const std::vector<int>& ports);
-  
+/*  
+   public :
+    //int     getPortFromFd(int fd) const;
   private :
     std::map<int, int> _tableFilePort;  // Associe un fd de socket serveur à son port
 */
