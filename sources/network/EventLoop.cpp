@@ -10,11 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-// EventLoop.cpp
-//#include "EventLoop.hpp"
-#include "../../include/network/EventLoop.hpp"
 #include <iostream>
 #include <cstring>  // Pour memset
+
+#include "../../include/network/EventLoop.hpp"
 
 EventLoop::EventLoop(const std::vector<int>& ports)
 {
@@ -27,21 +26,6 @@ EventLoop::~EventLoop()
 }
 
 /* ************************************************************************** */
-
-void EventLoop::setupServerSockets(const std::vector<int>& ports) 
-{
-    // Créer un socket serveur pour chaque port
-    _server_fds = _socket_handler.createServerSockets(ports);
-
-    // Ajouter chaque socket serveur à _poll_fds pour surveillance
-    for (size_t i = 0; i < _server_fds.size(); i++) 
-    {
-        struct pollfd pfd;
-        pfd.fd = _server_fds[i];
-        pfd.events = POLLIN;      // Surveiller les nouvelles connexions
-        _poll_fds.push_back(pfd);
-    }
-}
 
 void EventLoop::run() 
 {
@@ -84,10 +68,12 @@ void EventLoop::run()
     }
 }
 
+/* ************************************************************************** */
+
 void EventLoop::handleNewConnection(int server_fd)
 {
-    //struct sockaddr_in client_addr;
-    //socklen_t client_addr_len = sizeof(client_addr);
+   /* struct sockaddr_in client_addr;
+    socklen_t client_addr_len = sizeof(client_addr);*/
 
     // Accepter la nouvelle connexion
     std::string client_ip;
@@ -154,6 +140,23 @@ void EventLoop::handleClientRequest(int fd)
     // 4. Ici, tu pourrais appeler un parseur HTTP pour traiter la requête.
     //    Pour l'instant, on se contente d'afficher les données brutes.
 }
+
+void EventLoop::setupServerSockets(const std::vector<int>& ports) 
+{
+    // Créer un socket serveur pour chaque port
+    _server_fds = _socket_handler.createServerSockets(ports);
+
+    // Ajouter chaque socket serveur à _poll_fds pour surveillance
+    for (size_t i = 0; i < _server_fds.size(); i++) 
+    {
+        struct pollfd pfd;
+        pfd.fd = _server_fds[i];
+        pfd.events = POLLIN;      // Surveiller les nouvelles connexions
+        _poll_fds.push_back(pfd);
+    }
+}
+
+/* ************************************************************************** */
 
 void EventLoop::cleanup()
 {
