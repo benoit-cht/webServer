@@ -15,15 +15,17 @@
 SocketHandler::SocketHandler() {}
 SocketHandler::~SocketHandler() {}
 
-/* ========================================================================== */
+/* ************************************************************************** */
 
 std::vector<int> SocketHandler::createServerSockets(const std::vector<int>& ports)
 {
     std::vector<int> server_fds;
-    for (size_t i = 0; i < ports.size(); i++) {
+    for (size_t i = 0; i < ports.size(); i++) 
+    {
         int fd = createServerSocket(ports[i]);  // Appelle la méthode pour un seul port
         server_fds.push_back(fd);
     }
+    
     return server_fds;
 }
 
@@ -69,25 +71,40 @@ int SocketHandler::createServerSocket(int port)
     return socket_fd;
 }
 
+void SocketHandler::closeSocket(int fd)
+{
+    if (close(fd) == -1)
+        std::cerr << "[err](close()) " << strerror(errno) << std::endl;
+    std::cout << "[log] close socket success " << std::endl;
+}
+
+/* ************************************************************************** */
+
 int SocketHandler::acceptConnection(int socket_fd, std::string& client_ip, int& client_port)
 {
-    struct sockaddr_in client_addr;
-    socklen_t client_addr_len = sizeof(client_addr);
+    int                 client_fd = 0;
+    char                ip_str[INET_ADDRSTRLEN];
+    socklen_t           client_addr_len = 0;
+    struct sockaddr_in  client_addr;
 
-    // 1. Accepter la connexion
-    int client_fd = accept(socket_fd, (struct sockaddr *)&client_addr, &client_addr_len);
-    if (client_fd == -1) 
+    client_addr_len = sizeof(client_addr);
+    client_fd = accept(socket_fd, (struct sockaddr *)&client_addr, &client_addr_len);
+    if (client_fd == -1)
+    {
         throw std::runtime_error("[err](accept()) " + std::string(strerror(errno)));
-
-    // 2. Récupérer l'IP et le port du client
-    char ip_str[INET_ADDRSTRLEN];
-    inet_ntop(AF_INET, &(client_addr.sin_addr), ip_str, INET_ADDRSTRLEN);
-    client_ip = std::string(ip_str);
-    client_port = ntohs(client_addr.sin_port);
+    }
+    else 
+    {
+      inet_ntop(AF_INET, &(client_addr.sin_addr), ip_str, INET_ADDRSTRLEN);
+      client_ip = std::string(ip_str);
+      client_port = ntohs(client_addr.sin_port);
+    }
 
     std::cout << "[log] new connetion accept to " << client_ip << ":" << client_port << std::endl;
     return client_fd;
 }
+
+/* ************************************************************************** */
 
 ssize_t SocketHandler::readFromSocket(int fd, char* buffer, size_t size)
 {
@@ -107,17 +124,12 @@ ssize_t SocketHandler::writeToSocket(int fd, const char* buffer, size_t size)
     return bytes_written;
 }
 
-void SocketHandler::closeSocket(int fd)
-{
-    if (close(fd) == -1)
-        std::cerr << "[err](close()) " << strerror(errno) << std::endl;
-    std::cout << "[log] close socket success " << std::endl;
-}
-
-/* ========================================================================== */
-
-
 /* ************************************************************************** */
+/*                                                                            */
+/*  acceptConnection :   0. Definition des variable                           */
+/*                       1. Accepter la connexion                             */
+/*                       2. Récupérer l'IP et le port du client               */
+/*                       3. renvoyer le file descriptor du client             */
 /*                                                                            */
 /* ************************************************************************** */
 
