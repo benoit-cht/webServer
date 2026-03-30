@@ -33,6 +33,8 @@ class EventLoop {
 * Vérifier si c'est un socket serveur (nouvelle connexion)
 * Sinon, c'est un client existant (données à lire)
 */
+  public:
+    void  waitActivityOnSocket( void ); // Attendre une activité sur les sockets (timeout infini)
 
   private:
     void  cleanup();                                          // Nettoie les ressources (fermeture des sockets)
