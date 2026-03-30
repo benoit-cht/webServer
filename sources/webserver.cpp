@@ -47,6 +47,9 @@ void signal_handler(int signal)
         g_should_exit = 1;
     }
 }
+
+// void initVerctorOfPort ;
+
 //int main (int av, char *ag[])
 int main()
 {
