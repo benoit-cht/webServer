@@ -55,7 +55,7 @@ int main()
       loop.run();
       //runEventLoop(loop);
   } catch (const std::exception& e) {
-      std::cerr << "Erreur : " << e.what() << std::endl;
+      std::cerr << COLOR_RED << "Erreur : " << e.what() << COLOR_RESET << std::endl;
       return EXIT_FAILURE ;
   }
   return EXIT_SUCCESS ;

@@ -72,7 +72,8 @@ void EventLoop::run()
         int ret = poll(&_poll_fds[0], _poll_fds.size(), -1);
         if (ret == -1) 
         {
-            perror("poll() failed");
+            throw std::runtime_error("[err](poll()) " + std::string(strerror(errno)));
+            //perror("poll() failed");
             break;
         }
 
