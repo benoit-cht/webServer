@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:01:32 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/31 12:10:25 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/03/31 12:26:45 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ void  EventLoop::monitoredAllDescriptor( void ) //Parcourir tous les descripteur
 
 void EventLoop::run() 
 {
-    std::cout << COLOR_GREEN << "Info : start event loop..." << COLOR_RESET << std::endl;
+    std::cout << COLOR_MAGENTA << "Info : start event loop..." << COLOR_RESET << std::endl;
     while (true) 
     {
         // Attendre une activité sur les sockets (timeout infini)
@@ -131,7 +131,7 @@ void EventLoop::handleNewConnection(int server_fd)
     client_pollfd.events = POLLIN;
     _poll_fds.push_back(client_pollfd);
 
-    std::cout << COLOR_CYAN << "Info : new conection accept (fd=" << client_fd
+    std::cout << COLOR_CYAN << "(Log Client) : new conection accept (fd=" << client_fd
               << ", IP=" << client_ip
               << ", Port=" << client_port << ")" << COLOR_RESET << std::endl;
 }
@@ -154,7 +154,7 @@ void EventLoop::handleClientRequest(int fd)
     if (bytes_read <= 0)
     {
         // Client déconnecté ou erreur de lecture
-        std::cout << COLOR_CYAN << "Log : client déconnecté (fd=" << fd << ")." << COLOR_RESET << std::endl;
+        std::cout << COLOR_CYAN << "(Log Client) : client déconnecté (fd=" << fd << ")." << COLOR_RESET << std::endl;
         _client_manager.removeClient(fd);
 
         // Retirer le fd de _poll_fds
@@ -172,8 +172,8 @@ void EventLoop::handleClientRequest(int fd)
     // 3. Afficher les données reçues (pour débogage)
     std::cout << COLOR_BLUE 
               << "Données reçues de " << client->getAdressIp()
-              << ":" << client->getPortNumber() << " ("
-              << bytes_read << " octets) :\n" << buffer 
+              << ":" << client->getPortNumber() << " (" << bytes_read << " octets) :\n"
+              << "---------------------------------------------\n"<< buffer 
               << COLOR_RESET << std::endl;
 
     // 4. Ici, tu pourrais appeler un parseur HTTP pour traiter la requête.

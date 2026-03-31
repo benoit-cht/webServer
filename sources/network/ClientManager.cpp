@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/23 14:46:05 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/31 12:08:37 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/03/31 12:26:17 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void ClientManager::addClient(int fd, const std::string& ip, int port)
     _clients.push_back(client);
     _fileDescriptorClient[fd] = client;
 
-    std::cout << COLOR_CYAN << "Info : add new client: fd=" << fd << ", IP=" << ip << ", Port=" << port << COLOR_RESET <<std::endl;
+    std::cout << COLOR_CYAN << "(Log Server) : add new client: fd=" << fd << ", IP=" << ip << ", Port=" << port << COLOR_RESET <<std::endl;
 }
 
 void ClientManager::removeClient(int fd)
@@ -52,7 +52,7 @@ void ClientManager::removeClient(int fd)
     }
 
     delete client;
-    std::cout << COLOR_CYAN << "Info : delete client: fd=" << fd << COLOR_RESET << std::endl;
+    std::cout << COLOR_CYAN << "(Log Server) : delete client: fd=" << fd << COLOR_RESET << std::endl;
 }
 
 /* ************************************************************************** */
