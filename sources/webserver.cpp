@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/25 06:24:30 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/03/31 11:49:33 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static void signal_handler(int signal)
 {
   if (signal == SIGINT) 
   {
-    std::cout << " \n[log] Reçu SIGINT (Ctrl+C), arrêt du serveur... " << std::endl;
+    std::cout << COLOR_YELLOW << " \n[war] Reçu SIGINT (Ctrl+C), arrêt du serveur... " << COLOR_RESET << std::endl;
     g_should_exit = 1;
   }
 }
