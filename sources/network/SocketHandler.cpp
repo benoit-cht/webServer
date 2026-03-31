@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/23 13:33:39 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/31 11:56:58 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/03/31 12:19:06 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ int SocketHandler::createServerSocket(int port)
     // 6. Associer le fd au port pour référence future
     //_fd_to_port[socket_fd] = port;
 
-    std::cout << COLOR_GREEN << "Log : open socket to a port: " << port << COLOR_RESET << std::endl;
+    std::cout << COLOR_GREEN << "Success : open socket to a port: " << port << COLOR_RESET << std::endl;
     return socket_fd;
 }
 
@@ -78,7 +78,7 @@ void SocketHandler::closeSocket(int fd)
     }
     else
     {
-      std::cout << COLOR_GREEN <<"Log : close socket success " << COLOR_RESET << std::endl;
+      std::cout << COLOR_GREEN <<"Success : close socket " << COLOR_RESET << std::endl;
     }
 }
 
@@ -104,7 +104,7 @@ int SocketHandler::acceptConnection(int socket_fd, std::string& client_ip, int& 
       client_port = ntohs(client_addr.sin_port);
     }
 
-    std::cout << COLOR_GREEN << "Log : new connetion accept to " << client_ip << ":" << client_port << COLOR_RESET << std::endl;
+    std::cout << COLOR_GREEN << "Success : new connetion accept to " << client_ip << ":" << client_port << COLOR_RESET << std::endl;
     return client_fd;
 }
 
