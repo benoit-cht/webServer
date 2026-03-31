@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:39:42 by bchallat          #+#    #+#             */
-/*   Updated: 2026/02/27 14:13:23 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/03/31 11:46:14 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,12 @@
 #include <iostream>      // Pour les logs
 #include <arpa/inet.h>   // Pour inet_ntoa (affichage des IPs)
 
-//#include "RequestHttp.hpp"
-#include "NetworkTcp.hpp"
-//#include "SocketTcp.hpp"
-//#include "EventsLoop.hpp"
+#include "./log/colorLog.hpp"
+#include "./network/SocketHandler.hpp"
+#include "./network/ClientInfo.hpp"
+#include "./network/ClientManager.hpp"
+#include "./network/EventLoop.hpp"
+//#include "./request/RequestHttp.hpp"
 
 # endif 
 
