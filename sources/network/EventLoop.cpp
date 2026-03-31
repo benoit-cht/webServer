@@ -27,6 +27,16 @@ EventLoop::~EventLoop()
 
 /* ************************************************************************** */
 
+void  EventLoop::waitActivityOnSocket( void ) // Attendre une activité sur les sockets (timeout infini)
+{
+// Attendre une activité sur les sockets (timeout infini)
+  int ret = poll(&_poll_fds[0], _poll_fds.size(), -1);
+  if (ret == -1) 
+  {
+    throw std::runtime_error("[err](poll()) " + std::string(strerror(errno)));
+  }
+}
+
 void EventLoop::run() 
 {
     std::cout << "[log] start event loop..." << std::endl;
