@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:01:32 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/25 06:49:39 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/03/31 11:53:18 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ void  EventLoop::monitoredAllDescriptor( void ) //Parcourir tous les descripteur
 
 void EventLoop::run() 
 {
-    std::cout << "[log] start event loop..." << std::endl;
+    std::cout << COLOR_GREEN << "Info : start event loop..." << COLOR_RESET << std::endl;
     while (true) 
     {
         // Attendre une activité sur les sockets (timeout infini)

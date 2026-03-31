@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:29:31 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/25 06:46:02 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/03/31 11:53:51 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 
 #include "SocketHandler.hpp"
 #include "ClientManager.hpp"
+#include "./../log/colorLog.hpp"
 
 class EventLoop {
 

@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/31 11:49:33 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/03/31 11:52:22 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ int main()
       loop.run();
       //runEventLoop(loop);
   } catch (const std::exception& e) {
-      std::cerr << COLOR_RED << "Erreur : " << e.what() << COLOR_RESET << std::endl;
+      std::cerr << COLOR_RED << "Error : " << e.what() << COLOR_RESET << std::endl;
       return EXIT_FAILURE ;
   }
   return EXIT_SUCCESS ;
