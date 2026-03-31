@@ -27,7 +27,7 @@ EventLoop::~EventLoop()
 
 /* ************************************************************************** */
 
-void  EventLoop::waitActivityOnSocket( void ) // Attendre une activité sur les sockets (timeout infini)
+/*void  EventLoop::waitActivityOnSocket( void ) // Attendre une activité sur les sockets (timeout infini)
 {
 // Attendre une activité sur les sockets (timeout infini)
   int ret = poll(&_poll_fds[0], _poll_fds.size(), -1);
@@ -62,6 +62,7 @@ void  EventLoop::monitoredAllDescriptor( void ) //Parcourir tous les descripteur
     }
   }
 }
+*/
 
 void EventLoop::run() 
 {
@@ -72,8 +73,8 @@ void EventLoop::run()
         int ret = poll(&_poll_fds[0], _poll_fds.size(), -1);
         if (ret == -1) 
         {
-            throw std::runtime_error("poll() " + std::string(strerror(errno)));
-            //perror("poll() failed");
+            //throw std::runtime_error("poll() " + std::string(strerror(errno)));
+          std::cout << COLOR_RED << "Error : poll() failed interrupted system call ?" << COLOR_RESET << std::endl;
             break;
         }
 
@@ -173,7 +174,9 @@ void EventLoop::handleClientRequest(int fd)
     std::cout << COLOR_BLUE 
               << "Données reçues de " << client->getAdressIp()
               << ":" << client->getPortNumber() << " (" << bytes_read << " octets) :\n"
-              << "---------------------------------------------\n"<< buffer 
+              << "---------------------------------------------\n"
+              << buffer 
+              << "---------------------------------------------\n"
               << COLOR_RESET << std::endl;
 
     // 4. Ici, tu pourrais appeler un parseur HTTP pour traiter la requête.
