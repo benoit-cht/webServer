@@ -73,8 +73,13 @@ int SocketHandler::createServerSocket(int port)
 void SocketHandler::closeSocket(int fd)
 {
     if (close(fd) == -1)
-        std::cerr << "[err](close()) " << strerror(errno) << std::endl;
-    std::cout << "[log] close socket success " << std::endl;
+    {
+      std::cerr << "[err](close()) " << strerror(errno) << std::endl;
+    }
+    else
+    {
+      std::cout << "[log] close socket success " << std::endl;
+    }
 }
 
 /* ************************************************************************** */

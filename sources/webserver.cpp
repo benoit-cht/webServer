@@ -20,11 +20,11 @@ volatile sig_atomic_t g_should_exit = 0;
 
 static void signal_handler(int signal)
 {
-    if (signal == SIGINT) 
-    {
-        std::cout << " \n [log] Reçu SIGINT (Ctrl+C), arrêt du serveur... " << std::endl;
-        g_should_exit = 1;
-    }
+  if (signal == SIGINT) 
+  {
+    std::cout << " \n[log] Reçu SIGINT (Ctrl+C), arrêt du serveur... " << std::endl;
+    g_should_exit = 1;
+  }
 }
 
 static void initVerctorOfPort(std::vector<int>& ports)
@@ -32,6 +32,15 @@ static void initVerctorOfPort(std::vector<int>& ports)
   ports.push_back(8080);
   //ports.push_back(8081);
   //ports.push_back(8082);
+}
+
+static void runEventLoop(EventLoop loop)
+{
+  while(true)
+  {
+    loop.waitActivityOnSocket();
+    loop.monitoredAllDescriptor();
+  }
 }
 
 //int main (int av, char *ag[])
@@ -43,7 +52,8 @@ int main()
   initVerctorOfPort(ports);
   try {
       EventLoop loop(ports);  // Créer une instance de EventLoop
-      loop.run();             // Lancer la boucle d'événements
+      //loop.run();
+      runEventLoop(loop);
   } catch (const std::exception& e) {
       std::cerr << "Erreur : " << e.what() << std::endl;
       return EXIT_FAILURE ;

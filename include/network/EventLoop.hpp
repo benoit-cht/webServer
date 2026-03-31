@@ -34,7 +34,8 @@ class EventLoop {
 * Sinon, c'est un client existant (données à lire)
 */
   public:
-    void  waitActivityOnSocket( void ); // Attendre une activité sur les sockets (timeout infini)
+    void  waitActivityOnSocket( void );                       // Attendre une activité sur les sockets (timeout infini)
+    void  monitoredAllDescriptor( void );                     //Parcourir tous les descripteurs surveillés
 
   private:
     void  cleanup();                                          // Nettoie les ressources (fermeture des sockets)

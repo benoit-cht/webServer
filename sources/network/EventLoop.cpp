@@ -32,8 +32,34 @@ void  EventLoop::waitActivityOnSocket( void ) // Attendre une activité sur les 
 // Attendre une activité sur les sockets (timeout infini)
   int ret = poll(&_poll_fds[0], _poll_fds.size(), -1);
   if (ret == -1) 
-  {
     throw std::runtime_error("[err](poll()) " + std::string(strerror(errno)));
+}
+
+void  EventLoop::monitoredAllDescriptor( void ) //Parcourir tous les descripteurs surveillés
+{
+  for (size_t i = 0; i < _poll_fds.size(); i++)
+  {
+    if (_poll_fds[i].revents & POLLIN)
+    {
+      // Vérifier si c'est un socket serveur (nouvelle connexion)
+      bool is_server_fd = false;
+
+      for (size_t j = 0; j < _server_fds.size(); j++) 
+      {
+        if (_poll_fds[i].fd == _server_fds[j])
+        {
+          handleNewConnection(_poll_fds[i].fd);
+          is_server_fd = true;
+          break;
+        }
+      }
+
+      // Sinon, c'est un client existant (données à lire)
+      if (!is_server_fd)
+      {
+        handleClientRequest(_poll_fds[i].fd);
+      }
+    }
   }
 }
 
