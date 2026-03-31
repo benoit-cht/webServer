@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:30:07 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/25 06:50:11 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/03/31 12:06:49 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include <iostream>
 
 #include "ClientInfo.hpp"
+#include "./../log/colorLog.hpp"
 
 class ClientManager {
 

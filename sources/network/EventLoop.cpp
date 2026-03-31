@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:01:32 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/31 11:53:18 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/03/31 12:10:25 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void  EventLoop::waitActivityOnSocket( void ) // Attendre une activité sur les 
 // Attendre une activité sur les sockets (timeout infini)
   int ret = poll(&_poll_fds[0], _poll_fds.size(), -1);
   if (ret == -1) 
-    throw std::runtime_error("[err](poll()) " + std::string(strerror(errno)));
+    throw std::runtime_error("poll() " + std::string(strerror(errno)));
 }
 
 void  EventLoop::monitoredAllDescriptor( void ) //Parcourir tous les descripteurs surveillés
@@ -72,7 +72,7 @@ void EventLoop::run()
         int ret = poll(&_poll_fds[0], _poll_fds.size(), -1);
         if (ret == -1) 
         {
-            throw std::runtime_error("[err](poll()) " + std::string(strerror(errno)));
+            throw std::runtime_error("poll() " + std::string(strerror(errno)));
             //perror("poll() failed");
             break;
         }
@@ -131,9 +131,9 @@ void EventLoop::handleNewConnection(int server_fd)
     client_pollfd.events = POLLIN;
     _poll_fds.push_back(client_pollfd);
 
-    std::cout << "[log] new conection accept (fd=" << client_fd
+    std::cout << COLOR_CYAN << "Info : new conection accept (fd=" << client_fd
               << ", IP=" << client_ip
-              << ", Port=" << client_port << ")" << std::endl;
+              << ", Port=" << client_port << ")" << COLOR_RESET << std::endl;
 }
 
 void EventLoop::handleClientRequest(int fd)
@@ -154,7 +154,7 @@ void EventLoop::handleClientRequest(int fd)
     if (bytes_read <= 0)
     {
         // Client déconnecté ou erreur de lecture
-        std::cout << "Client déconnecté (fd=" << fd << ")." << std::endl;
+        std::cout << COLOR_CYAN << "Log : client déconnecté (fd=" << fd << ")." << COLOR_RESET << std::endl;
         _client_manager.removeClient(fd);
 
         // Retirer le fd de _poll_fds
@@ -170,9 +170,11 @@ void EventLoop::handleClientRequest(int fd)
     }
 
     // 3. Afficher les données reçues (pour débogage)
-    std::cout << "Données reçues de " << client->getAdressIp()
+    std::cout << COLOR_BLUE 
+              << "Données reçues de " << client->getAdressIp()
               << ":" << client->getPortNumber() << " ("
-              << bytes_read << " octets) :\n" << buffer << std::endl;
+              << bytes_read << " octets) :\n" << buffer 
+              << COLOR_RESET << std::endl;
 
     // 4. Ici, tu pourrais appeler un parseur HTTP pour traiter la requête.
     //    Pour l'instant, on se contente d'afficher les données brutes.
