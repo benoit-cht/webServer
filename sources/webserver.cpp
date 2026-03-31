@@ -34,7 +34,7 @@ static void initVerctorOfPort(std::vector<int>& ports)
   //ports.push_back(8082);
 }
 
-static void runEventLoop(EventLoop loop)
+void runEventLoop(EventLoop loop)
 {
   while(true)
   {
@@ -52,8 +52,8 @@ int main()
   initVerctorOfPort(ports);
   try {
       EventLoop loop(ports);  // Créer une instance de EventLoop
-      //loop.run();
-      runEventLoop(loop);
+      loop.run();
+      //runEventLoop(loop);
   } catch (const std::exception& e) {
       std::cerr << "Erreur : " << e.what() << std::endl;
       return EXIT_FAILURE ;
