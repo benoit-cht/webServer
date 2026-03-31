@@ -66,7 +66,7 @@ int SocketHandler::createServerSocket(int port)
     // 6. Associer le fd au port pour référence future
     //_fd_to_port[socket_fd] = port;
 
-    std::cout << "[log] open socket to a port: " << port << std::endl;
+    std::cout << COLOR_GREEN << "[log] open socket to a port: " << port << COLOR_RESET << std::endl;
     return socket_fd;
 }
 
@@ -78,7 +78,7 @@ void SocketHandler::closeSocket(int fd)
     }
     else
     {
-      std::cout << "[log] close socket success " << std::endl;
+      std::cout << COLOR_GREEN <<"[log] close socket success " << COLOR_RESET << std::endl;
     }
 }
 
@@ -104,7 +104,7 @@ int SocketHandler::acceptConnection(int socket_fd, std::string& client_ip, int& 
       client_port = ntohs(client_addr.sin_port);
     }
 
-    std::cout << "[log] new connetion accept to " << client_ip << ":" << client_port << std::endl;
+    std::cout << COLOR_GREEN << "[log] new connetion accept to " << client_ip << ":" << client_port << COLOR_RESET << std::endl;
     return client_fd;
 }
 

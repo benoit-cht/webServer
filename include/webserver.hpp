@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:39:42 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/25 06:39:09 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/03/31 11:46:14 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,17 +26,12 @@
 #include <iostream>      // Pour les logs
 #include <arpa/inet.h>   // Pour inet_ntoa (affichage des IPs)
 
+#include "./log/colorLog.hpp"
 #include "./network/SocketHandler.hpp"
 #include "./network/ClientInfo.hpp"
 #include "./network/ClientManager.hpp"
 #include "./network/EventLoop.hpp"
 //#include "./request/RequestHttp.hpp"
-
-static const char* COLOR_RESET   = "\033[0m";
-static const char* COLOR_RED     = "\033[1;31m";
-static const char* COLOR_GREEN   = "\033[1;32m";
-static const char* COLOR_YELLOW  = "\033[1;33m";
-static const char* COLOR_BLUE    = "\033[1;34m";
 
 # endif 
 

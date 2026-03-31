@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:32:48 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/25 06:48:26 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/03/31 11:46:43 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 #include <cstring>
 #include <map>
 
-//#include "../webserver.hpp"
+#include "./../log/colorLog.hpp"
 
 class SocketHandler {
   
