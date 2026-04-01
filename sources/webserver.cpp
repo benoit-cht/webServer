@@ -34,14 +34,14 @@ static void initVerctorOfPort(std::vector<int>& ports)
   //ports.push_back(8082);
 }
 
-void runEventLoop(EventLoop loop)
+/*void runEventLoop(EventLoop loop)
 {
   while(true)
   {
     loop.waitActivityOnSocket();
     loop.monitoredAllDescriptor();
   }
-}
+}*/
 
 //int main (int av, char *ag[])
 int main()
