@@ -13,27 +13,46 @@
 # ifndef REQUESTHTTP_HPP
 # define REQUESTHTTP_HPP
 
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <cstring>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
 class RequestHttp {
 
-  public :
-    
+  public:
     RequestHttp ( void );
     virtual ~RequestHttp ( void );
     RequestHttp (const RequestHttp& other);
     RequestHttp operator=(const RequestHttp& other);
 
-  private :
-  /* first ligne in request */
+  public:
+    void          setBuffer(std::string str);
+    std::string   getBuffer( void );
+    std::string   readFile(const std::string& path);
+
+  public:
+    std::string   buffer;
+};
+
+/*
+  // first ligne in request
     int         _methode ;
     std::string _link;
     double      _version;
-  /* header lingne */
+  
+  // header lingne 
     std::string _host;
     std::string _userAgent;
     std::string _contentType;
     ssize_t     _contentLength;
     std::string _connection;
-};
+*/
 
 # endif
 

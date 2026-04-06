@@ -18,6 +18,7 @@
 
 #include "SocketHandler.hpp"
 #include "ClientManager.hpp"
+#include "../request/RequestHttp.hpp"
 #include "./../log/colorLog.hpp"
 
 class EventLoop {
