@@ -6,7 +6,7 @@
 #    By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/20 09:10:14 by bchallat          #+#    #+#              #
-#    Updated: 2026/03/25 06:02:20 by bchallat         ###   ########.fr        #
+#    Updated: 2026/04/07 13:46:39 by bchallat         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -47,7 +47,7 @@ SRC	=	webserver.cpp \
 			network/ClientInfo.cpp \
 			network/ClientManager.cpp \
 			network/EventLoop.cpp \
-			request/RequestHttp.cpp \
+			request/HttpHandler.cpp \
 
 SRCS = ${addprefix ${SRCDIR}/, ${SRC}}
 OBJS = ${addprefix ${OBJDIR}/, $(SRC:.cpp=.o)}
