@@ -6,13 +6,13 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/07 13:50:06 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/04/07 13:56:25 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/request/HttpHandler.hpp"
 
-static t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request)
+t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request)
 {
 	t_httpRequest                    request;
 	std::map<t_token, std::string>   lexer;
@@ -34,18 +34,18 @@ static t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request
 	return ( request );
 }
 
-static t_httpResponse HttpHandler::setHttpResponse(int status, std::string body)
+t_httpResponse HttpHandler::setHttpResponse(int status, std::string body)
 {
 	t_httpResponse response;
 	
-	response->status = status;
-	response->headers = res_create_headers();
-	if (response.size() == 0)
+	response.status = status;
+	response.headers = res_create_headers();
+	if (response.headers.size() == 0)
 	{
 	    std::cerr << " Impossible response " << std::endl;
   }
     
-  response->body = body;
+  response.body = body;
 	return ( response );	
 }
 
