@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/08 12:24:05 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/08 12:47:37 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/04/08 12:58:06 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,13 +22,8 @@ static void   st_write_in_struct(t_httpRequest& request, t_token token)
     request.path = token.value;
   else if (token.type == VERSION)
     request.version = token.value;
-  else if (token.type == HEADER_KEY)
-    //to do 
-  else if (token.type == HEADER_VALUE)
-    //to do
   else if (token.type == BODY)
     request.body = request.body + token.value;
-
 }
 
 t_httpRequest req_struct_http_request(std::vector<t_token>& lexer)
