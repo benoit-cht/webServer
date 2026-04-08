@@ -28,17 +28,29 @@
 /*          definition struct         */
 /*------------------------------------*/
 
-typedef enum e_token
+typedef enum e_type
 {
 	METHOD,
 	PATH,
 	VERSION,
-	HEADERS,
+  HEADER_KEY, 
+	HEADER_VALUE, 
+	COLON, 
+	CRLF,
 	BODY,
 	WHITESPACE,
 	UNKNOWN
 
-}	t_token;
+} t_type;
+
+typedef struct s_token
+{ 
+	t_type       type; 
+	std::string  value;
+  s_token(t_type t, const std::string& v) : type(t), value(v) {}
+  ~s_token(void){};
+
+} t_token;
 
 typedef struct s_httpRequest 
 {
@@ -65,9 +77,9 @@ typedef struct s_httpResponse
 /*    prototype fonction parsing      */
 /*------------------------------------*/
 
-std::map<t_token, std::string>      req_lexing(const std::string raw_request);
-bool                                req_descending_deriv(std::map<t_token, std::string>& lexer);
-t_httpRequest                       req_struct(std::map<t_token, std::string>& lexer); 
+bool                  req_descending_deriv(std::vector<t_token>& lexer);
+t_httpRequest         req_struct(std::vector<t_token>& lexer); 
+std::vector<t_token>  req_lexing(const std::string raw_request);
 
 /*------------------------------------*/
 /*    prototype fonction response     */

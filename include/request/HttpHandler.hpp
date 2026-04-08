@@ -17,14 +17,13 @@
 
 class HttpHandler {
 	
-	public:
-		HttpHandler( void ) = delete;
-		virtual ~HttpHandler( void ) = delete;
-		
-	public:
+  public:
 		static t_httpRequest  setHttpRequest(const std::string& raw_request);
 		static t_httpResponse setHttpResponse(int status, std::string body);
-	
+
+	private:
+		HttpHandler( void );
+		virtual ~HttpHandler( void );
 };
 
 # endif // !HTTPHANDLER_HPP 

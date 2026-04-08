@@ -189,7 +189,7 @@ void EventLoop::handleClientRequest(int fd)
     std::cout << request.getBuffer() << std::endl;
     _socket_handler.writeToSocket(fd, reponsse.c_str(), sizeof(reponsse.c_str()) - 1);
 */
-// Lire le fichier index.html
+/* Lire le fichier index.html
         RequestHttp rep;
         std::string content = rep.readFile("sources/www/index.html");
         if (content.find("404") != std::string::npos) 
@@ -208,7 +208,8 @@ void EventLoop::handleClientRequest(int fd)
             
             _socket_handler.writeToSocket(fd, response.c_str(), response.size());
             //send(client_fd, response.c_str(), response.size(), 0);
-        }
+        }*/
+    req_lexing(buffer);
     // 4. Ici, tu pourrais appeler un parseur HTTP pour traiter la requête.
     //    Pour l'instant, on se contente d'afficher les données brutes.
 }

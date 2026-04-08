@@ -14,8 +14,8 @@
 
 t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request)
 {
-	t_httpRequest                    request;
-	std::map<t_token, std::string>   lexer;
+	t_httpRequest       request;
+	std::vector<t_token>   lexer;
 	
 	try {	
 		lexer = req_lexing(raw_request);

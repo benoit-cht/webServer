@@ -47,7 +47,7 @@ SRC	=	webserver.cpp \
 			network/ClientInfo.cpp \
 			network/ClientManager.cpp \
 			network/EventLoop.cpp \
-			request/HttpHandler.cpp \
+			request/rep_lexing.cpp \
 
 SRCS = ${addprefix ${SRCDIR}/, ${SRC}}
 OBJS = ${addprefix ${OBJDIR}/, $(SRC:.cpp=.o)}
