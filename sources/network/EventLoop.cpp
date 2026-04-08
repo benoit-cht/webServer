@@ -222,14 +222,33 @@ void EventLoop::handleClientRequest(int fd)
     } 
     else 
     {
-      // Construire la réponse HTTP
+      // Déterminer le Content-Type en fonction de l'extension du fichier
+      std::string content_type = "text/plain"; // Par défaut
+      size_t dot_pos = lexer[2].value.rfind('.');
+      if (dot_pos != std::string::npos) 
+      {
+        std::string extension = lexer[2].value.substr(dot_pos);
+        if (extension == ".html" || extension == ".htm") 
+        {
+          content_type = "text/html";
+        } 
+        else if (extension == ".css") 
+        {
+         content_type = "text/css";
+        }
+      }
+
+      // Construire la réponse HTTP avec le bon Content-Type
       std::string response =
       "HTTP/1.1 200 OK\r\n"
-      "Content-Type: text/html\r\n"
+      "Content-Type: " + content_type + "\r\n"
+      "Content-Length: " + std::to_string(content.size()) + "\r\n"
       "Connection: close\r\n"
-      "\r\n" + content;
-            
+      "\r\n" +
+      content;
+
       _socket_handler.writeToSocket(fd, response.c_str(), response.size());
+      std::cout << response << std::endl;
     }
     // 4. Ici, tu pourrais appeler un parseur HTTP pour traiter la requête.
     //    Pour l'instant, on se contente d'afficher les données brutes.
