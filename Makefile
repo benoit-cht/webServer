@@ -49,6 +49,7 @@ SRC	=	webserver.cpp \
 			network/EventLoop.cpp \
 			request/rep_lexing.cpp \
 			request/rep_descending_deriv.cpp \
+			request/readFile.cpp \
 
 SRCS = ${addprefix ${SRCDIR}/, ${SRC}}
 OBJS = ${addprefix ${OBJDIR}/, $(SRC:.cpp=.o)}

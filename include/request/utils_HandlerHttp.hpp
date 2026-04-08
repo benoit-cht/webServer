@@ -85,6 +85,7 @@ std::vector<t_token>  req_lexing(const std::string raw_request);
 /*    prototype fonction response     */
 /*------------------------------------*/
 
+std::string readFile(const std::string& path);
 std::map<std::string, std::string>  res_create_headers();
 
 #endif // !UTILS_HANDLERHTTP_HPP

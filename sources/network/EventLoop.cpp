@@ -214,6 +214,23 @@ void EventLoop::handleClientRequest(int fd)
         std::cout << COLOR_GREEN << "Success : request is valid " << COLOR_RESET << std::endl;
     else
         std::cout << COLOR_RED << "ERROR : bad request " << COLOR_RESET << std::endl;
+    
+    std::string content = readFile("sources/www/" + lexer[2].value);
+    if (content.find("404") != std::string::npos) 
+    {
+      _socket_handler.writeToSocket(fd, content.c_str(), content.size());
+    } 
+    else 
+    {
+      // Construire la réponse HTTP
+      std::string response =
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Type: text/html\r\n"
+      "Connection: close\r\n"
+      "\r\n" + content;
+            
+      _socket_handler.writeToSocket(fd, response.c_str(), response.size());
+    }
     // 4. Ici, tu pourrais appeler un parseur HTTP pour traiter la requête.
     //    Pour l'instant, on se contente d'afficher les données brutes.
 }
