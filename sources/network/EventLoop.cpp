@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:01:32 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/31 12:26:45 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/04/08 02:53:46 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,7 +209,11 @@ void EventLoop::handleClientRequest(int fd)
             _socket_handler.writeToSocket(fd, response.c_str(), response.size());
             //send(client_fd, response.c_str(), response.size(), 0);
         }*/
-    req_lexing(buffer);
+    std::vector<t_token> lexer = req_lexing(buffer);
+    if (req_descending_deriv(lexer))
+        std::cout << COLOR_GREEN << "Success : request is valid " << COLOR_RESET << std::endl;
+    else
+        std::cout << COLOR_RED << "ERROR : bad request " << COLOR_RESET << std::endl;
     // 4. Ici, tu pourrais appeler un parseur HTTP pour traiter la requête.
     //    Pour l'instant, on se contente d'afficher les données brutes.
 }
