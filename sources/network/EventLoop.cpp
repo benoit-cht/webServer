@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:01:32 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/08 02:53:46 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/04/10 20:27:51 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,39 +178,13 @@ void EventLoop::handleClientRequest(int fd)
               << buffer 
               << "---------------------------------------------\n"
               << COLOR_RESET << std::endl;
-    
-/*    RequestHttp request;
-    std::cout << request.getBuffer() << std::endl;
-    request.setBuffer(buffer);
-    std::cout << request.getBuffer() << std::endl;
-   
-    std::string reponsse = "HTTP/1.1 200 OK \nCache-Control: no-cache \nServer: libnhttpd \nDate: Wed Jul 4 15:32:03 2012 \nConnection: Keep-Alive: \nContent-Type: application/rdf+xml \nContent-Length: 24860 \n \n<!DOCTYPE html> \n<html> \n<head>\n<title></title>\n</head>\n<body>\n  <h1> Titre de test index.html </h1>\n</body>\n</html>" ;
-    request.setBuffer(reponsse);
-    std::cout << request.getBuffer() << std::endl;
-    _socket_handler.writeToSocket(fd, reponsse.c_str(), sizeof(reponsse.c_str()) - 1);
-*/
-/* Lire le fichier index.html
-        RequestHttp rep;
-        std::string content = rep.readFile("sources/www/index.html");
-        if (content.find("404") != std::string::npos) 
-        {
-          _socket_handler.writeToSocket(fd, content.c_str(), content.size());
-          //send(client_fd, content.c_str(), content.size(), 0);
-        } 
-        else 
-        {
-            // Construire la réponse HTTP
-            std::string response =
-                "HTTP/1.1 200 OK\r\n"
-                "Content-Type: text/html\r\n"
-                "Connection: close\r\n"
-                "\r\n" + content;
-            
-            _socket_handler.writeToSocket(fd, response.c_str(), response.size());
-            //send(client_fd, response.c_str(), response.size(), 0);
-        }*/
+
+
+/*  ****************************************************************  */
+
 
     t_httpRequest request = HttpHandler::setHttpRequest(buffer); 
+
     std::string content = readFile("sources/www/" + request.path);
     if (content.find("404") != std::string::npos) 
     {
@@ -235,7 +209,7 @@ void EventLoop::handleClientRequest(int fd)
       }
 
       // Construire la réponse HTTP avec le bon Content-Type
-      std::string response =
+      std::string response = // t_httpResponse::toString();
       "HTTP/1.1 200 OK\r\n"
       "Content-Type: " + content_type + "\r\n"
       "Content-Length: " + std::to_string(content.size()) + "\r\n"
