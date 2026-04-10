@@ -17,24 +17,20 @@ t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request)
 	t_httpRequest       request;
 	std::vector<t_token>   lexer;
 	
-	try {	
-		lexer = req_lexing(raw_request);
-		if (req_descending_deriv(lexer))
-		{
-			throw std::runtime_error("deriv() " + std::string(strerror(errno)));
-		}
-		request = req_struct(lexer);
-		 
-	}catch(const std::exception& e){
-		
-    std::cerr << COLOR_RED 
-				  << "Error : " << e.what() 
-				  << COLOR_RESET << std::endl;
-	}
-	return ( request );
+	lexer = req_lexing(raw_request);
+	if (req_descending_deriv(lexer))
+  {
+	  request = req_struct_http_request(lexer);
+  }
+  else
+  {
+    std::cout << COLOR_GREEN << "Success : request is valid " << COLOR_RESET << std::endl;
+  }
+	
+  return ( request );
 }
 
-t_httpResponse HttpHandler::setHttpResponse(int status, std::string body)
+/*t_httpResponse HttpHandler::setHttpResponse(int status, std::string body)
 {
 	t_httpResponse response;
 	
@@ -47,7 +43,7 @@ t_httpResponse HttpHandler::setHttpResponse(int status, std::string body)
     
   response.body = body;
 	return ( response );	
-}
+}*/
 
 /* ************************************************************************** */
 /*                                                                            */

@@ -12,24 +12,7 @@
 
 #include "../../include/request/utils_HandlerHttp.hpp"
 
-/*static std::string lx_read_until(const std::string& raw_request, size_t& index, const std::string& delimiters)
-{
-  std::string    value;
-  char c = raw_request[index];
-
-  while (index < raw_request.size()) 
-  {
-    c = raw_request[index];
-    if (delimiters.find(c) != std::string::npos) 
-    {
-            break;
-    }
-    value += c;
-    index++;
-  }
-  return( value );
-}*/
-
+/*
 static std::string typeToString(t_type type) 
 {
     switch (type) {
@@ -54,7 +37,7 @@ static void printTokens(const std::vector<t_token>& lexer)
         const t_token& token = *it;
         std::cout << "Token type: " << typeToString(token.type) << ", value: \"" << token.value << "\"" << std::endl;
     }
-}
+} */
 
 static void lx_tokenizer(std::vector<t_token>& lexer)
 {
@@ -154,8 +137,6 @@ std::vector<t_token> req_lexing(const std::string raw_request)
     lx_write_value(raw_request, index, lexer);
     lx_tokenizer(lexer);
   }
-  
-printTokens(lexer);
 
   return ( lexer );
 }

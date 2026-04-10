@@ -209,13 +209,9 @@ void EventLoop::handleClientRequest(int fd)
             _socket_handler.writeToSocket(fd, response.c_str(), response.size());
             //send(client_fd, response.c_str(), response.size(), 0);
         }*/
-    std::vector<t_token> lexer = req_lexing(buffer);
-    if (req_descending_deriv(lexer))
-        std::cout << COLOR_GREEN << "Success : request is valid " << COLOR_RESET << std::endl;
-    else
-        std::cout << COLOR_RED << "ERROR : bad request " << COLOR_RESET << std::endl;
-    
-    std::string content = readFile("sources/www/" + lexer[2].value);
+
+    t_httpRequest request = HttpHandler::setHttpRequest(buffer); 
+    std::string content = readFile("sources/www/" + request.path);
     if (content.find("404") != std::string::npos) 
     {
       _socket_handler.writeToSocket(fd, content.c_str(), content.size());
@@ -224,10 +220,10 @@ void EventLoop::handleClientRequest(int fd)
     {
       // Déterminer le Content-Type en fonction de l'extension du fichier
       std::string content_type = "text/plain"; // Par défaut
-      size_t dot_pos = lexer[2].value.rfind('.');
+      size_t dot_pos = request.path.rfind('.');
       if (dot_pos != std::string::npos) 
       {
-        std::string extension = lexer[2].value.substr(dot_pos);
+        std::string extension = request.path.substr(dot_pos);
         if (extension == ".html" || extension == ".htm") 
         {
           content_type = "text/html";

@@ -47,6 +47,7 @@ SRC	=	webserver.cpp \
 			network/ClientInfo.cpp \
 			network/ClientManager.cpp \
 			network/EventLoop.cpp \
+			request/HttpHandler.cpp \
 			request/req_lexing.cpp \
 			request/req_descending_deriv.cpp \
 			request/req_struct_http_request.cpp \
