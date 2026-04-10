@@ -244,7 +244,7 @@ void EventLoop::handleClientRequest(int fd)
       content;
 
       _socket_handler.writeToSocket(fd, response.c_str(), response.size());
-      std::cout << response << std::endl;
+      std::cout << COLOR_BLUE << response << COLOR_RESET << std::endl;
     }
     // 4. Ici, tu pourrais appeler un parseur HTTP pour traiter la requête.
     //    Pour l'instant, on se contente d'afficher les données brutes.
