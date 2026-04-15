@@ -21,14 +21,29 @@ t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request)
 	if (req_descending_deriv(lexer))
   {
 	  request = req_struct_http_request(lexer);
+    std::cout << COLOR_GREEN << "Success : request is valid " << COLOR_RESET << std::endl;
   }
   else
   {
-    std::cout << COLOR_GREEN << "Success : request is valid " << COLOR_RESET << std::endl;
+    std::cout << COLOR_YELLOW << "Warging : bad request " << COLOR_RESET << std::endl;
   }
 	
   return ( request );
 }
+
+/*t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request)
+{
+	t_httpResponse response;
+	
+  try {
+  	  
+    }
+    catch (const std::exception&) {
+  	
+    }	
+	
+  return ( response );	
+}*/
 
 /* ************************************************************************** */
 /*                                                                            */
