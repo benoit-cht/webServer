@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   SocketHandler.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/23 13:33:39 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/31 12:19:06 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/04/17 15:39:42 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ SocketHandler::~SocketHandler() {}
 std::vector<int> SocketHandler::createSocketWithPort(const std::vector<int>& ports)
 {
     std::vector<int> server_fds;
-    for (size_t i = 0; i < ports.size(); i++) 
+    for (size_t i = 0; i < ports.size(); i++)
     {
         int fd = createServerSocket(ports[i]);
         server_fds.push_back(fd);
@@ -28,13 +28,13 @@ std::vector<int> SocketHandler::createSocketWithPort(const std::vector<int>& por
     return server_fds;
 }
 
-int SocketHandler::createServerSocket(int port) 
+int SocketHandler::createServerSocket(int port)
 {
     // 1. Créer le socket
     int socket_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (socket_fd == -1) 
+    if (socket_fd == -1)
         throw std::runtime_error("socket() " + std::string(strerror(errno)));
-    
+
     // 2. Autoriser la réutilisation du port
     /*int opt = 1;
     if (setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) {
@@ -57,7 +57,7 @@ int SocketHandler::createServerSocket(int port)
     }
 
     // 5. Mettre le socket en mode écoute
-    if (listen(socket_fd, SOMAXCONN) == -1) 
+    if (listen(socket_fd, SOMAXCONN) == -1)
     {
         close(socket_fd);
         throw std::runtime_error("listen() " + std::string(strerror(errno)));
@@ -66,7 +66,7 @@ int SocketHandler::createServerSocket(int port)
     // 6. Associer le fd au port pour référence future
     //_fd_to_port[socket_fd] = port;
 
-    std::cout << COLOR_GREEN << "Success : open socket to a port: " << port << COLOR_RESET << std::endl;
+    std::cout << COLOR_GREEN; std::cout << "Success : open socket to a port: " << port << COLOR_RESET << std::endl;
     return socket_fd;
 }
 
@@ -78,7 +78,7 @@ void SocketHandler::closeSocket(int fd)
     }
     else
     {
-      std::cout << COLOR_GREEN <<"Success : close socket " << COLOR_RESET << std::endl;
+      std::cout << COLOR_GREEN; std::cout <<"Success : close socket " << COLOR_RESET << std::endl;
     }
 }
 
@@ -97,7 +97,7 @@ int SocketHandler::acceptConnection(int socket_fd, std::string& client_ip, int& 
     {
         throw std::runtime_error("accept() " + std::string(strerror(errno)));
     }
-    else 
+    else
     {
       inet_ntop(AF_INET, &(client_addr.sin_addr), ip_str, INET_ADDRSTRLEN);
       client_ip = std::string(ip_str);
@@ -124,7 +124,7 @@ ssize_t SocketHandler::writeToSocket(int fd, const char* buffer, size_t size)
     ssize_t bytes_written = write(fd, buffer, size);
     if (bytes_written == -1)
         throw std::runtime_error("write() " + std::string(strerror(errno)));
-    
+
     return bytes_written;
 }
 

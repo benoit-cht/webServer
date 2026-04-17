@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+         #
+#    By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/20 09:10:14 by bchallat          #+#    #+#              #
-#    Updated: 2026/03/25 06:02:20 by bchallat         ###   ########.fr        #
+#    Updated: 2026/04/17 15:27:25 by tjacquel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,7 +29,7 @@ else
 	FLAG	= -Wall -Wextra -Werror -std=c++98
 endif
 
-CCFLAG	= $(CC) $(FLAG) 
+CCFLAG	= $(CC) $(FLAG)
 
 SRCDIR = sources
 OBJDIR = object
@@ -52,7 +52,7 @@ SRCS = ${addprefix ${SRCDIR}/, ${SRC}}
 OBJS = ${addprefix ${OBJDIR}/, $(SRC:.cpp=.o)}
 
 object/%.o:sources/%.cpp | $(OBJDIR)
-	@echo  "$(GREEN)[OK]       	🛠️ $(YELLOW)Compaling ... $(BLUE)$< $(RESET)"
+	@echo -e  "$(GREEN)[OK]       	🛠️ $(YELLOW)Compaling ... $(BLUE)$< $(RESET)"
 	@$(CCFLAG) -c $< -o $@
 
 
@@ -63,15 +63,15 @@ object/%.o:sources/%.cpp | $(OBJDIR)
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	@echo  "$(GREEN)[OK]       	✅ $(YELLOW)CREATED   EXE$(BLUE) -- webserv --\n $(RESET)" 
+	@echo -e  "$(GREEN)[OK]       	✅ $(YELLOW)CREATED   EXE$(BLUE) -- webserv --\n $(RESET)"
 	@$(CCFLAG) -g3 $(OBJS) -o $(NAME)
 
 clean:
-	@echo "$(RED)[DELETE]	🧹$(BLUE) Delete file obj $(RESET)\n" 
+	@echo -e "$(RED)[DELETE]	🧹$(BLUE) Delete file obj $(RESET)\n"
 	@$(RMF) $(OBJDIR) $(OBJS)
 
 fclean:
-	@echo "$(RED)[DELETE]	🧹$(BLUE) Delete all file obj and .exe $(RESET)\n"
+	@echo -e "$(RED)[DELETE]	🧹$(BLUE) Delete all file obj and .exe $(RESET)\n"
 	@$(RMF) $(OBJDIR) $(OBJS) $(NAME)
 
 re: fclean all
@@ -83,10 +83,10 @@ re: fclean all
 #===============================================================#
 
 ${OBJDIR}:
-	@echo "${GREEN}[->]		${YELLOW}📂 Creating directory ${OBJ_DIR}$(BLUE)object/..$(RESET)\n"
+	@echo -e "${GREEN}[->]		${YELLOW}📂 Creating directory ${OBJ_DIR}$(BLUE)object/..$(RESET)\n"
 	@mkdir -p ${OBJDIR}
-	@mkdir -p ${OBJDIR}/network 
-	@mkdir -p ${OBJDIR}/cgi 
+	@mkdir -p ${OBJDIR}/network
+	@mkdir -p ${OBJDIR}/cgi
 	@mkdir -p ${OBJDIR}/request
 	@mkdir -p ${OBJDIR}/routing
 
