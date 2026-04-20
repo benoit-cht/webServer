@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+         #
+#    By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/20 09:10:14 by bchallat          #+#    #+#              #
-#    Updated: 2026/04/17 15:27:25 by tjacquel         ###   ########.fr        #
+#    Updated: 2026/04/20 19:37:36 by lcluzan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,7 +26,7 @@ ifeq ($(UNAME), Darwin)
 	FLAG	= -g3 -Wall -Wextra -Werror -std=c++98 -fsanitize=address
 else
 	CC	= c++
-	FLAG	= -Wall -Wextra -Werror -std=c++98
+	FLAG	= -Wall -Wextra -Werror -std=c++98 -MMD -MP
 endif
 
 CCFLAG	= $(CC) $(FLAG)
@@ -47,12 +47,13 @@ SRC	=	webserver.cpp \
 			network/ClientInfo.cpp \
 			network/ClientManager.cpp \
 			network/EventLoop.cpp \
+			config/ServerConfig.cpp \
 
 SRCS = ${addprefix ${SRCDIR}/, ${SRC}}
 OBJS = ${addprefix ${OBJDIR}/, $(SRC:.cpp=.o)}
 
 object/%.o:sources/%.cpp | $(OBJDIR)
-	@echo -e  "$(GREEN)[OK]       	🛠️ $(YELLOW)Compaling ... $(BLUE)$< $(RESET)"
+	@echo -e  "$(GREEN)[OK]       	🛠️ $(YELLOW)Compiling ... $(BLUE)$< $(RESET)"
 	@$(CCFLAG) -c $< -o $@
 
 
@@ -87,6 +88,7 @@ ${OBJDIR}:
 	@mkdir -p ${OBJDIR}
 	@mkdir -p ${OBJDIR}/network
 	@mkdir -p ${OBJDIR}/cgi
+	@mkdir -p ${OBJDIR}/config
 	@mkdir -p ${OBJDIR}/request
 	@mkdir -p ${OBJDIR}/routing
 

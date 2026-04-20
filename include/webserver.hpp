@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserver.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:39:42 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/31 11:46:14 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/04/20 19:27:09 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,9 +31,10 @@
 #include "./network/ClientInfo.hpp"
 #include "./network/ClientManager.hpp"
 #include "./network/EventLoop.hpp"
+# include "./ServerConfig.hpp"
 //#include "./request/RequestHttp.hpp"
 
-# endif 
+# endif
 
 /* ************************************************************************** */
 /*                                                                            */
