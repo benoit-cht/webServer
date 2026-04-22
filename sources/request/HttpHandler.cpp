@@ -6,11 +6,14 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/20 17:35:32 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/04/22 11:55:21 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/request/HttpHandler.hpp"
+
+static bool isStaticFile(const std::string& path);
+
 
 t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request)
 {
@@ -45,20 +48,22 @@ t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request)
   return ( response );	
 }*/
 
-static t_httpResponse setHttpResponse(t_httpRequest request)
+t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request)
 {
-	t_httpResponse response;
+	t_httpResponse                      response;
+  std::map<std::string, std::string>  headers;
 	
 	 // 1. Vérifier la méthode
-	if (request.method != "GET" && 
-		request.method != "POST" && 
-		request.method != "HEAD") 
-	{return t_httpResponse{501, {{"Content-Type", "text/html"}}, "<html>501 Not Implemented</html>"};}
-	
+	if (request.method != "GET" && request.method != "POST" && request.method != "HEAD") 
+	{
+    headers["Content-Type"] = "text/html";
+    return t_httpResponse(400, headers, "<html><body>400 Bad Request</body></html>");
+  }
+
 	// 2. Analyser le chemin
   if (request.path == "/") 
   {
-    return serveStaticFile("/var/www/html/index.html");
+    return serveStaticFile("index.html");
   } 
   else if (request.path.find("/cgi-bin/") == 0) 
   {
@@ -72,10 +77,11 @@ static t_httpResponse setHttpResponse(t_httpRequest request)
   } 
   else 
   {
-    return t_httpResponse{404, {{"Content-Type", "text/html"}}, "<html>404 Not Found</html>"};
+    headers["Content-Type"] = "text/html";
+    return t_httpResponse(404, headers, "<html>404 Not Found</html>");
   }
 
-	return ( response );	
+	return ( response );
 }
 
 /*
@@ -93,3 +99,14 @@ static t_httpResponse HandlerErrorHttp(int status)
 /* ************************************************************************** */
 /*                                                                            */
 /* ************************************************************************** */
+
+static bool isStaticFile(const std::string& path) 
+{
+    if (path.find("/static/") == 0 ||
+        path.substr(path.find_last_of(".") + 1) == "html" ||
+        path.substr(path.find_last_of(".") + 1) == "css" ||
+        path.substr(path.find_last_of(".") + 1) == "js") {
+        return true;
+    }
+    return false;
+}

@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:01:32 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/10 20:27:51 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/04/22 12:15:27 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,17 +174,23 @@ void EventLoop::handleClientRequest(int fd)
     std::cout << COLOR_BLUE 
               << "Données reçues de " << client->getAdressIp()
               << ":" << client->getPortNumber() << " (" << bytes_read << " octets) :\n"
-              << "---------------------------------------------\n"
-              << buffer 
-              << "---------------------------------------------\n"
+              //<< "---------------------------------------------\n"
+              //<< buffer 
+              //<< "---------------------------------------------\n"
               << COLOR_RESET << std::endl;
 
 
 /*  ****************************************************************  */
 
 
-    t_httpRequest request = HttpHandler::setHttpRequest(buffer); 
+    t_httpRequest   request  = HttpHandler::setHttpRequest(buffer); 
+    t_httpResponse  response = HttpHandler::setHttpResponse(request);
+   
+    std::string raw_response = response.toString();
+    _socket_handler.writeToSocket(fd, raw_response.c_str(), raw_response.size());
+    print_http_response(response); 
 
+/*
     std::string content = readFile("sources/www/" + request.path);
     if (content.find("404") != std::string::npos) 
     {
@@ -219,7 +225,7 @@ void EventLoop::handleClientRequest(int fd)
 
       _socket_handler.writeToSocket(fd, response.c_str(), response.size());
       std::cout << COLOR_BLUE << response << COLOR_RESET << std::endl;
-    }
+    }*/
     // 4. Ici, tu pourrais appeler un parseur HTTP pour traiter la requête.
     //    Pour l'instant, on se contente d'afficher les données brutes.
 }

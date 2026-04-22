@@ -6,7 +6,7 @@
 #    By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/20 09:10:14 by bchallat          #+#    #+#              #
-#    Updated: 2026/04/08 12:49:18 by bchallat         ###   ########.fr        #
+#    Updated: 2026/04/22 11:13:39 by bchallat         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -52,6 +52,8 @@ SRC	=	webserver.cpp \
 			request/req_descending_deriv.cpp \
 			request/req_struct_http_request.cpp \
 			request/readFile.cpp \
+			request/httpResponse.cpp \
+			request/servStaticFile.cpp \
 
 SRCS = ${addprefix ${SRCDIR}/, ${SRC}}
 OBJS = ${addprefix ${OBJDIR}/, $(SRC:.cpp=.o)}

@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:37:08 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/20 17:33:17 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/04/22 12:12:24 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,14 +68,10 @@ typedef struct s_httpResponse
   std::map<std::string, std::string> headers;
 	std::string                        body;
   
-  // Convertit en chaîne HTTP brute
-  //std::string                         toString() const;
+  s_httpResponse();
+  s_httpResponse(int status, const std::map<std::string, std::string>& headers, const std::string& body);
+  std::string toString() const;
 
-  /*
-  int                                 buildStatue() const;
-  std::string                         buildString() const;
-  std::map<std::string, std::string>  buildHeader() const;
-  */
 } t_httpResponse;
 
 /*------------------------------------*/
@@ -92,6 +88,7 @@ std::vector<t_token>  req_lexing(const std::string raw_request);
 
 std::string readFile(const std::string& path);
 t_httpResponse serveStaticFile(const std::string& path);
+void print_http_response(const t_httpResponse& response);
 
 #endif // !UTILS_HANDLERHTTP_HPP
 

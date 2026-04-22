@@ -1,0 +1,97 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   httpResponse.cpp                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/04/22 10:28:48 by bchallat          #+#    #+#             */
+/*   Updated: 2026/04/22 12:12:09 by bchallat         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../../include/request/utils_HandlerHttp.hpp"
+
+void print_http_response(const t_httpResponse& response) {
+    // Affichage du statut
+    std::cout << COLOR_CYAN << "\n=== HTTP Response ===" << COLOR_RESET << std::endl;
+    std::cout << "Status: " << COLOR_YELLOW << response.status << COLOR_RESET;
+    switch (response.status) {
+        case 200: std::cout << " (OK)"; break;
+        case 400: std::cout << " (Bad Request)"; break;
+        case 403: std::cout << " (Forbidden)"; break;
+        case 404: std::cout << " (Not Found)"; break;
+        case 501: std::cout << " (Not Implemented)"; break;
+        default: std::cout << " (Unknown Status)"; break;
+    }
+    std::cout << COLOR_RESET << std::endl;
+
+    // Affichage des en-têtes
+    std::cout << COLOR_CYAN << "\n--- Headers ---" << COLOR_RESET << std::endl;
+    if (response.headers.empty()) {
+        std::cout << COLOR_RED << "No headers." << COLOR_RESET << std::endl;
+    } else {
+        for (std::map<std::string, std::string>::const_iterator it = response.headers.begin();
+             it != response.headers.end(); ++it) {
+            std::cout << it->first << ": " << COLOR_GREEN << it->second << COLOR_RESET << std::endl;
+        }
+    }
+
+    // Affichage du body (si présent)
+    std::cout << COLOR_CYAN << "\n--- Body ---" << COLOR_RESET << std::endl;
+    if (response.body.empty()) {
+        std::cout << COLOR_RED << "No body." << COLOR_RESET << std::endl;
+    } else {
+        std::cout << COLOR_BLUE << response.body << COLOR_RESET << std::endl;
+    }
+
+    // Affichage de la réponse complète (optionnel)
+    std::cout << COLOR_CYAN << "\n--- Full Response ---" << COLOR_RESET << std::endl;
+    std::cout << COLOR_MAGENTA << response.toString() << COLOR_RESET << std::endl;
+
+    std::cout << COLOR_CYAN << "====================\n" << COLOR_RESET << std::endl;
+}
+
+// Constructeur par défaut
+s_httpResponse::s_httpResponse()
+    : status(200), body("") {
+    headers.insert(std::make_pair("Content-Type", "text/html"));
+}
+// Constructeur paramétré
+s_httpResponse::s_httpResponse(int status, const std::map<std::string, std::string>& headers, const std::string& body)
+    : status(status), headers(headers), body(body) {}
+
+// Méthode pour convertir la réponse en chaîne HTTP brute
+std::string s_httpResponse::toString() const {
+    std::string response;
+
+    // Ligne de statut (ex: "HTTP/1.1 200 OK")
+    response += "HTTP/1.1 " + std::to_string(status) + " ";
+    switch (status) {
+        case 200: response += "OK"; break;
+        case 400: response += "Bad Request"; break;
+        case 404: response += "Not Found"; break;
+        case 501: response += "Not Implemented"; break;
+        default: response += "Unknown Status"; break;
+    }
+    response += "\r\n";
+
+    // En-têtes
+    for (std::map<std::string, std::string>::const_iterator it = headers.begin(); it != headers.end(); ++it) {
+    response += it->first + ": " + it->second + "\r\n";
+}
+
+    // Body (si présent)
+    if (!body.empty()) {
+        response += "Content-Length: " + std::to_string(body.size()) + "\r\n";
+    }
+    response += "\r\n";
+    response += body;
+
+    return response;
+}
+
+/* ************************************************************************** */
+/*                                                                            */
+/* ************************************************************************** */
+
