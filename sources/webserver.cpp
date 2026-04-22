@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserver.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/22 18:33:38 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/04/22 20:26:36 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,9 +160,28 @@ int main (int av, char *ag[])
 	in_brackets = false;
 	bracket_count = 0;
 	for (size_t i = 0; i < tokens.size(); i++) {
-		if (i > 0 && tokens[i] == "{") {
-			buffer.context = tokens[i - 1];
+		if (i + 1 < tokens.size() && tokens[i] == "server") {
+			buffer.context = tokens[i];
 			parser.push_back(buffer);
+		}
+		if (i + 2 < tokens.size() && tokens[i] == "location") {
+			buffer.context = tokens[i];
+			parser.push_back(buffer);
+		}
+		else if (i > 0 && tokens[i] == ";" ) {
+			size_t sc_pos = i;
+			size_t	j = i;
+			while (j > 0 && tokens[j] != ";" && tokens[j] != "}" && tokens[j] != "{") {
+				j--;
+			}
+			j++;
+			size_t nbegin = j;
+			while (j < sc_pos - nbegin) {
+				buffer.directives.push_back(tokens[j]);
+				parser[i].directives.push_back(tokens[j]);
+				j++;
+			}
+			// buffer.directives
 		}
 	}
 
