@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerConfig.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 19:26:05 by lcluzan           #+#    #+#             */
-/*   Updated: 2026/04/21 15:25:29 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/04/22 17:58:08 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,14 @@
 # include <fstream>
 # include <iostream>
 # include <string>
+# include <vector>
 
-class ServerConfig
-{
+typedef struct	s_ServerParser {
+	std::string					context;
+	std::vector<std::string>	directives;
+}				t_ServerParser;
+
+class ServerConfig {
 
 public:
 	ServerConfig();
