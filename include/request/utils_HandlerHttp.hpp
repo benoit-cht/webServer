@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:37:08 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/10 20:24:07 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/04/20 17:33:17 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,7 @@ std::vector<t_token>  req_lexing(const std::string raw_request);
 /*------------------------------------*/
 
 std::string readFile(const std::string& path);
+t_httpResponse serveStaticFile(const std::string& path);
 
 #endif // !UTILS_HANDLERHTTP_HPP
 

@@ -20,6 +20,7 @@ class HttpHandler {
   public:
 		static t_httpRequest  setHttpRequest(const std::string& raw_request);
 		static t_httpResponse setHttpResponse(int status, std::string body);
+    static t_httpResponse HandlerErrorHttp(int status);
 
 	private:
 		HttpHandler( void );
