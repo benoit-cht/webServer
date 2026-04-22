@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerConfig.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 19:26:05 by lcluzan           #+#    #+#             */
-/*   Updated: 2026/04/20 19:44:09 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/04/21 15:25:29 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,12 @@
 # include <iostream>
 # include <string>
 
-class serverConfig
+class ServerConfig
 {
 
 public:
-	serverConfig();
-	~serverConfig();
+	ServerConfig();
+	~ServerConfig();
 
     int port;
     std::string server_name;

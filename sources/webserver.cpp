@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserver.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/20 20:24:35 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/04/21 20:07:15 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,8 +70,38 @@ int main (int av, char *ag[])
     liiines.push_back(line);
   }
 
+  std::vector<std::string> tokens;
   for (size_t i = 0; i < liiines.size(); i++) {
+	size_t j = 0;
+	while (j < liiines[i].size()) {
+		while (j < liiines[i].size() && isspace(liiines[i][j])) { // skip first whitespace
+			j++;
+		}
+
+		if (j >= liiines[i].size()) {
+			break ;
+		}
+
+		if (liiines[i][j] == '{' || liiines[i][j] == '}' || liiines[i][j] == ';') {
+			tokens.push_back(liiines[i].substr(j, 1));
+			j++;
+			continue ;
+		}
+
+		size_t	nbegin = j;
+		while (j < liiines[i].size() && !isspace(liiines[i][j]) && liiines[i][j] != '{' && liiines[i][j] != '}' && liiines[i][j] != ';') {
+			j++;
+		}
+		tokens.push_back(liiines[i].substr(nbegin, j - nbegin));
+
+
+	}
+
     std::cout << liiines[i] << std::endl;
+  }
+
+  for (size_t i = 0; i < tokens.size(); i++) {
+	std::cout << "`" << tokens[i] << "`" << std::endl;
   }
 
 
@@ -98,6 +128,7 @@ int main (int av, char *ag[])
   //     return EXIT_FAILURE ;
   // }
   // return EXIT_SUCCESS ;
+
 }
 
 /*
