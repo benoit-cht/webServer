@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 10:28:48 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/22 12:12:09 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/04/22 13:31:14 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,8 @@ void print_http_response(const t_httpResponse& response) {
     }
 
     // Affichage de la réponse complète (optionnel)
-    std::cout << COLOR_CYAN << "\n--- Full Response ---" << COLOR_RESET << std::endl;
-    std::cout << COLOR_MAGENTA << response.toString() << COLOR_RESET << std::endl;
+    /*std::cout << COLOR_CYAN << "\n--- Full Response ---" << COLOR_RESET << std::endl;
+    std::cout << COLOR_MAGENTA << response.toString() << COLOR_RESET << std::endl;*/
 
     std::cout << COLOR_CYAN << "====================\n" << COLOR_RESET << std::endl;
 }
