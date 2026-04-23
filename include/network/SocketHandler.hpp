@@ -33,21 +33,13 @@ class SocketHandler {
  
   public:
     int               createServerSocket(int port);
+    void              closeSocket(int fd);
     int               acceptConnection(int server_fd, std::string& ip, int& port);
     std::vector<int>  createSocketWithPort(const std::vector<int>& ports);
   
   public:
     ssize_t           readFromSocket(int fd, char* buffer, size_t size);
     ssize_t           writeToSocket(int fd, const char* buffer, size_t size);
-  
-  public :  
-    void              closeSocket(int fd);
-/*  
-   public :
-    //int     getPortFromFd(int fd) const;
-  private :
-    std::map<int, int> _tableFilePort;  // Associe un fd de socket serveur à son port
-*/
 };
 
 #endif 
