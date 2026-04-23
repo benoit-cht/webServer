@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/22 20:26:36 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/04/23 19:20:37 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,42 +155,48 @@ int main (int av, char *ag[])
 
 	}
 
-	std::vector<t_ServerParser>	parser;
-	t_ServerParser buffer;
-	in_brackets = false;
-	bracket_count = 0;
-	for (size_t i = 0; i < tokens.size(); i++) {
-		if (i + 1 < tokens.size() && tokens[i] == "server") {
-			buffer.context = tokens[i];
-			parser.push_back(buffer);
-		}
-		if (i + 2 < tokens.size() && tokens[i] == "location") {
-			buffer.context = tokens[i];
-			parser.push_back(buffer);
-		}
-		else if (i > 0 && tokens[i] == ";" ) {
-			size_t sc_pos = i;
-			size_t	j = i;
-			while (j > 0 && tokens[j] != ";" && tokens[j] != "}" && tokens[j] != "{") {
-				j--;
-			}
-			j++;
-			size_t nbegin = j;
-			while (j < sc_pos - nbegin) {
-				buffer.directives.push_back(tokens[j]);
-				parser[i].directives.push_back(tokens[j]);
-				j++;
-			}
-			// buffer.directives
-		}
-	}
+	// std::vector<t_block>	parser;
+	// t_block buffer;
+	// in_brackets = false;
+	// bracket_count = 0;
+	// for (size_t i = 0; i < tokens.size(); i++) {
+	// 	if (i + 1 < tokens.size() && tokens[i] == "server") {
+	// 		buffer.context = tokens[i];
+	// 		parser.push_back(buffer);
+	// 	}
+	// 	if (i + 2 < tokens.size() && tokens[i] == "location") {
+	// 		buffer.context = tokens[i];
+	// 		parser.push_back(buffer);
+	// 	}
+	// 	// else if (i > 0 && tokens[i] == ";" ) {
+	// 	// 	size_t sc_pos = i;
+	// 	// 	size_t	j = i;
+	// 	// 	while (j > 0 && tokens[j] != ";" && tokens[j] != "}" && tokens[j] != "{") {
+	// 	// 		j--;
+	// 	// 	}
+	// 	// 	j++;
+	// 	// 	size_t nbegin = j;
+	// 	// 	while (j < sc_pos - nbegin) {
+	// 	// 		buffer.directives.push_back(tokens[j]);
+	// 	// 		// parser[i].directives.push_back(tokens[j]);
+	// 	// 		j++;
+	// 	// 	}
+	// 	// 	parser[i].directives.push_back(buffer.directives[i]);
+	// 	// 	// buffer.directives
+	// 	// }
+	// }
 
-	for (size_t i = 0; i < parser.size(); i++) {
-		std::cout << "context[" << i << "]=" << parser[i].context << std::endl;
-		for (size_t j = 0; j < parser[i].directives.size(); i++) {
-			std::cout << "    directive[" << j << "]=" << parser[i].directives[j] << std::endl;
-		}
-	}
+	// size_t i = 0;
+	// std::vector<t_block>	parser;
+	// for (size_t i = 0; i < )
+	// block = parseTokens(tokens, i);
+
+	// for (size_t i = 0; i < block.size(); i++) {
+	// 	std::cout << "context[" << i << "]=" << block[i].context << std::endl;
+	// 	for (size_t j = 0; j < parser[i].directives.size(); i++) {
+	// 		std::cout << "    directive[" << j << "]=" << parser[i].directives[j] << std::endl;
+	// 	}
+	// }
 
 
 
