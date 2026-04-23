@@ -15,54 +15,11 @@
 
 #include "../../include/network/EventLoop.hpp"
 
-EventLoop::EventLoop(const std::vector<int>& ports)
-{
-    setupServerSockets(ports);
-}
+EventLoop::EventLoop(const std::vector<int>& ports) { setupServerSockets(ports); }
 
-EventLoop::~EventLoop()
-{
-    cleanup();
-}
+EventLoop::~EventLoop() { cleanup(); }
 
 /* ************************************************************************** */
-
-/*void  EventLoop::waitActivityOnSocket( void ) // Attendre une activité sur les sockets (timeout infini)
-{
-// Attendre une activité sur les sockets (timeout infini)
-  int ret = poll(&_poll_fds[0], _poll_fds.size(), -1);
-  if (ret == -1) 
-    throw std::runtime_error("poll() " + std::string(strerror(errno)));
-}
-
-void  EventLoop::monitoredAllDescriptor( void ) //Parcourir tous les descripteurs surveillés
-{
-  for (size_t i = 0; i < _poll_fds.size(); i++)
-  {
-    if (_poll_fds[i].revents & POLLIN)
-    {
-      // Vérifier si c'est un socket serveur (nouvelle connexion)
-      bool is_server_fd = false;
-
-      for (size_t j = 0; j < _server_fds.size(); j++) 
-      {
-        if (_poll_fds[i].fd == _server_fds[j])
-        {
-          handleNewConnection(_poll_fds[i].fd);
-          is_server_fd = true;
-          break;
-        }
-      }
-
-      // Sinon, c'est un client existant (données à lire)
-      if (!is_server_fd)
-      {
-        handleClientRequest(_poll_fds[i].fd);
-      }
-    }
-  }
-}
-*/
 
 void EventLoop::run() 
 {
@@ -179,10 +136,6 @@ void EventLoop::handleClientRequest(int fd)
               //<< "---------------------------------------------\n"
               << COLOR_RESET << std::endl;
 
-
-/*  ****************************************************************  */
-
-
     t_httpRequest   request  = HttpHandler::setHttpRequest(buffer); 
     t_httpResponse  response = HttpHandler::setHttpResponse(request);
    
@@ -190,44 +143,6 @@ void EventLoop::handleClientRequest(int fd)
     _socket_handler.writeToSocket(fd, raw_response.c_str(), raw_response.size());
     print_http_response(response); 
 
-/*
-    std::string content = readFile("sources/www/" + request.path);
-    if (content.find("404") != std::string::npos) 
-    {
-      _socket_handler.writeToSocket(fd, content.c_str(), content.size());
-    } 
-    else 
-    {
-      // Déterminer le Content-Type en fonction de l'extension du fichier
-      std::string content_type = "text/plain"; // Par défaut
-      size_t dot_pos = request.path.rfind('.');
-      if (dot_pos != std::string::npos) 
-      {
-        std::string extension = request.path.substr(dot_pos);
-        if (extension == ".html" || extension == ".htm") 
-        {
-          content_type = "text/html";
-        } 
-        else if (extension == ".css") 
-        {
-         content_type = "text/css";
-        }
-      }
-
-      // Construire la réponse HTTP avec le bon Content-Type
-      std::string response = // t_httpResponse::toString();
-      "HTTP/1.1 200 OK\r\n"
-      "Content-Type: " + content_type + "\r\n"
-      "Content-Length: " + std::to_string(content.size()) + "\r\n"
-      "Connection: close\r\n"
-      "\r\n" +
-      content;
-
-      _socket_handler.writeToSocket(fd, response.c_str(), response.size());
-      std::cout << COLOR_BLUE << response << COLOR_RESET << std::endl;
-    }*/
-    // 4. Ici, tu pourrais appeler un parseur HTTP pour traiter la requête.
-    //    Pour l'instant, on se contente d'afficher les données brutes.
 }
 
 void EventLoop::setupServerSockets(const std::vector<int>& ports) 

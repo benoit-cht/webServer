@@ -21,10 +21,6 @@ class HttpHandler {
 		static t_httpRequest  setHttpRequest(const std::string& raw_request);
 		static t_httpResponse setHttpResponse(t_httpRequest request);
     static t_httpResponse HandlerErrorHttp(int status);
-
-	private:
-		HttpHandler( void );
-		virtual ~HttpHandler( void );
 };
 
 # endif // !HTTPHANDLER_HPP 
