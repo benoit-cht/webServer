@@ -33,12 +33,5 @@ const std::string& ClientInfo::getAdressIp(void) const
 }
 
 /* ************************************************************************** */
-/* Constructeur : Initialise les membres avec les valeurs en paramètre        */
-/* Destructeur : Vide (pas de ressources à libérer manuellement)              */
 /*                                                                            */
-/* Getter Metode:                                                             */
-/* getFileDescriptor le descripteur de fichier du socket client               */
-/* getPortNumber le numéro de port du client                                  */
-/* getAdressIp l'adresse IP du client                                         */
-/* (par référence constante pour éviter la copie)                             */
 /* ************************************************************************** */
