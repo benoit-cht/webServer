@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/23 19:20:37 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/04/24 20:55:31 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,9 +63,9 @@ int main (int av, char *ag[])
 	std::string line;
 	std::vector<std::string>liiines;
 	while (std::getline(inFile, line)) {
-		size_t  sharpPos = line.find("#");
-		if (sharpPos != std::string::npos) {
-		line = line.substr(0, sharpPos);
+		size_t  hashPos = line.find("#");
+		if (hashPos != std::string::npos) {
+		line = line.substr(0, hashPos);
 		}
 		liiines.push_back(line);
 	}
@@ -99,6 +99,11 @@ int main (int av, char *ag[])
 		}
 
 		std::cout << liiines[i] << std::endl;
+	}
+
+	if (tokens.empty()) {
+		std::cerr << "Config file error: file is empty or contains no valid tokens" << std::endl;
+		return (1);
 	}
 
 	for (size_t i = 0; i < tokens.size(); i++) {
@@ -138,7 +143,7 @@ int main (int av, char *ag[])
 			}
 		}
 		if (in_brackets == false && tokens[i] != "server" && tokens[i] != "}") {
-			std::cerr << "Config file error: only `server` token expected outside brackets but found tokens[" << i << "] == " << tokens[i] << std::endl;
+			std::cerr << "Config file error: only `server` token expected outside brackets block but found tokens[" << i << "] == " << tokens[i] << std::endl;
 			std::cout << "in_brackets=" << in_brackets << " and bracket_count=" << bracket_count << std::endl;
 			return (1);
 		}
@@ -153,7 +158,18 @@ int main (int av, char *ag[])
 			return (1);
 		}
 
+		if (i > 0 && tokens[i] == "{" && tokens[i - 1] == ";") {
+			std::cerr << "Config file error: unexpected `;` found before opening brackets `{`" << std::endl;
+			return (1);
+		}
 	}
+
+	std::cout << "tokens.back()=" << tokens.back() << std::endl;
+	if (tokens.back() != "}") {
+		std::cerr << "Config file error: last token is not a closing bracket" << std::endl;
+		return (1);
+	}
+	// std::cout << "directiveblocks_count=" << directiveblocks_count << std::endl;
 
 	// std::vector<t_block>	parser;
 	// t_block buffer;
@@ -186,18 +202,51 @@ int main (int av, char *ag[])
 	// 	// }
 	// }
 
-	// size_t i = 0;
-	// std::vector<t_block>	parser;
-	// for (size_t i = 0; i < )
-	// block = parseTokens(tokens, i);
+	std::vector<t_block>	block;
+	size_t i = 0;
+	while (i < tokens.size()) {
+		if (tokens[i] == "server") {
+			block.push_back(parseTokens(tokens, i));
+		}
+		else {
+			std::cerr << "Config file error: Unexpected token found outside server block: tokens[" << i << "]=" << tokens[i] << std::endl;
+			return (1);
+		}
+	}
 
+	// std::cout << "block.size()=" << block.size() << std::endl;
 	// for (size_t i = 0; i < block.size(); i++) {
-	// 	std::cout << "context[" << i << "]=" << block[i].context << std::endl;
-	// 	for (size_t j = 0; j < parser[i].directives.size(); i++) {
-	// 		std::cout << "    directive[" << j << "]=" << parser[i].directives[j] << std::endl;
+	// 	std::cout << "block[" << i << "].name=" << block[i].name << std::endl;
+	// 	for (size_t j = 0; j < block[i].parameters.size(); j++) {
+	// 		std::cout << "block[" << i << "].parameters[" << j << "]=" << block[i].parameters[j] << std::endl;
+	// 	}
+	// 	for (size_t k = 0; k < block[i].directives.size(); k++) {
+	// 		for (size_t ka = 0; ka < block[i].directives[k].size(); ka++) {
+	// 			std::cout << "    block[" << i << "].directives[" << k << "][" << ka << "]=" << block[i].directives[k][ka] << std::endl;
+	// 		}
+	// 	}
+	// 	for (size_t l = 0; l < block[i].embed_block.size(); l++) {
+	// 		std::cout << "    block[" << i << "].embed_block[" << l << "].name=" << block[i].embed_block[l].name << std::endl;
+	// 		for (size_t la = 0; la < block[i].embed_block[l].parameters.size(); la++) {
+	// 			std::cout << "    block[" << i << "].embed_block[" << l << "].parameters[" << la << "]=" << block[i].embed_block[l].parameters[la] << std::endl;
+	// 		}
+	// 		for (size_t lb = 0; lb < block[i].embed_block[l].directives.size(); lb++) {
+	// 			for (size_t lba = 0; lba < block[i].embed_block[l].directives[lb].size(); lba++) {
+	// 				std::cout << "        block[" << i << "].embed_block[" << l << "].directives[" << lb << "][" << lba << "]=" << block[i].embed_block[l].directives[lb][lba] << std::endl;
+	// 			}
+	// 		}
+
 	// 	}
 	// }
 
+	for (size_t i = 0; i < block.size(); i++) {
+		std::stringstream	ss;
+		ss << "block[" << i << "]";
+		std::string			base_prefix = ss.str();
+
+		printParserBlocks(block[i], base_prefix, 0);
+		std::cout << "\n";
+	}
 
 
 }
