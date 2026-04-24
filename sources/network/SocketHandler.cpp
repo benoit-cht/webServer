@@ -19,55 +19,47 @@ SocketHandler::~SocketHandler() {}
 
 std::vector<int> SocketHandler::createSocketWithPort(const std::vector<int>& ports)
 {
-    std::vector<int> server_fds;
-    for (size_t i = 0; i < ports.size(); i++) 
-    {
-        int fd = createServerSocket(ports[i]);
-        server_fds.push_back(fd);
-    }
-    return server_fds;
+  int               fd  = -1;
+  size_t            iterator = 0;  
+  std::vector<int>  server_fds;
+
+  while(iterator < ports.size()) 
+  {
+    fd = createServerSocket(ports[iterator]);
+    server_fds.push_back(fd);
+    iterator++;
+  }
+
+  return server_fds;
 }
 
 int SocketHandler::createServerSocket(int port) 
 {
-    // 1. Créer le socket
-    int socket_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (socket_fd == -1) 
-        throw std::runtime_error("socket() " + std::string(strerror(errno)));
+  struct sockaddr_in socket_addr;
+  memset(&socket_addr, 0, sizeof(socket_addr));
+  socket_addr.sin_family = AF_INET;
+  socket_addr.sin_addr.s_addr = INADDR_ANY;  // Écouter sur toutes les interfaces
+  socket_addr.sin_port = htons(port);
+
+  int socket_fd = socket(AF_INET, SOCK_STREAM, 0);
     
-    // 2. Autoriser la réutilisation du port
-    /*int opt = 1;
-    if (setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) {
-        close(socket_fd);
-        throw std::runtime_error("setsockopt() failed: " + std::string(strerror(errno)));
-    }*/
+  if (socket_fd == -1)
+  {
+        throw std::runtime_error("socket() " + std::string(strerror(errno)));
+  }
+  if (bind(socket_fd, (struct sockaddr *)&socket_addr, sizeof(socket_addr)) == -1)
+  {
+    close(socket_fd);
+    throw std::runtime_error("bind() " + std::string(strerror(errno)));
+  }
+  if (listen(socket_fd, SOMAXCONN) == -1) 
+  {
+    close(socket_fd);
+    throw std::runtime_error("listen() " + std::string(strerror(errno)));
+  }
 
-    // 3. Configurer l'adresse du serveur
-    struct sockaddr_in socket_addr;
-    memset(&socket_addr, 0, sizeof(socket_addr));
-    socket_addr.sin_family = AF_INET;
-    socket_addr.sin_addr.s_addr = INADDR_ANY;  // Écouter sur toutes les interfaces
-    socket_addr.sin_port = htons(port);
-
-    // 4. Associer le socket à l'adresse et au port
-    if (bind(socket_fd, (struct sockaddr *)&socket_addr, sizeof(socket_addr)) == -1)
-    {
-        close(socket_fd);
-        throw std::runtime_error("bind() " + std::string(strerror(errno)));
-    }
-
-    // 5. Mettre le socket en mode écoute
-    if (listen(socket_fd, SOMAXCONN) == -1) 
-    {
-        close(socket_fd);
-        throw std::runtime_error("listen() " + std::string(strerror(errno)));
-    }
-
-    // 6. Associer le fd au port pour référence future
-    //_fd_to_port[socket_fd] = port;
-
-    std::cout << COLOR_GREEN << "Success : open socket to a port: " << port << COLOR_RESET << std::endl;
-    return socket_fd;
+  std::cout << COLOR_GREEN << "Success : open socket to a port: " << port << COLOR_RESET << std::endl;
+  return socket_fd;
 }
 
 void SocketHandler::closeSocket(int fd)
@@ -80,7 +72,7 @@ void SocketHandler::closeSocket(int fd)
     {
       std::cout << COLOR_GREEN <<"Success : close socket " << COLOR_RESET << std::endl;
     }
-}
+  }
 
 /* ************************************************************************** */
 
