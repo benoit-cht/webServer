@@ -59,7 +59,7 @@ SRCS = ${addprefix ${SRCDIR}/, ${SRC}}
 OBJS = ${addprefix ${OBJDIR}/, $(SRC:.cpp=.o)}
 
 object/%.o:sources/%.cpp | $(OBJDIR)
-	@echo  "$(GREEN)[OK]       	🛠️ $(YELLOW)Compaling ... $(BLUE)$< $(RESET)"
+	@echo  "$(GREEN)[OK]       	🛠️ $(YELLOW)Compiling ... $(BLUE)$< $(RESET)"
 	@$(CCFLAG) -c $< -o $@
 
 
@@ -79,11 +79,33 @@ clean:
 
 fclean:
 	@echo "$(RED)[DELETE]	🧹$(BLUE) Delete all file obj and .exe $(RESET)\n"
-	@$(RMF) $(OBJDIR) $(OBJS) $(NAME)
+	@$(RMF) $(OBJDIR) $(OBJS) $(NAME) $(TEST_NAME)
 
 re: fclean all
 
-.PHONY: all clean fclean re
+#===============================================================#
+#                                                               #
+#===============================================================#
+
+TEST_DIR = stack/tests
+TEST_SRCS = $(wildcard $(TEST_DIR)/*.cpp)
+TEST_OBJS = $(patsubst $(TEST_DIR)/%.cpp, $(OBJDIR)/%.o, $(TEST_SRCS))
+
+TEST_NAME = test_webserv
+
+$(TEST_NAME): $(TEST_OBJS) $(OBJS)
+	@echo "$(GREEN)[OK]       	🧪 $(YELLOW)Compiling tests...$(RESET)"
+	@$(CCFLAG) $(filter-out $(OBJDIR)/webserver.o, $(OBJS)) $(TEST_OBJS) -o $(TEST_NAME)
+
+$(OBJDIR)/%.o: $(TEST_DIR)/%.cpp | $(OBJDIR)
+	@echo "$(GREEN)[OK]       	🛠️ $(YELLOW)Compiling test... $(BLUE)$<$(RESET)"
+	@$(CCFLAG) -Iinclude -I$(TEST_DIR)/include -c $< -o $@
+
+test: $(TEST_NAME)
+	@echo "$(GREEN)[OK]       	🧪 $(YELLOW)Running tests...$(RESET)"
+#@./$(TEST_NAME) --success
+
+.PHONY: test all clean fclean re
 
 #===============================================================#
 #                                                               #
