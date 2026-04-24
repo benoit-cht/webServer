@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SOCKET_HANDLER_HPP
-#define SOCKET_HANDLER_HPP
+#ifndef SOCKET_HANDLER_HPP_INCLUDED
+#define SOCKET_HANDLER_HPP_INCLUDED
 
 #include <iostream>
 #include <sys/socket.h>
@@ -42,7 +42,8 @@ class SocketHandler {
     ssize_t           writeToSocket(int fd, const char* buffer, size_t size);
 };
 
-#endif 
+#endif/* SOCKET_HANDLER_HPP_INCLUDED */
+
 /* ************************************************************************** */
 /*                                                                            */
 /* ************************************************************************** */

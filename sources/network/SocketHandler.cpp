@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../../include/network/SocketHandler.hpp"
+# include <network/SocketHandler.hpp>
 
 SocketHandler::SocketHandler() {}
 SocketHandler::~SocketHandler() {}
