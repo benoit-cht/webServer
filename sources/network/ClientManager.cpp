@@ -16,55 +16,63 @@ ClientManager::ClientManager(void) {}
 
 ClientManager::~ClientManager(void) 
 {
-    for (size_t index = 0; index < _clients.size(); index++)
-        delete _clients[index];
+  size_t  index = 0;
+  
+  while(index < _clients.size())
+  {
+    delete _clients[index];
+    index++;
+  }
 
-    _clients.clear();
-    _fileDescriptorClient.clear();
+  _clients.clear();
+  _fileDescriptorClient.clear();
+
 }
 
 /* ************************************************************************** */
 
 void ClientManager::addClient(int fd, const std::string& ip, int port)
 {
-    ClientInfo* client = new ClientInfo(fd, ip, port);
-    _clients.push_back(client);
-    _fileDescriptorClient[fd] = client;
+  ClientInfo* client = new ClientInfo(fd, ip, port);
+  _clients.push_back(client);
+  _fileDescriptorClient[fd] = client;
 
-    std::cout << COLOR_CYAN << "(Log Server) : add new client: fd=" << fd << ", IP=" << ip << ", Port=" << port << COLOR_RESET <<std::endl;
+  std::cout << COLOR_CYAN << "(Log Server) : add new client: fd=" << fd << ", IP=" << ip << ", Port=" << port << COLOR_RESET <<std::endl;
 }
 
 void ClientManager::removeClient(int fd)
 {
-    std::map<int, ClientInfo*>::iterator it = _fileDescriptorClient.find(fd);
-    if (it == _fileDescriptorClient.end())
-    {
-        return;  // Client non trouvé, rien à faire ![TO DO lever l'execption][war]
-    }
+  std::map<int, ClientInfo*>::iterator it = _fileDescriptorClient.find(fd);
+  if (it == _fileDescriptorClient.end())
+  {
+    std::cout << COLOR_YELLOW << "Warnig(Log Server) : don't delete client: fd=" << fd << COLOR_RESET << std::endl;
+    return;  // Client non trouvé, rien à faire ![TO DO lever l'execption][war]
+  }
 
-    ClientInfo* client = it->second;
-    _fileDescriptorClient.erase(it);
+  ClientInfo* client = it->second;
+  _fileDescriptorClient.erase(it);
     
-    std::vector<ClientInfo*>::iterator vec_it = std::find(_clients.begin(), _clients.end(), client);
-    if (vec_it != _clients.end())
-    {
-        _clients.erase(vec_it);
-    }
+  std::vector<ClientInfo*>::iterator vec_it = std::find(_clients.begin(), _clients.end(), client);
+  if (vec_it != _clients.end())
+  {
+    _clients.erase(vec_it);
+  }
 
-    delete client;
-    std::cout << COLOR_CYAN << "(Log Server) : delete client: fd=" << fd << COLOR_RESET << std::endl;
+  delete client;
+  std::cout << COLOR_CYAN << "(Log Server) : delete client: fd=" << fd << COLOR_RESET << std::endl;
 }
 
 /* ************************************************************************** */
 
 ClientInfo* ClientManager::getClient(int fd) const 
 {
-    std::map<int, ClientInfo*>::const_iterator it = _fileDescriptorClient.find(fd);
-    if (it == _fileDescriptorClient.end())
-    {
-        return nullptr;  // Client non trouvé ![TO DO lever une exeption][war]
-    }
-    return it->second;
+  std::map<int, ClientInfo*>::const_iterator it = _fileDescriptorClient.find(fd);
+  if (it == _fileDescriptorClient.end())
+  {
+    std::cout << COLOR_YELLOW << "Warning(Log Server) : don't find client: fd=" << fd << COLOR_RESET << std::endl;
+    return( nullptr );  // Client non trouvé ![TO DO lever une exeption][war]
+  }
+  return( it->second );
 }
 
 const std::vector<ClientInfo*>& ClientManager::getClients(void) const 
@@ -73,24 +81,6 @@ const std::vector<ClientInfo*>& ClientManager::getClients(void) const
 }
 
 /* ************************************************************************** */
-/*                                                                            */
-/* Constructor NONE                                                           */
-/* Destructor libére la mémoire allouée des ClientInfo et clear les atribu    */
-/*                                                                            */
-/* Methode principal: (add, remove)ClientManager                              */
-/*                                                                            */
-/* AddClientManager:    cree et ajoute dans liste le clients                  */
-/*                      ajout pour un accès rapide a ma map                   */
-/*                                                                            */
-/* DeleteClientManger:  supprimer de la map                                   */
-/*                      supprimer de la liste _clients                        */
-/*                      libérer la mémoire                                    */
-/*                                                                            */
-/* Methode get: (Client, vertor)                                              */
-/*                                                                            */
-/* getClient :          Recherche dans la map par fd                          */
-/*                                                                            */
-/* getClients :         Retourne le vecteur clients(par référence constante)  */
 /*                                                                            */
 /* ************************************************************************** */
 
