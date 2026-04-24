@@ -103,7 +103,7 @@ $(OBJDIR)/%.o: $(TEST_DIR)/%.cpp | $(OBJDIR)
 
 test: $(TEST_NAME)
 	@echo "$(GREEN)[OK]       	🧪 $(YELLOW)Running tests...$(RESET)"
-#@./$(TEST_NAME) --success
+	@./$(TEST_NAME)
 
 .PHONY: test all clean fclean re
 
