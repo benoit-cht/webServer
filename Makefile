@@ -29,7 +29,7 @@ else
 	FLAG	= -Wall -Wextra -Werror -std=c++98
 endif
 
-CCFLAG	= $(CC) $(FLAG) 
+CCFLAG	= $(CC) $(FLAG) -I./include
 
 SRCDIR = sources
 OBJDIR = object
