@@ -33,25 +33,43 @@ std::vector<int> SocketHandler::createSocketWithPort(const std::vector<int>& por
   return server_fds;
 }
 
-int SocketHandler::createServerSocket(int port) 
+void SocketHandler::closeSocket(int fd)
+{
+  if (close(fd) == -1)
+    std::cerr << "close() " << strerror(errno) << std::endl;
+  else
+    std::cout << COLOR_GREEN <<"Success : close socket " << COLOR_RESET << std::endl;
+}
+
+
+/* ************************************************************************** */
+
+static struct sockaddr_in  set_socket_addr(int port)
 {
   struct sockaddr_in socket_addr;
+  
   memset(&socket_addr, 0, sizeof(socket_addr));
   socket_addr.sin_family = AF_INET;
-  socket_addr.sin_addr.s_addr = INADDR_ANY;  // Écouter sur toutes les interfaces
+  socket_addr.sin_addr.s_addr = INADDR_ANY;
   socket_addr.sin_port = htons(port);
+  
+  return ( socket_addr );
+}
 
+int SocketHandler::createServerSocket(int port) 
+{
   int socket_fd = socket(AF_INET, SOCK_STREAM, 0);
+  struct sockaddr_in socket_addr = set_socket_addr(port);
     
   if (socket_fd == -1)
-  {
-        throw std::runtime_error("socket() " + std::string(strerror(errno)));
-  }
+    throw std::runtime_error("socket() " + std::string(strerror(errno)));
+
   if (bind(socket_fd, (struct sockaddr *)&socket_addr, sizeof(socket_addr)) == -1)
   {
     close(socket_fd);
     throw std::runtime_error("bind() " + std::string(strerror(errno)));
   }
+
   if (listen(socket_fd, SOMAXCONN) == -1) 
   {
     close(socket_fd);
@@ -59,20 +77,8 @@ int SocketHandler::createServerSocket(int port)
   }
 
   std::cout << COLOR_GREEN << "Success : open socket to a port: " << port << COLOR_RESET << std::endl;
-  return socket_fd;
+  return( socket_fd );
 }
-
-void SocketHandler::closeSocket(int fd)
-{
-    if (close(fd) == -1)
-    {
-      std::cerr << "close() " << strerror(errno) << std::endl;
-    }
-    else
-    {
-      std::cout << COLOR_GREEN <<"Success : close socket " << COLOR_RESET << std::endl;
-    }
-  }
 
 /* ************************************************************************** */
 
@@ -85,6 +91,7 @@ int SocketHandler::acceptConnection(int socket_fd, std::string& client_ip, int& 
 
     client_addr_len = sizeof(client_addr);
     client_fd = accept(socket_fd, (struct sockaddr *)&client_addr, &client_addr_len);
+
     if (client_fd == -1)
     {
         throw std::runtime_error("accept() " + std::string(strerror(errno)));
@@ -97,7 +104,7 @@ int SocketHandler::acceptConnection(int socket_fd, std::string& client_ip, int& 
     }
 
     std::cout << COLOR_GREEN << "Success : new connetion accept to " << client_ip << ":" << client_port << COLOR_RESET << std::endl;
-    return client_fd;
+    return( client_fd );
 }
 
 /* ************************************************************************** */
@@ -105,6 +112,7 @@ int SocketHandler::acceptConnection(int socket_fd, std::string& client_ip, int& 
 ssize_t SocketHandler::readFromSocket(int fd, char* buffer, size_t size)
 {
     ssize_t bytes_read = read(fd, buffer, size);
+
     if (bytes_read == -1)
         throw std::runtime_error("read() " + std::string(strerror(errno)));
 
@@ -114,6 +122,7 @@ ssize_t SocketHandler::readFromSocket(int fd, char* buffer, size_t size)
 ssize_t SocketHandler::writeToSocket(int fd, const char* buffer, size_t size)
 {
     ssize_t bytes_written = write(fd, buffer, size);
+
     if (bytes_written == -1)
         throw std::runtime_error("write() " + std::string(strerror(errno)));
     
