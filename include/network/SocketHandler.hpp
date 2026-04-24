@@ -23,7 +23,7 @@
 #include <cstring>
 #include <map>
 
-#include "./../log/colorLog.hpp"
+#include <log/colorLog.hpp>
 
 class SocketHandler {
   
