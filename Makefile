@@ -6,7 +6,7 @@
 #    By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/20 09:10:14 by bchallat          #+#    #+#              #
-#    Updated: 2026/04/24 16:28:46 by lcluzan          ###   ########.fr        #
+#    Updated: 2026/04/24 17:13:58 by lcluzan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -54,7 +54,7 @@ SRC	=	webserver.cpp \
 			request/readFile.cpp \
 			request/httpResponse.cpp \
 			request/servStaticFile.cpp \
-			cgi/cgiHandler.cpp \
+			cgi/CgiHandler.cpp \
 
 SRCS = ${addprefix ${SRCDIR}/, ${SRC}}
 OBJS = ${addprefix ${OBJDIR}/, $(SRC:.cpp=.o)}
