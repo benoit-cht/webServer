@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   HttpHandler.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/22 11:55:21 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/04/24 16:42:28 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/request/HttpHandler.hpp"
+#include "../../include/cgi/CgiHandler.hpp"
 
 static bool isStaticFile(const std::string& path);
 
@@ -67,9 +68,8 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request)
   } 
   else if (request.path.find("/cgi-bin/") == 0) 
   {
-    //To do 
-    //return executeCgi(request.path, request);
-    std::cout << "Warging: cgi detect not implemente methode " << std::endl;
+    return CgiHandler::executeCgi(request.path, request);
+      // std::cout << "Warging: cgi detect not implemente methode " << std::endl;
   } 
   else if (isStaticFile(request.path)) 
   {
