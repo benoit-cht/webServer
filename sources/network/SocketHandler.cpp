@@ -131,10 +131,5 @@ ssize_t SocketHandler::writeToSocket(int fd, const char* buffer, size_t size)
 
 /* ************************************************************************** */
 /*                                                                            */
-/*  acceptConnection :   0. Definition des variable                           */
-/*                       1. Accepter la connexion                             */
-/*                       2. Récupérer l'IP et le port du client               */
-/*                       3. renvoyer le file descriptor du client             */
-/*                                                                            */
 /* ************************************************************************** */
 
