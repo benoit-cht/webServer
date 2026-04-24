@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+         #
+#    By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/20 09:10:14 by bchallat          #+#    #+#              #
-#    Updated: 2026/04/22 11:13:39 by bchallat         ###   ########.fr        #
+#    Updated: 2026/04/24 16:28:46 by lcluzan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -54,6 +54,7 @@ SRC	=	webserver.cpp \
 			request/readFile.cpp \
 			request/httpResponse.cpp \
 			request/servStaticFile.cpp \
+			cgi/cgiHandler.cpp \
 
 SRCS = ${addprefix ${SRCDIR}/, ${SRC}}
 OBJS = ${addprefix ${OBJDIR}/, $(SRC:.cpp=.o)}
