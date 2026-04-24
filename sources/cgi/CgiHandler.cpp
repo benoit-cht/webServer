@@ -65,7 +65,7 @@ t_httpResponse CgiHandler::executeCgi(const std::string& path, const t_httpReque
         }
         envp[env_strings.size()] = NULL;
 
-        char *args[] = { (char*)"/usr/bin/php-cgi", (char*)full_path.c_str(), NULL };
+        char *args[] = { (char*)"/opt/homebrew/bin/php-cgi", (char*)full_path.c_str(), NULL }; //change later if needed
         
         execve(args[0], args, envp);
 
