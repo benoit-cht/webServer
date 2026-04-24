@@ -36,4 +36,7 @@
 ehthumbs.db
 Thumbs.db
 
-
+# file .exe #
+#############
+test_webserv
+webserv
