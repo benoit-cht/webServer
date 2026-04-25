@@ -6,7 +6,7 @@
 #    By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/20 09:10:14 by bchallat          #+#    #+#              #
-#    Updated: 2026/04/25 19:04:22 by tjacquel         ###   ########.fr        #
+#    Updated: 2026/04/25 19:22:32 by tjacquel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,7 +26,7 @@ ifeq ($(UNAME), Darwin)
 	FLAG	= -g3 -Wall -Wextra -Werror -std=c++98 -fsanitize=address
 else
 	CC	= c++
-	FLAG	= -Wall -Wextra -Werror -std=c++11
+	FLAG	= -Wall -Wextra -Werror -std=c++98
 endif
 
 CCFLAG	= $(CC) $(FLAG) -I./include -MMD -MP
