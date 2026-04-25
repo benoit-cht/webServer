@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   req_lexing.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 14:25:13 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/08 13:09:52 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/04/25 18:09:12 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/request/utils_HandlerHttp.hpp"
 
 /*
-static std::string typeToString(t_type type) 
+static std::string typeToString(t_type type)
 {
     switch (type) {
         case METHOD: return "METHOD";
@@ -32,7 +32,7 @@ static std::string typeToString(t_type type)
 
 static void printTokens(const std::vector<t_token>& lexer)
 {
-    for (std::vector<t_token>::const_iterator it = lexer.begin(); it != lexer.end(); ++it) 
+    for (std::vector<t_token>::const_iterator it = lexer.begin(); it != lexer.end(); ++it)
     {
         const t_token& token = *it;
         std::cout << "Token type: " << typeToString(token.type) << ", value: \"" << token.value << "\"" << std::endl;
@@ -42,34 +42,35 @@ static void printTokens(const std::vector<t_token>& lexer)
 static void lx_tokenizer(std::vector<t_token>& lexer)
 {
   int curr = lexer.size() - 1;
-  int i = lexer[curr].value.size() - 1;
-  if (curr == 0 && (lexer[curr].value == "GET" || lexer[curr].value == "POST" || lexer[curr].value == "DELETE "))
+  int i = lexer.at(curr).value.size() - 1;
+  if (curr == 0 && (lexer.at(curr).value == "GET" || lexer.at(curr).value == "POST" || lexer.at(curr).value == "DELETE "))
+
   {
-    lexer[curr].type = METHOD;
+    lexer.at(curr).type = METHOD;
   }
-  else if (curr == 2 && lexer[curr].value[0] == '/')
+  else if (curr == 2 && !lexer.at(curr).value.empty() && lexer.at(curr).value.at(0) == '/')
   {
-    lexer[curr].type = PATH;
+    lexer.at(curr).type = PATH;
   }
-  else if (curr == 4 && lexer[curr].value == "HTTP/1.1")
+  else if (curr == 4 && lexer.at(curr).value == "HTTP/1.1")
   {
-    lexer[curr].type = VERSION;
+    lexer.at(curr).type = VERSION;
   }
-  else if (curr >= 5 && lexer[curr].value[i] == ':')
+  else if (curr >= 5 && !lexer.at(curr).value.empty() && lexer.at(curr).value.at(i) == ':')
   {
-    lexer[curr].type = HEADER_KEY;
+    lexer.at(curr).type = HEADER_KEY;
   }
-  else if (curr >= 7 && lexer[curr - 2].type == HEADER_KEY)
+  else if (curr >= 7 && lexer.at(curr - 2).type == HEADER_KEY)
   {
-    lexer[curr].type = HEADER_VALUE;
+    lexer.at(curr).type = HEADER_VALUE;
   }
-  else if (curr >= 8 && lexer[curr - 1].type == HEADER_VALUE)
+  else if (curr >= 8 && lexer.at(curr - 1).type == HEADER_VALUE)
   {
-    lexer[curr].type = CRLF;
+    lexer.at(curr).type = CRLF;
   }
-  else if (lexer[curr - 1].type == CRLF || lexer[curr - 1].type == BODY)
+  else if (lexer.at(curr - 1).type == CRLF || lexer.at(curr - 1).type == BODY)
   {
-    lexer[curr].type = BODY;
+    lexer.at(curr).type = BODY;
   }
 }
 
@@ -117,11 +118,11 @@ static void  lx_write_value(const std::string raw_request, size_t& index, std::v
     str = lx_header_value(raw_request, index);
     s_token temp(UNKNOWN, str);
     lexer.push_back(temp);
-  
+
   }
   else
   {
-    str = lx_value(raw_request, index); 
+    str = lx_value(raw_request, index);
     s_token temp(UNKNOWN, str);
     lexer.push_back(temp);
   }
