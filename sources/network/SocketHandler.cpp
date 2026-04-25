@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   SocketHandler.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/23 13:33:39 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/31 12:19:06 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/04/17 15:39:42 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ int SocketHandler::acceptConnection(int socket_fd, std::string& client_ip, int& 
     {
         throw std::runtime_error("accept() " + std::string(strerror(errno)));
     }
-    else 
+    else
     {
       inet_ntop(AF_INET, &(client_addr.sin_addr), ip_str, INET_ADDRSTRLEN);
       client_ip = std::string(ip_str);
@@ -125,7 +125,7 @@ ssize_t SocketHandler::writeToSocket(int fd, const char* buffer, size_t size)
 
     if (bytes_written == -1)
         throw std::runtime_error("write() " + std::string(strerror(errno)));
-    
+
     return bytes_written;
 }
 

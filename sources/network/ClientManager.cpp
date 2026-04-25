@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ClientManager.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/23 14:46:05 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/31 12:26:17 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/04/17 15:51:52 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 ClientManager::ClientManager(void) {}
 
-ClientManager::~ClientManager(void) 
+ClientManager::~ClientManager(void)
 {
   size_t  index = 0;
   
@@ -64,7 +64,7 @@ void ClientManager::removeClient(int fd)
 
 /* ************************************************************************** */
 
-ClientInfo* ClientManager::getClient(int fd) const 
+ClientInfo* ClientManager::getClient(int fd) const
 {
   std::map<int, ClientInfo*>::const_iterator it = _fileDescriptorClient.find(fd);
   if (it == _fileDescriptorClient.end())
@@ -75,7 +75,7 @@ ClientInfo* ClientManager::getClient(int fd) const
   return( it->second );
 }
 
-const std::vector<ClientInfo*>& ClientManager::getClients(void) const 
+const std::vector<ClientInfo*>& ClientManager::getClients(void) const
 {
     return _clients;
 }

@@ -1,28 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   color_log.hpp                                      :+:      :+:    :+:   */
+/*   colorLog.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/31 11:25:49 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/31 11:30:26 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/04/17 15:38:39 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef COLORLOG_HPP
-#define COLORLOG_HPP
+# define COLORLOG_HPP
 
-#include <iostream>
+# include <iostream>
 
-static const char* COLOR_RESET   = "\033[0m";
-static const char* COLOR_RED     = "\033[1;31m";
-static const char* COLOR_GREEN   = "\033[1;32m";
-static const char* COLOR_YELLOW  = "\033[1;33m";
-static const char* COLOR_BLUE    = "\033[1;34m";
-static const char* COLOR_MAGENTA = "\033[1;35m";
-static const char* COLOR_CYAN    = "\033[1;36m";
-static const char* COLOR_WHITE   = "\033[1;37m";
+// static const char* COLOR_RESET   = "\033[0m";
+// static const char* COLOR_RED     = "\033[1;31m";
+// static const char* COLOR_GREEN   = "\033[1;32m";
+// static const char* COLOR_YELLOW  = "\033[1;33m";
+// static const char* COLOR_BLUE    = "\033[1;34m";
+// static const char* COLOR_MAGENTA = "\033[1;35m";
+// static const char* COLOR_CYAN    = "\033[1;36m";
+// static const char* COLOR_WHITE   = "\033[1;37m";
+
+# define COLOR_RESET   "\033[0m"
+# define COLOR_RED     "\033[1;31m"
+# define COLOR_GREEN   "\033[1;32m"
+# define COLOR_YELLOW  "\033[1;33m"
+# define COLOR_BLUE    "\033[1;34m"
+# define COLOR_MAGENTA "\033[1;35m"
+# define COLOR_CYAN    "\033[1;36m"
+# define COLOR_WHITE   "\033[1;37m"
 
 #endif // COLORLOG_HPP
 

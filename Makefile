@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+         #
+#    By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/20 09:10:14 by bchallat          #+#    #+#              #
-#    Updated: 2026/04/24 17:13:58 by lcluzan          ###   ########.fr        #
+#    Updated: 2026/04/23 18:37:35 by tjacquel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,10 +26,10 @@ ifeq ($(UNAME), Darwin)
 	FLAG	= -g3 -Wall -Wextra -Werror -std=c++98 -fsanitize=address
 else
 	CC	= c++
-	FLAG	= -Wall -Wextra -Werror -std=c++98
+	FLAG	= -Wall -Wextra -Werror -std=c++98 
 endif
 
-CCFLAG	= $(CC) $(FLAG) -I./include
+CCFLAG	= $(CC) $(FLAG) -I./include -MMD -MP
 
 SRCDIR = sources
 OBJDIR = object
@@ -43,6 +43,8 @@ NAME = webserv
 #=======================================================================#
 
 SRC	=	webserver.cpp \
+			config/ServerConfig.cpp \
+			config/ConfigParsing.cpp \
 			network/SocketHandler.cpp\
 			network/ClientInfo.cpp \
 			network/ClientManager.cpp \
@@ -56,11 +58,12 @@ SRC	=	webserver.cpp \
 			request/servStaticFile.cpp \
 			cgi/CgiHandler.cpp \
 
+
 SRCS = ${addprefix ${SRCDIR}/, ${SRC}}
 OBJS = ${addprefix ${OBJDIR}/, $(SRC:.cpp=.o)}
 
 object/%.o:sources/%.cpp | $(OBJDIR)
-	@echo  "$(GREEN)[OK]       	🛠️ $(YELLOW)Compiling ... $(BLUE)$< $(RESET)"
+	@echo -e  "$(GREEN)[OK]       	🛠️ $(YELLOW)Compiling ... $(BLUE)$< $(RESET)"
 	@$(CCFLAG) -c $< -o $@
 
 
@@ -71,52 +74,31 @@ object/%.o:sources/%.cpp | $(OBJDIR)
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	@echo  "$(GREEN)[OK]       	✅ $(YELLOW)CREATED   EXE$(BLUE) -- webserv --\n $(RESET)" 
+	@echo -e  "$(GREEN)[OK]       	✅ $(YELLOW)CREATED   EXE$(BLUE) -- webserv --\n $(RESET)"
 	@$(CCFLAG) -g3 $(OBJS) -o $(NAME)
 
 clean:
-	@echo "$(RED)[DELETE]	🧹$(BLUE) Delete file obj $(RESET)\n" 
+	@echo -e "$(RED)[DELETE]	🧹$(BLUE) Delete file obj $(RESET)\n"
 	@$(RMF) $(OBJDIR) $(OBJS)
 
 fclean:
-	@echo "$(RED)[DELETE]	🧹$(BLUE) Delete all file obj and .exe $(RESET)\n"
-	@$(RMF) $(OBJDIR) $(OBJS) $(NAME) $(TEST_NAME)
+	@echo -e "$(RED)[DELETE]	🧹$(BLUE) Delete all file obj and .exe $(RESET)\n"
+	@$(RMF) $(OBJDIR) $(OBJS) $(NAME)
 
 re: fclean all
 
-#===============================================================#
-#                                                               #
-#===============================================================#
-
-TEST_DIR = stack/tests
-TEST_SRCS = $(wildcard $(TEST_DIR)/*.cpp)
-TEST_OBJS = $(patsubst $(TEST_DIR)/%.cpp, $(OBJDIR)/%.o, $(TEST_SRCS))
-
-TEST_NAME = test_webserv
-
-$(TEST_NAME): $(TEST_OBJS) $(OBJS)
-	@echo "$(GREEN)[OK]       	🧪 $(YELLOW)Compiling tests...$(RESET)"
-	@$(CCFLAG) $(filter-out $(OBJDIR)/webserver.o, $(OBJS)) $(TEST_OBJS) -o $(TEST_NAME)
-
-$(OBJDIR)/%.o: $(TEST_DIR)/%.cpp | $(OBJDIR)
-	@echo "$(GREEN)[OK]       	🛠️ $(YELLOW)Compiling test... $(BLUE)$<$(RESET)"
-	@$(CCFLAG) -Iinclude -I$(TEST_DIR)/include -c $< -o $@
-
-test: $(TEST_NAME)
-	@echo "$(GREEN)[OK]       	🧪 $(YELLOW)Running tests...$(RESET)"
-	@./$(TEST_NAME)
-
-.PHONY: test all clean fclean re
+.PHONY: all clean fclean re
 
 #===============================================================#
 #                                                               #
 #===============================================================#
 
 ${OBJDIR}:
-	@echo "${GREEN}[->]		${YELLOW}📂 Creating directory ${OBJ_DIR}$(BLUE)object/..$(RESET)\n"
+	@echo -e "${GREEN}[->]		${YELLOW}📂 Creating directory ${OBJ_DIR}$(BLUE)object/..$(RESET)\n"
 	@mkdir -p ${OBJDIR}
-	@mkdir -p ${OBJDIR}/network 
-	@mkdir -p ${OBJDIR}/cgi 
+	@mkdir -p ${OBJDIR}/network
+	@mkdir -p ${OBJDIR}/cgi
+	@mkdir -p ${OBJDIR}/config
 	@mkdir -p ${OBJDIR}/request
 	@mkdir -p ${OBJDIR}/routing
 

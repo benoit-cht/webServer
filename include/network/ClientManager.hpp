@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ClientManager.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:30:07 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/31 12:06:49 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/04/17 15:47:41 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <algorithm>
 
 #include "ClientInfo.hpp"
 #include "./../log/colorLog.hpp"
@@ -26,7 +27,7 @@ class ClientManager {
   public:
     ClientManager( void );
     virtual ~ClientManager( void );
-  
+
   public :
     ClientInfo*                       getClient(int fd) const;
     const std::vector<ClientInfo*>&   getClients() const;
@@ -34,14 +35,14 @@ class ClientManager {
   public:
     void                              addClient(int fd, const std::string& ip, int port);
     void                              removeClient(int fd);
-  
+
   private:
     std::vector<ClientInfo*>          _clients;
     std::map<int, ClientInfo*>        _fileDescriptorClient;
 
 };
 
-# endif 
+# endif
 
 /* ************************************************************************** */
 /*                                                                            */

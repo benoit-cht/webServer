@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   SocketHandler.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:32:48 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/31 11:46:43 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/04/17 15:19:22 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,21 +22,22 @@
 #include <stdexcept>
 #include <cstring>
 #include <map>
+#include <vector>
 
 #include <log/colorLog.hpp>
 
 class SocketHandler {
-  
+
   public:
     SocketHandler( void );
     virtual ~SocketHandler( void );
- 
+
   public:
     int               createServerSocket(int port);
     void              closeSocket(int fd);
     int               acceptConnection(int server_fd, std::string& ip, int& port);
     std::vector<int>  createSocketWithPort(const std::vector<int>& ports);
-  
+
   public:
     ssize_t           readFromSocket(int fd, char* buffer, size_t size);
     ssize_t           writeToSocket(int fd, const char* buffer, size_t size);
