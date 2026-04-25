@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/24 20:55:31 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/04/25 16:46:51 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,32 +16,32 @@
 
 # include "../include/webserver.hpp"
 
-// volatile sig_atomic_t g_should_exit = 0;
+volatile sig_atomic_t g_should_exit = 0;
 
-// static void signal_handler(int signal)
-// {
-//   if (signal == SIGINT)
-//   {
-//     std::cout << COLOR_YELLOW << " \nWarning : Reçu SIGINT (Ctrl+C), arrêt du serveur... " << COLOR_RESET << std::endl;
-//     g_should_exit = 1;
-//   }
-// }
+static void signal_handler(int signal)
+{
+  if (signal == SIGINT)
+  {
+    std::cout << COLOR_YELLOW << " \nWarning : Reçu SIGINT (Ctrl+C), arrêt du serveur... " << COLOR_RESET << std::endl;
+    g_should_exit = 1;
+  }
+}
 
-// static void initVerctorOfPort(std::vector<int>& ports)
-// {
-//   ports.push_back(8080);
-//   //ports.push_back(8081);
-//   //ports.push_back(8082);
-// }
+static void initVerctorOfPort(std::vector<int>& ports)
+{
+  ports.push_back(8080);
+  //ports.push_back(8081);
+  //ports.push_back(8082);
+}
 
-/*void runEventLoop(EventLoop loop)
+/* void runEventLoop(EventLoop loop)
 {
   while(true)
   {
     loop.waitActivityOnSocket();
     loop.monitoredAllDescriptor();
   }
-}*/
+} */
 
 int main (int av, char *ag[])
 // int main()
@@ -50,8 +50,8 @@ int main (int av, char *ag[])
 		std::cout << "c'est pas bon kevin" << std::endl;
 		return (1);
 	}
-	// std::vector<int> ports;
-	// std::signal(SIGINT, signal_handler);// Enregistrer le gestionnaire de signal
+	std::vector<int> ports;
+	std::signal(SIGINT, signal_handler);// Enregistrer le gestionnaire de signal
 	std::string filename  = ag[1];
 
 	std::ifstream inFile(filename.c_str());
@@ -249,34 +249,19 @@ int main (int av, char *ag[])
 	}
 
 
+
+
+  initVerctorOfPort(ports);
+  try {
+      EventLoop loop(ports);  // Créer une instance de EventLoop
+      loop.run();
+      //runEventLoop(loop);
+  } catch (const std::exception& e) {
+      std::cerr << COLOR_RED << "Error : " << e.what() << COLOR_RESET << std::endl;
+      return EXIT_FAILURE ;
+  }
+  return EXIT_SUCCESS ;
 }
-
-
-
-
-
-  // std::vector<serverConfig> server;
-  // server[0].port = 8080;
-  // server[1].port = 9200;
-
-
-  // std::map<std::string, std::string> map;
-  // map["port"] = /* ... */ "test";
-  // map["server_name"] = /* ...*/ "test2";
-
-
-
-
-  // initVerctorOfPort(ports);
-  // try {
-  //     EventLoop loop(ports);  // Créer une instance de EventLoop
-  //     loop.run();
-  //     //runEventLoop(loop);
-  // } catch (const std::exception& e) {
-  //     std::cerr << COLOR_RED << "Error : " << e.what() << COLOR_RESET << std::endl;
-  //     return EXIT_FAILURE ;
-  // }
-  // return EXIT_SUCCESS ;
 
 
 /*

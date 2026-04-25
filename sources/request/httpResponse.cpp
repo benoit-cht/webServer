@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 10:28:48 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/22 13:31:14 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/04/25 16:44:19 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,10 @@ std::string s_httpResponse::toString() const {
     std::string response;
 
     // Ligne de statut (ex: "HTTP/1.1 200 OK")
-    response += "HTTP/1.1 " + std::to_string(status) + " ";
+	std::stringstream	ss;
+	ss << "HTTP/1.1 " << status << " ";
+	response = ss.str();
+    // response += "HTTP/1.1 " + std::to_string(status) + " ";
     switch (status) {
         case 200: response += "OK"; break;
         case 400: response += "Bad Request"; break;
@@ -83,7 +86,9 @@ std::string s_httpResponse::toString() const {
 
     // Body (si présent)
     if (!body.empty()) {
-        response += "Content-Length: " + std::to_string(body.size()) + "\r\n";
+		ss << "Content-Length: " << body.size() << "\r\n";
+        // response += "Content-Length: " + std::to_string(body.size()) + "\r\n";
+		response = ss.str();
     }
     response += "\r\n";
     response += body;

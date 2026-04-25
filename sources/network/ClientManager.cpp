@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/23 14:46:05 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/17 15:51:52 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/04/25 16:11:46 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ ClientManager::ClientManager(void) {}
 ClientManager::~ClientManager(void)
 {
   size_t  index = 0;
-  
+
   while(index < _clients.size())
   {
     delete _clients[index];
@@ -51,7 +51,7 @@ void ClientManager::removeClient(int fd)
 
   ClientInfo* client = it->second;
   _fileDescriptorClient.erase(it);
-    
+
   std::vector<ClientInfo*>::iterator vec_it = std::find(_clients.begin(), _clients.end(), client);
   if (vec_it != _clients.end())
   {
@@ -70,7 +70,7 @@ ClientInfo* ClientManager::getClient(int fd) const
   if (it == _fileDescriptorClient.end())
   {
     std::cout << COLOR_YELLOW << "Warning(Log Server) : don't find client: fd=" << fd << COLOR_RESET << std::endl;
-    return( nullptr );  // Client non trouvé ![TO DO lever une exeption][war]
+    return( NULL );  // Client non trouvé ![TO DO lever une exeption][war]
   }
   return( it->second );
 }
