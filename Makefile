@@ -38,11 +38,11 @@ OBJDIR = object
 
 RMF = rm -rf
 
-NAME = webserv
-
 #=======================================================================#
 #                                                                       #
 #=======================================================================#
+
+NAME = webserv
 
 SRC = webserver.cpp ${SRC_CONFIG} ${SRC_NETWORCK} ${SRC_REQUEST} ${SRC_CGI}
 
@@ -64,12 +64,29 @@ SRC_REQUEST		=	request/HttpHandler.cpp \
 
 SRC_CGI				=	cgi/CgiHandler.cpp \
 
+SRCS = ${addprefix ${SRCDIR}/, ${SRC}}
+OBJS = ${addprefix ${OBJDIR}/, $(SRC:.cpp=.o)}
+
 #=======================================================================#
 #                                                                       #
 #=======================================================================#
 
-SRCS = ${addprefix ${SRCDIR}/, ${SRC}}
-OBJS = ${addprefix ${OBJDIR}/, $(SRC:.cpp=.o)}
+TEST_NAME = test_webserv
+
+TEST_DIR = stack/tests
+
+TEST_SRCS = $(wildcard $(TEST_DIR)/unit_test/*.cpp)
+TEST_OBJS = $(patsubst $(TEST_DIR)/unit_test/%.cpp, $(OBJDIR)/%.o, $(TEST_SRCS))
+
+#=======================================================================#
+#                                                                       #
+#=======================================================================#
+
+all: $(NAME)
+
+$(NAME): $(OBJS)
+	@${ECHO_FLAG}  "\n$(GREEN)[OK]       	✅ $(YELLOW)CREATED   EXE$(BLUE) -- $(RED)${NAME} --\n $(RESET)"
+	@$(CCFLAG) -g3 $(OBJS) -o $(NAME)
 
 object/%.o:sources/%.cpp | $(OBJDIR)
 	@${ECHO_FLAG}  "$(GREEN)[OK]       	🛠️ $(YELLOW)Compiling ... $(BLUE)$< $(RESET)"
@@ -84,54 +101,35 @@ ${OBJDIR}:
 	@mkdir -p ${OBJDIR}/request
 	@mkdir -p ${OBJDIR}/routing
 
+#===============================================================#
+#                                                               #
+#===============================================================#
 
-#=======================================================================#
-#                                                                       #
-#=======================================================================#
+test: $(TEST_NAME)
 
-all: $(NAME)
+$(TEST_NAME): $(TEST_OBJS) $(OBJS)
+	@${ECHO_FLAG} "\n$(GREEN)[OK]       	🧪 $(YELLOW)CREATED   EXE$(BLUE) -- $(RED)${TEST_NAME} --\n $(RESET)"
+	@$(CCFLAG) $(filter-out $(OBJDIR)/webserver.o, $(OBJS)) $(TEST_OBJS) -o $(TEST_NAME)
 
-$(NAME): $(OBJS)
-	@${ECHO_FLAG}  "$(GREEN)[OK]       	✅ $(YELLOW)CREATED   EXE$(BLUE) -- webserv --\n $(RESET)"
-	@$(CCFLAG) -g3 $(OBJS) -o $(NAME)
+$(OBJDIR)/%.o: $(TEST_DIR)/unit_test/%.cpp | $(OBJDIR)
+	@${ECHO_FLAG} "$(GREEN)[OK]       	🛠️ $(YELLOW)Compiling ... $(BLUE)$<$(RESET)"
+	@$(CCFLAG) -Iinclude -I$(TEST_DIR)/include -c $< -o $@
+
+	
+#===============================================================#
+#                                                               #
+#===============================================================#
 
 clean:
 	@${ECHO_FLAG} "$(RED)[DELETE]	🧹$(BLUE) Delete file obj $(RESET)\n"
 	@$(RMF) $(OBJDIR) $(OBJS)
 
 fclean:
-	@${ECHO_FLAG} "$(RED)[DELETE]	🧹$(BLUE) Delete all file obj and .exe $(RESET)\n"
-	@$(RMF) $(OBJDIR) $(OBJS) $(NAME)
+	@${ECHO_FLAG} "$(RED)[DELETE]	🧹$(BLUE) Delete all file obj and target $(RESET)\n"
+	@$(RMF) $(OBJDIR) $(OBJS) $(NAME) $(TEST_NAME)
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re test 
 
-#===============================================================#
-#                                                               #
-#===============================================================#
 
-TEST_DIR = stack/tests
-TEST_SRCS = $(wildcard $(TEST_DIR)/*.cpp)
-TEST_OBJS = $(patsubst $(TEST_DIR)/%.cpp, $(OBJDIR)/%.o, $(TEST_SRCS))
-
-TEST_NAME = test_webserv
-
-$(TEST_NAME): $(TEST_OBJS) $(OBJS)
-	@${ECHO_FLAG} "$(GREEN)[OK]       	🧪 $(YELLOW)Compiling tests...$(RESET)"
-	@$(CCFLAG) $(filter-out $(OBJDIR)/webserver.o, $(OBJS)) $(TEST_OBJS) -o $(TEST_NAME)
-
-$(OBJDIR)/%.o: $(TEST_DIR)/%.cpp | $(OBJDIR)
-	@${ECHO_FLAG} "$(GREEN)[OK]       	🛠️ $(YELLOW)Compiling test... $(BLUE)$<$(RESET)"
-	@$(CCFLAG) -Iinclude -I$(TEST_DIR)/include -c $< -o $@
-
-test: $(TEST_NAME)
-	@${ECHO_FLAG} "$(GREEN)[OK]       	🧪 $(YELLOW)Running tests...$(RESET)"
-	@./$(TEST_NAME)
-	@${RMF} ${TEST_NAME}
-
-.PHONY: test
-
-#===============================================================#
-#                                                               #
-#===============================================================#
