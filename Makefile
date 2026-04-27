@@ -22,11 +22,13 @@ RESET	= \033[0m
 
 UNAME := $(shell uname)
 ifeq ($(UNAME), Darwin)
-	CC	= clang++
-	FLAG	= -g3 -Wall -Wextra -Werror -std=c++98 -fsanitize=address
+	ECHO_FLAG	=	echo
+	CC				= clang++
+	FLAG			= -g3 -Wall -Wextra -Werror -std=c++98 -fsanitize=address
 else
-	CC	= c++
-	FLAG	= -Wall -Wextra -Werror -std=c++98
+	ECHO_FLAG	= echo -e
+	CC				= c++
+	FLAG			= -Wall -Wextra -Werror -std=c++98
 endif
 
 CCFLAG	= $(CC) $(FLAG) -I./include -MMD -MP
@@ -42,29 +44,45 @@ NAME = webserv
 #                                                                       #
 #=======================================================================#
 
-SRC	=	webserver.cpp \
-			config/ServerConfig.cpp \
-			config/ConfigParsing.cpp \
-			network/SocketHandler.cpp\
-			network/ClientInfo.cpp \
-			network/ClientManager.cpp \
-			network/EventLoop.cpp \
-			request/HttpHandler.cpp \
-			request/req_lexing.cpp \
-			request/req_descending_deriv.cpp \
-			request/req_struct_http_request.cpp \
-			request/readFile.cpp \
-			request/httpResponse.cpp \
-			request/servStaticFile.cpp \
-			cgi/CgiHandler.cpp \
+SRC = webserver.cpp ${SRC_CONFIG} ${SRC_NETWORCK} ${SRC_REQUEST} ${SRC_CGI}
 
+SRC_CONFIG		=	config/ServerConfig.cpp \
+								config/ConfigParsing.cpp \
+
+SRC_NETWORCK	=	network/SocketHandler.cpp\
+								network/ClientInfo.cpp \
+								network/ClientManager.cpp \
+								network/EventLoop.cpp \
+
+SRC_REQUEST		=	request/HttpHandler.cpp \
+								request/req_lexing.cpp \
+								request/req_descending_deriv.cpp \
+								request/req_struct_http_request.cpp \
+								request/readFile.cpp \
+								request/httpResponse.cpp \
+								request/servStaticFile.cpp \
+
+SRC_CGI				=	cgi/CgiHandler.cpp \
+
+#=======================================================================#
+#                                                                       #
+#=======================================================================#
 
 SRCS = ${addprefix ${SRCDIR}/, ${SRC}}
 OBJS = ${addprefix ${OBJDIR}/, $(SRC:.cpp=.o)}
 
 object/%.o:sources/%.cpp | $(OBJDIR)
-	@echo -e  "$(GREEN)[OK]       	🛠️ $(YELLOW)Compiling ... $(BLUE)$< $(RESET)"
+	@${ECHO_FLAG}  "$(GREEN)[OK]       	🛠️ $(YELLOW)Compiling ... $(BLUE)$< $(RESET)"
 	@$(CCFLAG) -c $< -o $@
+
+${OBJDIR}:
+	@${ECHO_FLAG} "${GREEN}[->]		${YELLOW}📂 Creating directory $(BLUE)object/..$(RESET)\n"
+	@mkdir -p ${OBJDIR}
+	@mkdir -p ${OBJDIR}/network
+	@mkdir -p ${OBJDIR}/cgi
+	@mkdir -p ${OBJDIR}/config
+	@mkdir -p ${OBJDIR}/request
+	@mkdir -p ${OBJDIR}/routing
 
 
 #=======================================================================#
@@ -74,15 +92,15 @@ object/%.o:sources/%.cpp | $(OBJDIR)
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	@echo -e  "$(GREEN)[OK]       	✅ $(YELLOW)CREATED   EXE$(BLUE) -- webserv --\n $(RESET)"
+	@${ECHO_FLAG}  "$(GREEN)[OK]       	✅ $(YELLOW)CREATED   EXE$(BLUE) -- webserv --\n $(RESET)"
 	@$(CCFLAG) -g3 $(OBJS) -o $(NAME)
 
 clean:
-	@echo -e "$(RED)[DELETE]	🧹$(BLUE) Delete file obj $(RESET)\n"
+	@${ECHO_FLAG} "$(RED)[DELETE]	🧹$(BLUE) Delete file obj $(RESET)\n"
 	@$(RMF) $(OBJDIR) $(OBJS)
 
 fclean:
-	@echo -e "$(RED)[DELETE]	🧹$(BLUE) Delete all file obj and .exe $(RESET)\n"
+	@${ECHO_FLAG} "$(RED)[DELETE]	🧹$(BLUE) Delete all file obj and .exe $(RESET)\n"
 	@$(RMF) $(OBJDIR) $(OBJS) $(NAME)
 
 re: fclean all
@@ -93,12 +111,27 @@ re: fclean all
 #                                                               #
 #===============================================================#
 
-${OBJDIR}:
-	@echo -e "${GREEN}[->]		${YELLOW}📂 Creating directory ${OBJ_DIR}$(BLUE)object/..$(RESET)\n"
-	@mkdir -p ${OBJDIR}
-	@mkdir -p ${OBJDIR}/network
-	@mkdir -p ${OBJDIR}/cgi
-	@mkdir -p ${OBJDIR}/config
-	@mkdir -p ${OBJDIR}/request
-	@mkdir -p ${OBJDIR}/routing
+TEST_DIR = stack/tests
+TEST_SRCS = $(wildcard $(TEST_DIR)/*.cpp)
+TEST_OBJS = $(patsubst $(TEST_DIR)/%.cpp, $(OBJDIR)/%.o, $(TEST_SRCS))
 
+TEST_NAME = test_webserv
+
+$(TEST_NAME): $(TEST_OBJS) $(OBJS)
+	@${ECHO_FLAG} "$(GREEN)[OK]       	🧪 $(YELLOW)Compiling tests...$(RESET)"
+	@$(CCFLAG) $(filter-out $(OBJDIR)/webserver.o, $(OBJS)) $(TEST_OBJS) -o $(TEST_NAME)
+
+$(OBJDIR)/%.o: $(TEST_DIR)/%.cpp | $(OBJDIR)
+	@${ECHO_FLAG} "$(GREEN)[OK]       	🛠️ $(YELLOW)Compiling test... $(BLUE)$<$(RESET)"
+	@$(CCFLAG) -Iinclude -I$(TEST_DIR)/include -c $< -o $@
+
+test: $(TEST_NAME)
+	@${ECHO_FLAG} "$(GREEN)[OK]       	🧪 $(YELLOW)Running tests...$(RESET)"
+	@./$(TEST_NAME)
+	@${RMF} ${TEST_NAME}
+
+.PHONY: test
+
+#===============================================================#
+#                                                               #
+#===============================================================#
