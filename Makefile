@@ -131,8 +131,8 @@ fclean:
 
 re: fclean all
 
-build: all unit_test 
+up: all unit_test
 
-.PHONY: all clean fclean re unit_test 
+.PHONY: all clean fclean re up unit_test
 
 
