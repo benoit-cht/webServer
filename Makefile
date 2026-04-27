@@ -6,7 +6,7 @@
 #    By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/20 09:10:14 by bchallat          #+#    #+#              #
-#    Updated: 2026/04/25 19:22:32 by tjacquel         ###   ########.fr        #
+#    Updated: 2026/04/27 14:05:53 by bchallat         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -61,6 +61,7 @@ SRC_REQUEST		=	request/HttpHandler.cpp \
 								request/readFile.cpp \
 								request/httpResponse.cpp \
 								request/servStaticFile.cpp \
+								request/isStaticFile.cpp \
 
 SRC_CGI				=	cgi/CgiHandler.cpp \
 

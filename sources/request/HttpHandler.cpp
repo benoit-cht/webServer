@@ -6,16 +6,12 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/25 18:11:59 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/04/27 14:05:22 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-//#include "../../include/request/HttpHandler.hpp"
 #include <request/HttpHandler.hpp>
 #include "../../include/cgi/CgiHandler.hpp"
-
-static bool isStaticFile(const std::string& path);
-
 
 t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request)
 {
@@ -35,20 +31,6 @@ t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request)
 
   return ( request );
 }
-
-/*t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request)
-{
-	t_httpResponse response;
-
-  try {
-
-    }
-    catch (const std::exception&) {
-
-    }
-
-  return ( response );
-}*/
 
 t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request)
 {
@@ -72,7 +54,7 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request)
     // return CgiHandler::executeCgi(request.path, request);
       std::cout << "Warging: cgi detect not implemente methode " << std::endl;
   }
-  else if (isStaticFile(request.path))
+  else if (HttpHandler::isStaticFile(request.path))
   {
     return HttpHandler::serveStaticFile(request.path);
   }
@@ -101,13 +83,4 @@ static t_httpResponse HandlerErrorHttp(int status)
 /*                                                                            */
 /* ************************************************************************** */
 
-static bool isStaticFile(const std::string& path)
-{
-    if (path.find("/static/") == 0 ||
-        path.substr(path.find_last_of(".") + 1) == "html" ||
-        path.substr(path.find_last_of(".") + 1) == "css" ||
-        path.substr(path.find_last_of(".") + 1) == "js") {
-        return true;
-    }
-    return false;
-}
+
