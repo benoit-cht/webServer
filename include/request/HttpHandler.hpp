@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 11:31:58 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/27 14:02:36 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/04/27 15:06:23 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ class HttpHandler {
     static std::vector<t_token>  lexing(const std::string raw_request);
 
   private:
-    static bool isStaticFile(const std::string& path);
+    static bool                   isStaticFile(const std::string& path);
     static void                  print_http_response(const t_httpResponse& response);
     static std::string           readFile(const std::string& path);
     static t_httpResponse        serveStaticFile(const std::string& path);
