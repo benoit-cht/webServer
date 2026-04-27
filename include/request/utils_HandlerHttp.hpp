@@ -76,22 +76,6 @@ typedef struct s_httpResponse
 
 } t_httpResponse;
 
-/*------------------------------------*/
-/*    prototype fonction parsing      */
-/*------------------------------------*/
-
-bool                  req_descending_deriv(std::vector<t_token>& lexer);
-t_httpRequest         req_struct_http_request(std::vector<t_token>& lexer);
-std::vector<t_token>  req_lexing(const std::string raw_request);
-
-/*------------------------------------*/
-/*    prototype fonction response     */
-/*------------------------------------*/
-
-std::string readFile(const std::string& path);
-t_httpResponse serveStaticFile(const std::string& path);
-void print_http_response(const t_httpResponse& response);
-
 #endif // !UTILS_HANDLERHTTP_HPP
 
 
