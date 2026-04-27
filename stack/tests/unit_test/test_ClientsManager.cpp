@@ -1,4 +1,4 @@
-#include "include/catch.hpp"
+#include "../include/catch.hpp"
 #include <network/ClientManager.hpp>
 #include <network/ClientInfo.hpp>
 

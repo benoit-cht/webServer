@@ -1,4 +1,4 @@
-#include "include/catch.hpp"
+#include "../include/catch.hpp"
 #include <network/ClientInfo.hpp>
 
 TEST_CASE("ClientInfo: Constructor and Getters", "[ClientInfo]") {
