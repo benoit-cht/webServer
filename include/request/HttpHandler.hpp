@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 11:31:58 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/22 11:33:11 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/04/27 13:58:32 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@
 #include <vector>
 
 #include <log/colorLog.hpp>
-#include <request/utils_HandlerHttp.hpp>
 #include <request/struct.hpp>
 
 class HttpHandler {
@@ -29,7 +28,6 @@ class HttpHandler {
   public:
 		static t_httpRequest         setHttpRequest(const std::string& raw_request);
 		static t_httpResponse        setHttpResponse(t_httpRequest request);
-    static t_httpResponse        HandlerErrorHttp(int status);
 
   private:
     static bool                  descending_deriv(std::vector<t_token>& lexer);
@@ -40,6 +38,9 @@ class HttpHandler {
     static void                  print_http_response(const t_httpResponse& response);
     static std::string           readFile(const std::string& path);
     static t_httpResponse        serveStaticFile(const std::string& path);
+  
+  private:
+    static t_httpResponse        HandlerErrorHttp(int status);
 
 };
 

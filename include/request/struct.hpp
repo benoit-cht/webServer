@@ -1,28 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils_HandlerHttp.hpp                              :+:      :+:    :+:   */
+/*   struct.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/07 13:37:08 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/25 16:37:25 by tjacquel         ###   ########.fr       */
+/*   Created: 2026/04/27 13:55:25 by bchallat          #+#    #+#             */
+/*   Updated: 2026/04/27 13:56:15 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef UTILS_HANDLERHTTP_HPP
 #define UTILS_HANDLERHTTP_HPP
 
-#include <iostream>
-#include <sstream>
-#include <stdexcept>
-#include <string>
-#include <map>
-#include <vector>
+enum t_type {
 
-#include <log/colorLog.hpp>
-enum t_type
-{
 	METHOD,
 	PATH,
 	VERSION,
@@ -36,8 +28,8 @@ enum t_type
 
 };
 
-struct t_token
-{
+struct t_token {
+
 	t_type       type;
 	std::string  value;
   t_token(t_type t, const std::string& v) : type(t), value(v) {}
@@ -45,8 +37,8 @@ struct t_token
 
 };
 
-struct t_httpRequest
-{
+struct t_httpRequest {
+
 	std::string                        method;
   std::string                        path;
   std::string                        version;
@@ -55,8 +47,8 @@ struct t_httpRequest
 
 };
 
-struct t_httpResponse
-{
+struct t_httpResponse {
+
 	int                                status;
   std::map<std::string, std::string> headers;
 	std::string                        body;
