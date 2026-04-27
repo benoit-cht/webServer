@@ -55,9 +55,9 @@ SRC_NETWORCK	=	network/SocketHandler.cpp\
 								network/EventLoop.cpp \
 
 SRC_REQUEST		=	request/HttpHandler.cpp \
-								request/req_lexing.cpp \
-								request/req_descending_deriv.cpp \
-								request/req_struct_http_request.cpp \
+								request/lexing.cpp \
+								request/descending_deriv.cpp \
+								request/struct_http_request.cpp \
 								request/readFile.cpp \
 								request/httpResponse.cpp \
 								request/servStaticFile.cpp \

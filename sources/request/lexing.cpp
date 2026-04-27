@@ -128,7 +128,7 @@ static void  lx_write_value(const std::string raw_request, size_t& index, std::v
   }
 }
 
-std::vector<t_token> HttpHandler::req_lexing(const std::string raw_request)
+std::vector<t_token> HttpHandler::lexing(const std::string raw_request)
 {
   std::vector<t_token> lexer;
   size_t index = 0;

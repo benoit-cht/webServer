@@ -27,19 +27,19 @@
 class HttpHandler {
 	
   public:
-		static t_httpRequest  setHttpRequest(const std::string& raw_request);
-		static t_httpResponse setHttpResponse(t_httpRequest request);
-    static t_httpResponse HandlerErrorHttp(int status);
+		static t_httpRequest         setHttpRequest(const std::string& raw_request);
+		static t_httpResponse        setHttpResponse(t_httpRequest request);
+    static t_httpResponse        HandlerErrorHttp(int status);
 
   private:
-    static bool                  req_descending_deriv(std::vector<t_token>& lexer);
-    static t_httpRequest         req_struct_http_request(std::vector<t_token>& lexer);
-    static std::vector<t_token>  req_lexing(const std::string raw_request);
+    static bool                  descending_deriv(std::vector<t_token>& lexer);
+    static t_httpRequest         struct_http_request(std::vector<t_token>& lexer);
+    static std::vector<t_token>  lexing(const std::string raw_request);
 
   private:
-    static std::string readFile(const std::string& path);
-    static t_httpResponse serveStaticFile(const std::string& path);
-    static void print_http_response(const t_httpResponse& response);
+    static void                  print_http_response(const t_httpResponse& response);
+    static std::string           readFile(const std::string& path);
+    static t_httpResponse        serveStaticFile(const std::string& path);
 
 };
 

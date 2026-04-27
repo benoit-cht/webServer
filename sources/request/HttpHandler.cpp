@@ -22,10 +22,10 @@ t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request)
 	t_httpRequest       request;
 	std::vector<t_token>   lexer;
 
-	lexer = HttpHandler::req_lexing(raw_request);
-	if (HttpHandler::req_descending_deriv(lexer))
+	lexer = HttpHandler::lexing(raw_request);
+	if (HttpHandler::descending_deriv(lexer))
   {
-	  request = HttpHandler::req_struct_http_request(lexer);
+	  request = HttpHandler::struct_http_request(lexer);
     std::cout << COLOR_GREEN << "Success : request is valid " << COLOR_RESET << std::endl;
   }
   else

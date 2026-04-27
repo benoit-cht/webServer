@@ -55,7 +55,7 @@ static bool dd_header_body(const std::vector<t_token>& lexer)
   return (true);
 }
 
-bool  HttpHandler::req_descending_deriv(std::vector<t_token>& lexer)
+bool  HttpHandler::descending_deriv(std::vector<t_token>& lexer)
 {
   if (!dd_first_line(lexer))
     return ( false );
