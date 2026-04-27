@@ -141,7 +141,7 @@ void EventLoop::handleClientRequest(int fd)
    
     std::string raw_response = response.toString();
     _socket_handler.writeToSocket(fd, raw_response.c_str(), raw_response.size());
-    print_http_response(response); 
+    //HttpHandler::print_http_response(response); 
 
 }
 
