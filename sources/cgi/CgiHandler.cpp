@@ -65,6 +65,16 @@ t_httpResponse CgiHandler::executeCgi(const std::string& path, const t_httpReque
         }
         envp[env_strings.size()] = NULL;
 
+        std::string dir_path = ".";
+        std::string script_name = full_path;
+
+        size_t last_slash = full_path.find_last_of('/');
+        if (last_slash != std::string::npos) {
+            dir_path = full_path.substr(0, last_slash);
+            script_name = full_path.substr(last_slash + 1);
+        }
+        chdir(dir_path.c_str());
+
         char *args[] = { (char*)"/opt/homebrew/bin/php-cgi", (char*)full_path.c_str(), NULL }; //change later if needed
         
         execve(args[0], args, envp);
