@@ -10,7 +10,8 @@
 #include <ios>
 
 
-#include "../../include/request/utils_HandlerHttp.hpp"
+//#include "../../include/request/utils_HandlerHttp.hpp"
+#include <request/HttpHandler.hpp>
 
 // std::string readFile(const std::string& path) {
 //     std::ifstream file(path, std::ios::binary | std::ios_base::ate);  // Ouvre en mode binaire et se place à la fin pour connaître la taille
@@ -32,7 +33,7 @@
 //     return buffer.str();
 // }
 
-std::string readFile(const std::string& filepath) {
+std::string HttpHandler::readFile(const std::string& filepath) {
     std::ifstream file(filepath.c_str());
     if (!file.is_open()) {
         return ""; // Le fichier n'existe pas ou n'a pas les droits de lecture

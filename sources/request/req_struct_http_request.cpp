@@ -10,7 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/request/utils_HandlerHttp.hpp"
+//#include "../../include/request/utils_HandlerHttp.hpp"
+#include <request/HttpHandler.hpp>
 
 static void print_http_request(const t_httpRequest& request) {
     // Affichage de la méthode, du chemin et de la version
@@ -79,7 +80,7 @@ static void   st_write_in_struct(t_httpRequest& request, t_token token)
     request.body += token.value;
 }
 
-t_httpRequest req_struct_http_request(std::vector<t_token>& lexer)
+t_httpRequest HttpHandler::req_struct_http_request(std::vector<t_token>& lexer)
 {
   size_t        indx = 0;
   t_httpRequest request;

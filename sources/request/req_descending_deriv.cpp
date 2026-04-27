@@ -10,7 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/request/utils_HandlerHttp.hpp"
+//#include "../../include/request/utils_HandlerHttp.hpp"
+#include <request/HttpHandler.hpp>
 
 static bool dd_first_line(const std::vector<t_token>& lexer)
 {
@@ -54,7 +55,7 @@ static bool dd_header_body(const std::vector<t_token>& lexer)
   return (true);
 }
 
-bool  req_descending_deriv(std::vector<t_token>& lexer)
+bool  HttpHandler::req_descending_deriv(std::vector<t_token>& lexer)
 {
   if (!dd_first_line(lexer))
     return ( false );

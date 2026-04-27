@@ -10,7 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/request/HttpHandler.hpp"
+//#include "../../include/request/HttpHandler.hpp"
+#include <request/HttpHandler.hpp>
 #include "../../include/cgi/CgiHandler.hpp"
 
 static bool isStaticFile(const std::string& path);
@@ -21,10 +22,10 @@ t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request)
 	t_httpRequest       request;
 	std::vector<t_token>   lexer;
 
-	lexer = req_lexing(raw_request);
-	if (req_descending_deriv(lexer))
+	lexer = HttpHandler::req_lexing(raw_request);
+	if (HttpHandler::req_descending_deriv(lexer))
   {
-	  request = req_struct_http_request(lexer);
+	  request = HttpHandler::req_struct_http_request(lexer);
     std::cout << COLOR_GREEN << "Success : request is valid " << COLOR_RESET << std::endl;
   }
   else
@@ -64,7 +65,7 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request)
 	// 2. Analyser le chemin
   if (request.path == "/")
   {
-    return serveStaticFile("index.html");
+    return HttpHandler::serveStaticFile("index.html");
   }
   else if (request.path.find("/cgi-bin/") == 0)
   {
@@ -73,7 +74,7 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request)
   }
   else if (isStaticFile(request.path))
   {
-    return serveStaticFile(request.path);
+    return HttpHandler::serveStaticFile(request.path);
   }
   else
   {

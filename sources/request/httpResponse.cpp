@@ -10,10 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/request/utils_HandlerHttp.hpp"
+//#include "../../include/request/utils_HandlerHttp.hpp"
+#include <request/HttpHandler.hpp>
 #include <cstdlib>
 
-void print_http_response(const t_httpResponse& response) {
+void HttpHandler::print_http_response(const t_httpResponse& response) {
     // Affichage du statut
     std::cout << COLOR_CYAN << "\n=== HTTP Response ===" << COLOR_RESET << std::endl;
     std::cout << "Status: " << COLOR_YELLOW << response.status << COLOR_RESET;
