@@ -109,21 +109,21 @@ static void  lx_write_value(const std::string raw_request, size_t& index, std::v
 
   if(raw_request[index] == 32)
   {
-    s_token temp(WHITESPACE, " ");
+    t_token temp(WHITESPACE, " ");
     lexer.push_back(temp);
     index++;
   }
   else if (index > 2 && raw_request[index - 2] == ':')
   {
     str = lx_header_value(raw_request, index);
-    s_token temp(UNKNOWN, str);
+    t_token temp(UNKNOWN, str);
     lexer.push_back(temp);
 
   }
   else
   {
     str = lx_value(raw_request, index);
-    s_token temp(UNKNOWN, str);
+    t_token temp(UNKNOWN, str);
     lexer.push_back(temp);
   }
 }

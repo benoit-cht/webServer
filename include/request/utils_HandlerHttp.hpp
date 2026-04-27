@@ -13,10 +13,6 @@
 #ifndef UTILS_HANDLERHTTP_HPP
 #define UTILS_HANDLERHTTP_HPP
 
-/*------------------------------------*/
-/*             include                */
-/*------------------------------------*/
-
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
@@ -24,13 +20,8 @@
 #include <map>
 #include <vector>
 
-#include "./../log/colorLog.hpp"
-
-/*------------------------------------*/
-/*          definition struct         */
-/*------------------------------------*/
-
-typedef enum e_type
+#include <log/colorLog.hpp>
+enum t_type
 {
 	METHOD,
 	PATH,
@@ -43,18 +34,18 @@ typedef enum e_type
 	WHITESPACE,
 	UNKNOWN
 
-} t_type;
+};
 
-typedef struct s_token
+struct t_token
 {
 	t_type       type;
 	std::string  value;
-  s_token(t_type t, const std::string& v) : type(t), value(v) {}
-  ~s_token(void){};
+  t_token(t_type t, const std::string& v) : type(t), value(v) {}
+  ~t_token(void){};
 
-} t_token;
+};
 
-typedef struct s_httpRequest
+struct t_httpRequest
 {
 	std::string                        method;
   std::string                        path;
@@ -62,22 +53,21 @@ typedef struct s_httpRequest
   std::map<std::string, std::string> headers;
   std::string                        body;
 
-}   t_httpRequest;
+};
 
-typedef struct s_httpResponse
+struct t_httpResponse
 {
 	int                                status;
   std::map<std::string, std::string> headers;
 	std::string                        body;
 
-  s_httpResponse();
-  s_httpResponse(int status, const std::map<std::string, std::string>& headers, const std::string& body);
+  t_httpResponse();
+  t_httpResponse(int status, const std::map<std::string, std::string>& headers, const std::string& body);
   std::string toString() const;
 
-} t_httpResponse;
+};
 
 #endif // !UTILS_HANDLERHTTP_HPP
-
 
 /* ************************************************************************** */
 /*                                                                            */

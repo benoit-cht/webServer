@@ -55,16 +55,16 @@ void HttpHandler::print_http_response(const t_httpResponse& response) {
 }
 
 // Constructeur par défaut
-s_httpResponse::s_httpResponse()
+t_httpResponse::t_httpResponse()
     : status(200), body("") {
     headers.insert(std::make_pair("Content-Type", "text/html"));
 }
 // Constructeur paramétré
-s_httpResponse::s_httpResponse(int status, const std::map<std::string, std::string>& headers, const std::string& body)
+t_httpResponse::t_httpResponse(int status, const std::map<std::string, std::string>& headers, const std::string& body)
     : status(status), headers(headers), body(body) {}
 
 // Méthode pour convertir la réponse en chaîne HTTP brute
-std::string s_httpResponse::toString() const {
+std::string t_httpResponse::toString() const {
     // std::string response;
 	std::stringstream	ss;
 

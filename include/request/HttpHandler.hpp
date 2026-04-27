@@ -13,7 +13,16 @@
 # ifndef HANDLERHTTP_HPP
 # define HANDLERHTTP_HPP
 
-#include "./utils_HandlerHttp.hpp"
+#include <iostream>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <map>
+#include <vector>
+
+#include <log/colorLog.hpp>
+#include <request/utils_HandlerHttp.hpp>
+#include <request/struct.hpp>
 
 class HttpHandler {
 	
