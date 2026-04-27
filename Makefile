@@ -71,17 +71,6 @@ OBJS = ${addprefix ${OBJDIR}/, $(SRC:.cpp=.o)}
 #                                                                       #
 #=======================================================================#
 
-TEST_NAME = test_webserv
-
-TEST_DIR = stack/tests
-
-TEST_SRCS = $(wildcard $(TEST_DIR)/unit_test/*.cpp)
-TEST_OBJS = $(patsubst $(TEST_DIR)/unit_test/%.cpp, $(OBJDIR)/%.o, $(TEST_SRCS))
-
-#=======================================================================#
-#                                                                       #
-#=======================================================================#
-
 all: $(NAME)
 
 $(NAME): $(OBJS)
@@ -105,7 +94,19 @@ ${OBJDIR}:
 #                                                               #
 #===============================================================#
 
-test: $(TEST_NAME)
+TEST_NAME = t_unit
+
+TEST_DIR = stack/tests
+
+TEST_SRCS = $(wildcard $(TEST_DIR)/unit_test/*.cpp)
+TEST_OBJS = $(patsubst $(TEST_DIR)/unit_test/%.cpp, $(OBJDIR)/%.o, $(TEST_SRCS))
+
+#=======================================================================#
+#                                                                       #
+#=======================================================================#
+
+
+unit_test: $(TEST_NAME)
 
 $(TEST_NAME): $(TEST_OBJS) $(OBJS)
 	@${ECHO_FLAG} "\n$(GREEN)[OK]       	🧪 $(YELLOW)CREATED   EXE$(BLUE) -- $(RED)${TEST_NAME} --\n $(RESET)"
@@ -130,6 +131,8 @@ fclean:
 
 re: fclean all
 
-.PHONY: all clean fclean re test 
+build: all unit_test 
+
+.PHONY: all clean fclean re unit_test 
 
 
