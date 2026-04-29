@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/23 18:37:03 by tjacquel          #+#    #+#             */
-/*   Updated: 2026/04/24 21:07:32 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/04/29 20:15:49 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,39 @@ void		printParserBlocks(const t_block& curr_block, const std::string& prefix, in
 		printParserBlocks(curr_block.embed_block[e], embed_prefix, indent_level);
 	}
 
+}
+
+void		linterBlock(const t_block& curr_block, size_t& i) {
+	if (curr_block.directives.empty() && curr_block.embed_block.empty()) {
+		std::cerr << "Config file error: cannot have empty directive block" << std::endl;
+		std::cerr << "    Found no directive or embed block within: block[" << i << "]=" << curr_block.name << std::endl;
+		exit (1);
+	}
+	if (!curr_block.embed_block.empty()) {
+		for (size_t j = 0; j < curr_block.embed_block.size(); j++) {
+			linterBlock(curr_block.embed_block[j], j);
+		}
+	}
+}
+
+void		paramCheck(const t_block& curr_block) {
+	if (curr_block.name == "server") {
+		if (!curr_block.parameters.empty()) {
+			std::cerr << "Config file error: no parameter expected for server directive" << std::endl;
+			exit (1);
+		}
+	}
+	if (curr_block.name == "location") {
+		if (curr_block.parameters.empty()) {
+			std::cerr << "Config file error: filepath parameter expected for location directive" << std::endl;
+			exit (1);
+		}
+	}
+	if (!curr_block.embed_block.empty()) {
+		for (size_t j = 0; j < curr_block.embed_block.size(); j++) {
+			paramCheck(curr_block.embed_block[j]);
+		}
+	}
 }
 
 t_block		parseTokens(const std::vector<std::string>& tokens, size_t& i) {

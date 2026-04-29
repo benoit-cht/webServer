@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 19:26:05 by lcluzan           #+#    #+#             */
-/*   Updated: 2026/04/24 20:50:21 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/04/29 20:13:43 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,5 +42,7 @@ public:
 t_block		parseTokens(const std::vector<std::string>& tokens, size_t& i);
 void		printParserBlocks(const t_block& curr_block, const std::string& prefix, int indent_level);
 void		printParserEmbedBlocks(const std::vector<t_block>& embed_block, size_t& i);
+void		linterBlock(const t_block& curr_block, size_t& i);
+void		paramCheck(const t_block& curr_block);
 
 #endif
