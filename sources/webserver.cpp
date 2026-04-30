@@ -34,19 +34,10 @@ static void initVerctorOfPort(std::vector<int>& ports)
   //ports.push_back(8082);
 }
 
-/* void runEventLoop(EventLoop loop)
+//int main (int av, char *ag[])
+int main()
 {
-  while(true)
-  {
-    loop.waitActivityOnSocket();
-    loop.monitoredAllDescriptor();
-  }
-} */
-
-int main (int av, char *ag[])
-// int main()
-{
-	if (av != 2) {
+	/*if (av != 2) {
 		std::cout << "c'est pas bon kevin" << std::endl;
 		return (1);
 	}
@@ -246,21 +237,57 @@ int main (int av, char *ag[])
 
 		printParserBlocks(block[i], base_prefix, 0);
 		std::cout << "\n";
-	}
+	}*/
 
 
 
+std::vector<int> ports;
+std::signal(SIGINT, signal_handler);// Enregistrer le gestionnaire de signal
+initVerctorOfPort(ports);
+try {
+        EventLoop loop(ports);
+        loop.setupServerSockets();
 
-  initVerctorOfPort(ports);
-  try {
-      EventLoop loop(ports);  // Créer une instance de EventLoop
-      loop.run();
-      //runEventLoop(loop);
-  } catch (const std::exception& e) {
-      std::cerr << COLOR_RED << "Error : " << e.what() << COLOR_RESET << std::endl;
-      return EXIT_FAILURE ;
-  }
-  return EXIT_SUCCESS ;
+        while (true) 
+        {
+            int ret = loop.waitForActivity();
+            if (ret == -1)
+            {
+                std::cerr << COLOR_RED << "Error: poll() failed (interrupted system call?)" << COLOR_RESET << std::endl;
+                break;
+            }
+
+            std::vector<int> activeFds = loop.getActiveFds();
+            for (size_t i = 0; i < activeFds.size(); i++) 
+            {
+                int fd = activeFds[i];
+                if (loop.isServerFd(fd)) 
+                {
+                    loop.acceptNewConnection(fd);
+                } 
+                else 
+                {
+                    char buffer[4096];
+                    ssize_t bytes_read = loop.readFromClient(fd, buffer, sizeof(buffer));
+                    if (bytes_read <= 0) 
+                    {
+                        loop.removeClient(fd);
+                        continue;
+                    }
+                    // 👇 Traitement HTTP (déjà implémenté, hors scope)
+                    t_httpRequest request = HttpHandler::setHttpRequest(buffer);
+                    t_httpResponse response = HttpHandler::setHttpResponse(request);
+                    std::string raw_response = response.toString();
+                    loop.sendResponse(fd, raw_response);
+                }
+            }
+        }
+        loop.cleanup();
+    } catch (const std::exception& e) {
+        std::cerr << COLOR_RED << "Error: " << e.what() << COLOR_RESET << std::endl;
+        return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
 }
 
 
