@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/23 18:37:03 by tjacquel          #+#    #+#             */
-/*   Updated: 2026/04/29 20:15:49 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/05/01 19:32:51 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,10 @@ void		paramCheck(const t_block& curr_block) {
 	if (curr_block.name == "location") {
 		if (curr_block.parameters.empty()) {
 			std::cerr << "Config file error: filepath parameter expected for location directive" << std::endl;
+			exit (1);
+		}
+		else if (curr_block.parameters.size() > 1) {
+			std::cerr << "Config file error: single parameter exepected for location directive" << std::endl;
 			exit (1);
 		}
 	}
