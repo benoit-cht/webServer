@@ -35,14 +35,13 @@ static void initVerctorOfPort(std::vector<int>& ports)
   //ports.push_back(8082);
 }
 
-//int main (int av, char *ag[])
-int main()
+int main (int av, char *ag[])
+//int main()
 {
-	/*if (av != 2) {
+	if (av != 2) {
 		std::cout << "c'est pas bon kevin" << std::endl;
 		return (1);
 	}
-	std::vector<int> ports;
 	std::signal(SIGINT, signal_handler);// Enregistrer le gestionnaire de signal
 	std::string filename  = ag[1];
 
@@ -238,11 +237,10 @@ int main()
 
 		printParserBlocks(block[i], base_prefix, 0);
 		std::cout << "\n";
-	}*/
+	}
 
 
 std::vector<int> ports;
-std::signal(SIGINT, signal_handler);// Enregistrer le gestionnaire de signal
 initVerctorOfPort(ports);
 
 try {
