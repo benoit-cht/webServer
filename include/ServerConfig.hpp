@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 19:26:05 by lcluzan           #+#    #+#             */
-/*   Updated: 2026/04/29 20:13:43 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/05/08 18:57:43 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,16 @@
 
 typedef struct	s_block {
 	// std::vector<t_ServerParser>	context;
-	std::string					name;
+	std::string								name;
 	std::vector< std::vector<std::string> >	directives;
-	std::vector<std::string>	parameters;
-	std::vector<s_block>		embed_block;
-}				t_block;
+	std::vector<std::string>				parameters;
+	std::vector<s_block>					embed_block;
+}				t_block ;
+
+typedef struct	s_LocationConfig {
+	std::string					root;
+	std::vector<std::string>	allow_methods;
+}				t_LocationConfig ;
 
 class ServerConfig {
 
@@ -35,8 +40,21 @@ public:
 	ServerConfig();
 	~ServerConfig();
 
-    int port;
-    std::string server_name;
+	void	loadFromBlock(const t_block& block);
+
+	void	serverDirCheck(const t_block& curr_block);
+	void	listenDirCheckAndLoad(const std::vector<std::string>& curr_dir);
+
+	void	printServerConfig(const size_t i) const;
+
+private:
+	// int			i;
+	int			port;
+	std::string	server_name;
+	std::string	host;
+	int			client_max_body_size;
+	std::map<std::string, t_LocationConfig>	location;
+
 } ;
 
 t_block		parseTokens(const std::vector<std::string>& tokens, size_t& i);

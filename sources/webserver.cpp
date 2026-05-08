@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/29 20:14:42 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/05/08 18:58:03 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -253,7 +253,7 @@ int main (int av, char *ag[])
 		std::cout << "\n";
 	}
 
-	for (size_t i = 0; i < block.size(); i++) {
+/* 	for (size_t i = 0; i < block.size(); i++) {
 		// if (block[i].directives.empty() && block[i].embed_block.empty()) {
 		// 	std::cerr << "Config file error: cannot have empty directive block" << std::endl;
 		// 	return (1);
@@ -275,6 +275,17 @@ int main (int av, char *ag[])
 		// 		return (1);
 		// 	}
 		// }
+	} */
+
+	std::vector<ServerConfig>	virtual_servers;
+	for (size_t i = 0; i < block.size(); i++) {
+		ServerConfig		new_server;
+		new_server.loadFromBlock(block.at(i));
+		virtual_servers.push_back(new_server);
+	}
+
+	for (size_t i = 0; i < virtual_servers.size(); i++) {
+		virtual_servers[i].printServerConfig(i);
 	}
 
 
