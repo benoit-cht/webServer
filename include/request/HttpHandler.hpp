@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 11:31:58 by bchallat          #+#    #+#             */
-/*   Updated: 2026/05/20 11:34:16 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/05/20 12:04:38 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ class HttpHandler {
     static t_httpResponse handleDelete(const std::string& path);
     static bool           isDirectory(const std::string& path);
     static t_httpResponse handleAutoIndex(const std::string& path);
+    static t_httpResponse handleUpload(const t_httpRequest& request);
 };
 
 # endif // !HTTPHANDLER_HPP 

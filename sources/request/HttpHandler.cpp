@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/05/20 11:50:16 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/05/20 12:11:31 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <cstdio>
 #include <sys/stat.h> // stat()
 #include <dirent.h> // opendir(), readdir()
+#include <fstream> // std::ifstream
 
 static bool isStaticFile(const std::string& path);
 
@@ -69,8 +70,9 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request)
     return serveStaticFile("index.html");
   }if (request.method == "DELETE") {
         return handleDelete(request.path);
-  }else if (request.method == "GET") 
-    {
+  }else if (request.method == "POST" && request.path == "/upload") {
+        return handleUpload(request);
+    } else if (request.method == "GET") {
         std::string full_path = "./sources/www" + request.path;
         if (isDirectory(full_path)) {
             // On vérifie d'abord si un index.html existe dans ce dossier
@@ -189,5 +191,80 @@ t_httpResponse HttpHandler::handleAutoIndex(const std::string& path) {
     // On précise que c'est du HTML
     response.headers["Content-Type"] = "text/html"; 
 
+    return response;
+}
+
+t_httpResponse HttpHandler::handleUpload(const t_httpRequest& request) {
+    t_httpResponse response;
+
+    // 1. Vérifier que c'est bien une requête d'upload (multipart/form-data)
+    std::map<std::string, std::string>::const_iterator it = request.headers.find("Content-Type");
+    if (it == request.headers.end() || it->second.find("multipart/form-data") == std::string::npos) {
+        response.status = 400; // Bad Request
+        response.body = "<html><body><h1>400 Bad Request</h1><p>Content-Type invalide pour un upload.</p></body></html>";
+        return response;
+    }
+
+    // 2. Extraire la "boundary" (la ligne de séparation générée par le navigateur)
+    std::string content_type = it->second;
+    size_t boundary_pos = content_type.find("boundary=");
+    if (boundary_pos == std::string::npos) {
+        response.status = 400;
+        return response;
+    }
+    // La boundary dans le body est toujours précédée de "--"
+    std::string boundary = "--" + content_type.substr(boundary_pos + 9);
+
+    // 3. Chercher le nom du fichier ("filename") dans le body
+    size_t filename_pos = request.body.find("filename=\"");
+    if (filename_pos == std::string::npos) {
+        response.status = 400;
+        response.body = "<html><body><h1>400 Bad Request</h1><p>Aucun fichier trouve dans la requete.</p></body></html>";
+        return response;
+    }
+    
+    // Extraire le nom exact entre les guillemets
+    size_t filename_start = filename_pos + 10;
+    size_t filename_end = request.body.find("\"", filename_start);
+    std::string filename = request.body.substr(filename_start, filename_end - filename_start);
+
+    // 4. Trouver où commencent les vraies données du fichier
+    // Les données commencent juste après la séquence "\r\n\r\n" qui suit le filename
+    size_t data_start = request.body.find("\r\n\r\n", filename_end);
+    if (data_start == std::string::npos) {
+        response.status = 400;
+        return response;
+    }
+    data_start += 4; // On avance de 4 caractères pour sauter le "\r\n\r\n"
+
+    // 5. Trouver où finissent les données (au début de la prochaine boundary)
+    size_t data_end = request.body.find(boundary, data_start);
+    if (data_end == std::string::npos) {
+        response.status = 400;
+        return response;
+    }
+    // On recule de 2 caractères pour enlever le "\r\n" qui précède la boundary finale
+    data_end -= 2;
+
+    // 6. Extraire le contenu brut du fichier
+    std::string file_content = request.body.substr(data_start, data_end - data_start);
+
+    // 7. Sauvegarder le fichier sur le disque
+    std::string file_path = "./sources/www/uploads/" + filename;
+    
+    // On ouvre un flux en mode binaire (très important pour les images/pdf !)
+    std::ofstream outfile(file_path.c_str(), std::ios::out | std::ios::binary);
+    if (!outfile.is_open()) {
+        response.status = 500; // Internal Server Error
+        response.body = "<html><body><h1>500 Erreur Interne</h1><p>Impossible d'enregistrer le fichier.</p></body></html>";
+        return response;
+    }
+    
+    outfile.write(file_content.c_str(), file_content.size());
+    outfile.close();
+
+    // 8. Succès ! Le code HTTP officiel pour une création réussie est 201 (Created)
+    response.status = 201; 
+    response.body = "<html><body><h1>201 Created</h1><p>Le fichier " + filename + " a ete uploade avec succes !</p></body></html>";
     return response;
 }
