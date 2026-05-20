@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   HttpHandler.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/25 18:11:59 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/05/20 11:25:47 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/request/HttpHandler.hpp"
 #include "../../include/cgi/CgiHandler.hpp"
+#include "cstdio"
 
 static bool isStaticFile(const std::string& path);
 
@@ -62,26 +63,20 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request)
   }
 
 	// 2. Analyser le chemin
-  if (request.path == "/")
-  {
+  if (request.path == "/"){
     return serveStaticFile("index.html");
-  }
-  else if (request.path.find("/cgi-bin/") == 0)
-  {
-    // return CgiHandler::executeCgi(request.path, request);
-      std::cout << "Warging: cgi detect not implemente methode " << std::endl;
-  }
-  else if (isStaticFile(request.path))
-  {
+  }if (request.method == "DELETE") {
+        return handleDelete(request.path);
+  }else if (request.path.find("/cgi-bin/") == 0){
+    return CgiHandler::executeCgi(request.path, request);
+    std::cout << "Warging: cgi detect not implemente methode " << std::endl;
+  }else if (isStaticFile(request.path)){
     return serveStaticFile(request.path);
-  }
-  else
-  {
+  }else{
     headers["Content-Type"] = "text/html";
     return t_httpResponse(404, headers, "<html>404 Not Found</html>");
   }
-
-	return ( response );
+  return ( response );
 }
 
 /*
@@ -109,4 +104,19 @@ static bool isStaticFile(const std::string& path)
         return true;
     }
     return false;
+}
+
+t_httpResponse HttpHandler::handleDelete(const std::string& path) {
+    t_httpResponse response;
+
+    std::string full_path = "./sources/www" + path;
+
+    if (std::remove(full_path.c_str()) == 0) {
+      response.status = 204;
+      response.body = ""; 
+    } else {
+      response.status = 404; // Not Found
+      response.body = "<html><body><h1>404 Not Found</h1><p>Le fichier n'existe pas ou ne peut etre supprime.</p></body></html>";
+    }
+    return response;
 }

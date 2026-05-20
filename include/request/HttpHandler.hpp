@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpHandler.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 11:31:58 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/22 11:33:11 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/05/20 11:19:23 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,9 @@ class HttpHandler {
 		static t_httpRequest  setHttpRequest(const std::string& raw_request);
 		static t_httpResponse setHttpResponse(t_httpRequest request);
     static t_httpResponse HandlerErrorHttp(int status);
+
+  private:
+    static t_httpResponse handleDelete(const std::string& path);
 };
 
 # endif // !HTTPHANDLER_HPP 
