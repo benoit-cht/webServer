@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/05/20 12:11:31 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/05/22 18:25:44 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,18 +79,15 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request)
             std::string index_path = full_path + "/index.html";
             struct stat buffer;
             if (stat(index_path.c_str(), &buffer) == 0) {
-                // Si index.html existe, on triche un peu et on modifie la requête 
+                // Si index.html existe, on triche un peu et on modifie la requête
                 // pour qu'elle serve ce fichier normalement juste en dessous
-                request.path = request.path + "/index.html"; 
+                request.path = request.path + "/index.html";
             } else {
                 // S'il n'y a pas d'index.html, on lance notre Autoindex !
                 return handleAutoIndex(request.path);
             }
         }
-      }else if (request.path.find("/cgi-bin/") == 0){
-    return CgiHandler::executeCgi(request.path, request);
-    std::cout << "Warging: cgi detect not implemente methode " << std::endl;
-  }else if (isStaticFile(request.path)){
+      }else if (isStaticFile(request.path)){
     return serveStaticFile(request.path);
   }else{
     headers["Content-Type"] = "text/html";
@@ -132,7 +129,7 @@ t_httpResponse HttpHandler::handleDelete(const std::string& path) {
 
     if (std::remove(full_path.c_str()) == 0) {
       response.status = 204;
-      response.body = ""; 
+      response.body = "";
     } else {
       response.status = 404; // Not Found
       response.body = "<html><body><h1>404 Not Found</h1><p>Le fichier n'existe pas ou ne peut etre supprime.</p></body></html>";
@@ -142,7 +139,7 @@ t_httpResponse HttpHandler::handleDelete(const std::string& path) {
 
 bool HttpHandler::isDirectory(const std::string& path) {
     struct stat statbuf;
-    
+
     if (stat(path.c_str(), &statbuf) != 0) {
         return false;
     }
@@ -152,7 +149,7 @@ bool HttpHandler::isDirectory(const std::string& path) {
 t_httpResponse HttpHandler::handleAutoIndex(const std::string& path) {
     t_httpResponse response;
     std::string full_path = "./sources/www" + path;
-    
+
     // 1. Ouvrir le dossier
     DIR *dir = opendir(full_path.c_str());
     if (dir == NULL) {
@@ -170,14 +167,14 @@ t_httpResponse HttpHandler::handleAutoIndex(const std::string& path) {
     struct dirent *entry;
     while ((entry = readdir(dir)) != NULL) {
         std::string file_name = entry->d_name;
-        
+
         // On ignore le dossier actuel "." mais on garde ".." pour pouvoir remonter
         if (file_name == ".") continue;
 
         // On construit le lien cliquable
         // Si le chemin actuel est "/", on évite de faire "//fichier", on fait "/fichier"
         std::string link = (path == "/") ? "/" + file_name : path + "/" + file_name;
-        
+
         html += "<li><a href='" + link + "'>" + file_name + "</a></li>";
     }
 
@@ -189,7 +186,7 @@ t_httpResponse HttpHandler::handleAutoIndex(const std::string& path) {
     response.status = 200;
     response.body = html;
     // On précise que c'est du HTML
-    response.headers["Content-Type"] = "text/html"; 
+    response.headers["Content-Type"] = "text/html";
 
     return response;
 }
@@ -222,7 +219,7 @@ t_httpResponse HttpHandler::handleUpload(const t_httpRequest& request) {
         response.body = "<html><body><h1>400 Bad Request</h1><p>Aucun fichier trouve dans la requete.</p></body></html>";
         return response;
     }
-    
+
     // Extraire le nom exact entre les guillemets
     size_t filename_start = filename_pos + 10;
     size_t filename_end = request.body.find("\"", filename_start);
@@ -251,7 +248,7 @@ t_httpResponse HttpHandler::handleUpload(const t_httpRequest& request) {
 
     // 7. Sauvegarder le fichier sur le disque
     std::string file_path = "./sources/www/uploads/" + filename;
-    
+
     // On ouvre un flux en mode binaire (très important pour les images/pdf !)
     std::ofstream outfile(file_path.c_str(), std::ios::out | std::ios::binary);
     if (!outfile.is_open()) {
@@ -259,12 +256,12 @@ t_httpResponse HttpHandler::handleUpload(const t_httpRequest& request) {
         response.body = "<html><body><h1>500 Erreur Interne</h1><p>Impossible d'enregistrer le fichier.</p></body></html>";
         return response;
     }
-    
+
     outfile.write(file_content.c_str(), file_content.size());
     outfile.close();
 
     // 8. Succès ! Le code HTTP officiel pour une création réussie est 201 (Created)
-    response.status = 201; 
+    response.status = 201;
     response.body = "<html><body><h1>201 Created</h1><p>Le fichier " + filename + " a ete uploade avec succes !</p></body></html>";
     return response;
 }

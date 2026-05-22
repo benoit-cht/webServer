@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:29:31 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/27 15:15:12 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/05/22 16:13:05 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,17 +17,29 @@
 #include <poll.h>
 #include <map>
 #include <sys/types.h>
+#include <string>
 #include "SocketHandler.hpp"
 #include "ClientManager.hpp"
 #include "../request/HttpHandler.hpp"
 #include "./../log/colorLog.hpp"
+
+struct CgiContext {
+    int     client_fd;       // Le client qui a fait la requête
+    int     pipe_in;         // FD pour écrire le body de la requête (POST)
+    int     pipe_out;        // FD pour lire la réponse du CGI
+    pid_t   pid;             // Le PID du script PHP
+
+    std::string request_body;    // Body à envoyer
+    size_t      bytes_written;   // Suivi de l'écriture
+    std::string response_buffer; // Stockage de la réponse
+};
 
 class EventLoop {
 
   public:
     EventLoop(const std::vector<int>& ports);  // Prend une liste de ports à écouter
     ~EventLoop();
-  
+
   public:
     void  run();
 
@@ -43,8 +55,7 @@ class EventLoop {
     ClientManager               _client_manager;              // Gère la liste des clients connectés
     std::vector<int>            _server_fds;                  // Liste des descripteurs de socket serveur (un par port)
     std::vector<struct pollfd>  _poll_fds;                    // Liste des descripteurs à surveiller avec poll()
-    std::map<int, int>          _cgi_to_client;               // Map des FDs de CGI vers les FDs clients correspondants;
-    std::map<int, pid_t>        _cgi_to_pid;                  // Map des FDs clients vers les PIDs des processus CGI correspondants;
+    std::map<int, CgiContext*>  _cgi_contexts;
 };
 
 # endif
