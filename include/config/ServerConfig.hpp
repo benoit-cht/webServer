@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 19:26:05 by lcluzan           #+#    #+#             */
-/*   Updated: 2026/05/08 18:57:43 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/05/23 18:09:06 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,21 +20,25 @@
 # include <string>
 # include <vector>
 # include <cstdlib>
+# include "LocationConfig.hpp"
+# include "ConfigParsing.hpp"
 
-typedef struct	s_block {
-	// std::vector<t_ServerParser>	context;
-	std::string								name;
-	std::vector< std::vector<std::string> >	directives;
-	std::vector<std::string>				parameters;
-	std::vector<s_block>					embed_block;
-}				t_block ;
+// class	LocationConfig {
 
-typedef struct	s_LocationConfig {
-	std::string					root;
-	std::vector<std::string>	allow_methods;
-}				t_LocationConfig ;
+// public:
+// 	LocationConfig();
+// 	~LocationConfig();
 
-class ServerConfig {
+// 	void	loadFromBlock(const t_block& curr_block);
+
+// 	void	printLocationConfig() const;
+
+// private:
+// 	std::string					root;
+// 	std::vector<std::string>	allow_methods;
+// } ;
+
+class	ServerConfig {
 
 public:
 	ServerConfig();
@@ -44,6 +48,8 @@ public:
 
 	void	serverDirCheck(const t_block& curr_block);
 	void	listenDirCheckAndLoad(const std::vector<std::string>& curr_dir);
+	void	server_nameDirCheckAndLoad(const std::vector<std::string>& curr_dir);
+	void	cmbsDirCheckAndLoad(const std::vector<std::string>& curr_dir);
 
 	void	printServerConfig(const size_t i) const;
 
@@ -53,7 +59,7 @@ private:
 	std::string	server_name;
 	std::string	host;
 	int			client_max_body_size;
-	std::map<std::string, t_LocationConfig>	location;
+	std::map<std::string, LocationConfig>	location;
 
 } ;
 

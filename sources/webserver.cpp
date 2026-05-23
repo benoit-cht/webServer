@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/05/08 18:58:03 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/05/23 17:28:48 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,11 @@
 #include <cstdlib>
 #include <iostream>
 
+#define RUN_WITH_SERVER 0
+
 # include "../include/webserver.hpp"
 
+#if RUN_WITH_SERVER
 volatile sig_atomic_t g_should_exit = 0;
 
 static void signal_handler(int signal)
@@ -42,6 +45,7 @@ static void initVerctorOfPort(std::vector<int>& ports)
     loop.monitoredAllDescriptor();
   }
 } */
+#endif
 
 int main (int av, char *ag[])
 // int main()
@@ -51,7 +55,9 @@ int main (int av, char *ag[])
 		return (1);
 	}
 	std::vector<int> ports;
+#if RUN_WITH_SERVER
 	std::signal(SIGINT, signal_handler);// Enregistrer le gestionnaire de signal
+#endif
 	std::string filename  = ag[1];
 
 	std::ifstream inFile(filename.c_str());
@@ -290,7 +296,7 @@ int main (int av, char *ag[])
 
 
 
-
+#if RUN_WITH_SERVER
   initVerctorOfPort(ports);
   try {
       EventLoop loop(ports);  // Créer une instance de EventLoop
@@ -301,6 +307,7 @@ int main (int av, char *ag[])
       return EXIT_FAILURE ;
   }
   return EXIT_SUCCESS ;
+#endif
 }
 
 

@@ -6,11 +6,12 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/23 18:37:03 by tjacquel          #+#    #+#             */
-/*   Updated: 2026/05/01 19:32:51 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/05/23 17:52:48 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/ServerConfig.hpp"
+#include <config/ServerConfig.hpp>
+#include <config/ConfigParsing.hpp>
 
 void		printParserBlocks(const t_block& curr_block, const std::string& prefix, int indent_level) {
 	std::string	indent(indent_level * 4, ' ');
