@@ -6,15 +6,17 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:01:32 by bchallat          #+#    #+#             */
-/*   Updated: 2026/05/22 19:59:49 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/05/23 18:11:08 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
 #include <cstring>  // Pour memset
 #include <fcntl.h>
+#include <sys/wait.h>
 
 #include "../../include/network/EventLoop.hpp"
+#include "../../include/cgi/CgiHandler.hpp"
 
 EventLoop::EventLoop(const std::vector<int>& ports) { setupServerSockets(ports); }
 
@@ -70,7 +72,6 @@ void EventLoop::run()
                     i--; // On recule l'index car on a réduit le vecteur
                 }
             }
-
             // CAS B: poll() nous dit qu'on peut lire le résultat généré par le PHP
             else if ((_poll_fds[i].revents & POLLIN) && current_fd == ctx->pipe_out) {
                 char buffer[4096];
@@ -109,6 +110,7 @@ void EventLoop::run()
                 }
             }
             continue;
+        }
             if (_poll_fds[i].revents & POLLIN)
             {
                 // Vérifier si c'est un socket serveur (nouvelle connexion)
@@ -125,16 +127,11 @@ void EventLoop::run()
                   bool  is_cgi_fd = (_cgi_contexts.find(_poll_fds[i].fd) != _cgi_contexts.end());
 
                  if (is_server_fd) {
-                   handleClientRequest(_poll_fds[i].fd);
-                  }
-                  else if (is_cgi_fd) {
-                    handleCgiResponse(_poll_fds[i].fd);
-                  }
-                  else {
-                    handleCgiResponse(_poll_fds[i].fd);
+                   handleNewConnection(_poll_fds[i].fd);
+                } else {
+                    handleClientRequest(_poll_fds[i].fd);
                 }
             }
-        }
         }
     }
 }
@@ -245,82 +242,6 @@ void EventLoop::handleClientRequest(int fd)
     _socket_handler.writeToSocket(fd, raw_response.c_str(), raw_response.size());
     print_http_response(response);
 
-}
-
-void EventLoop::handleCgiResponse(int cgi_fd)
-{
-    // Retrouver à qui appartient cette réponse
-    int client_fd = _cgi_to_client[cgi_fd];
-    pid_t pid = _cgi_to_pid[cgi_fd];
-
-    // Lire la réponse du processus enfant (PHP/Python)
-    char buffer[4096];
-    std::string cgi_output;
-    int bytes_read;
-
-    // On lit tout ce qu'il y a dans le pipe
-    while ((bytes_read = read(cgi_fd, buffer, sizeof(buffer) - 1)) > 0) {
-        buffer[bytes_read] = '\0';
-        cgi_output += buffer;
-    }
-
-    // Récupérer le processus enfant pour éviter un zombie
-    // Puisque read a renvoyé 0 (ou fini), le script a terminé, waitpid ne bloquera pas
-    waitpid(pid, NULL, 0);
-
-    // Formater la réponse pour ton Webserv
-    t_httpResponse response;
-    size_t header_end = cgi_output.find("\r\n\r\n");
-    if (header_end != std::string::npos) {
-        response.status = 200;
-        // On récupère uniquement le body (on met les headers bruts de côté)
-        response.body = cgi_output.substr(header_end + 4);
-
-        std::string header_block = cgi_output.substr(0, header_end);
-
-        size_t line_start = 0;
-        size_t line_end = header_block.find("\r\n");
-
-        while (line_end != std::string::npos) {
-            std::string line = header_block.substr(line_start, line_end - line_start);
-            size_t colon_pos = line.find(":");
-
-            if (colon_pos != std::string::npos) {
-                std::string key = line.substr(0, colon_pos);
-
-                size_t value_start = line.find_first_not_of(" ", colon_pos + 1);
-                std::string value = "";
-                if (value_start != std::string::npos) {
-                    value = line.substr(value_start);
-                }
-                response.headers[key] = value;
-        }
-        line_start = line_end + 2;
-        line_end = header_block.find("\r\n", line_start);
-        }
-    }
-    else {
-        response.status = 502; // Bad Gateway
-        response.body = "<html><body>502 Bad Gateway (Invalid CGI output)</body></html>";
-    }
-
-    // Envoyer la réponse finale au vrai client
-    std::string raw_response = response.toString();
-    _socket_handler.writeToSocket(client_fd, raw_response.c_str(), raw_response.size());
-    std::cout << COLOR_GREEN << "✅ CGI Response sent to client (fd=" << client_fd << ")" << COLOR_RESET << std::endl;
-
-    // 🧹 LE GRAND NETTOYAGE 🧹
-    close(cgi_fd); // Fermer le pipe de lecture
-    _cgi_to_client.erase(cgi_fd); // Enlever des maps
-    _cgi_to_pid.erase(cgi_fd);
-
-    // Retirer le FD du CGI de la liste surveillée par poll()
-    for (size_t i = 0; i < _poll_fds.size(); i++) {
-        if (_poll_fds[i].fd == cgi_fd) {
-            _poll_fds.erase(_poll_fds.begin() + i);
-            break;
-        }
-    }
 }
 
 void EventLoop::setupServerSockets(const std::vector<int>& ports)

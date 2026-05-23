@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:29:31 by bchallat          #+#    #+#             */
-/*   Updated: 2026/05/22 16:13:05 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/05/23 17:56:04 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ class EventLoop {
     void  cleanup();                                          // Nettoie les ressources (fermeture des sockets)
     void  handleNewConnection(int server_fd);                 // Accepte une nouvelle connexion
     void  handleClientRequest(int fd);                        // Traite une requête client
-    void  handleCgiResponse(int cgi_fd);
     void  setupServerSockets(const std::vector<int>& ports);  // Configure les sockets serveur
 
   private:
