@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:29:31 by bchallat          #+#    #+#             */
-/*   Updated: 2026/05/23 18:24:52 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/05/23 18:34:00 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,24 @@
 #include <cstring>
 #include <vector>
 #include <poll.h>
+#include <map>
 
+
+#include <sys/types.h>
 #include <network/SocketHandler.hpp>
 #include <network/ClientManager.hpp>
 #include <log/colorLog.hpp>
+#include <request/utils_HandlerHttp.hpp>
+
+struct CgiContext {
+    int         client_fd;
+    int         pipe_in;
+    int         pipe_out;
+    pid_t       pid;
+    std::string request_body;
+    size_t      bytes_written;
+    std::string response_buffer;
+};
 
 class EventLoop {
 
@@ -33,6 +47,7 @@ class EventLoop {
     void              cleanup();
     void              removeClient(int fd);
     void              sendResponse(int fd, const std::string& response);
+    void              startCgi(int client_fd, const std::string& path, const t_httpRequest& request);
 
   public:
     int               waitForActivity();
@@ -47,6 +62,8 @@ class EventLoop {
     std::vector<int>  _server_fds;
     std::vector<int>  _ports;
     std::vector<struct pollfd> _poll_fds;
+    std::map<int, CgiContext*> _cgi_contexts;
+    void              processCgiEvents();
 
 };
 

@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:01:32 by bchallat          #+#    #+#             */
-/*   Updated: 2026/05/23 18:20:12 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/05/23 18:48:33 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,13 @@ void EventLoop::setupServerSockets()
 
 /* ************************************************************************** */
 
-int EventLoop::waitForActivity()
-{
-  return (poll(&_poll_fds[0], _poll_fds.size(), -1));
+int EventLoop::waitForActivity() {
+  int ret = poll(&_poll_fds[0], _poll_fds.size(), -1);
+  if (ret > 0) {
+      // Dès que poll s'arrête, on traite les events CGI
+      processCgiEvents();
+  }
+  return ret;
 }
 
 std::vector<int> EventLoop::getActiveFds() const
@@ -57,13 +61,18 @@ std::vector<int> EventLoop::getActiveFds() const
   {
     if (_poll_fds[index].revents & POLLIN)
     {
-      active.push_back(_poll_fds[index].fd);
+      //On s'assure que le FD n'est pas un pipe de CGI
+      if (_cgi_contexts.find(_poll_fds[index].fd) == _cgi_contexts.end())
+      {
+        active.push_back(_poll_fds[index].fd);
+      }
     }
     index++;
   }
 
   return ( active );
 }
+
 
 bool EventLoop::isServerFd(int fd) const
 {
@@ -160,4 +169,112 @@ void EventLoop::cleanup()
   {
     _socket_handler.closeSocket(clients[i]->getFileDescriptor());
   }
+}
+
+void EventLoop::startCgi(int client_fd, const std::string& path, const t_httpRequest& request) {
+    // On lance le script PHP en arrière-plan via CgiHandler
+    CgiContext* ctx = CgiHandler::startCgi(path, request, client_fd);
+
+    if (!ctx) {
+        // En cas d'échec du fork/pipe
+        t_httpResponse response(500, std::map<std::string, std::string>(), "500 Internal Error");
+        sendResponse(client_fd, response.toString());
+        return;
+    }
+    // On stocke le contexte
+    _cgi_contexts[ctx->pipe_in] = ctx;
+    _cgi_contexts[ctx->pipe_out] = ctx;
+
+    // On dit à poll() de surveiller l'écriture vers le PHP
+    struct pollfd pfd_in;
+    pfd_in.fd = ctx->pipe_in;
+    pfd_in.events = POLLOUT;
+    _poll_fds.push_back(pfd_in);
+
+    // On dit à poll() de surveiller la lecture depuis le PHP
+    struct pollfd pfd_out;
+    pfd_out.fd = ctx->pipe_out;
+    pfd_out.events = POLLIN;
+    _poll_fds.push_back(pfd_out);
+}
+
+void EventLoop::processCgiEvents() {
+    for (size_t i = 0; i < _poll_fds.size(); i++) {
+        int current_fd = _poll_fds[i].fd;
+
+        // Est-ce que ce FD est lié à un CGI en cours ?
+        if (_cgi_contexts.find(current_fd) != _cgi_contexts.end()) {
+            CgiContext* ctx = _cgi_contexts[current_fd];
+
+            // 1. Envoyer le Body (POST) vers le PHP
+            if ((_poll_fds[i].revents & POLLOUT) && current_fd == ctx->pipe_in) {
+                if (ctx->bytes_written < ctx->request_body.size()) {
+                    ssize_t ret = write(ctx->pipe_in,
+                                        ctx->request_body.c_str() + ctx->bytes_written,
+                                        ctx->request_body.size() - ctx->bytes_written);
+                    if (ret > 0) ctx->bytes_written += ret;
+                } if (ctx->bytes_written >= ctx->request_body.size()) {
+                    close(ctx->pipe_in);
+                    _cgi_contexts.erase(ctx->pipe_in);
+                    _poll_fds.erase(_poll_fds.begin() + i);
+                    i--; // Ajuste l'index de la boucle car on a réduit _poll_fds
+                }
+            }
+            // 2. Lire le résultat généré par le PHP
+            else if ((_poll_fds[i].revents & POLLIN) && current_fd == ctx->pipe_out) {
+                char buffer[4096];
+                ssize_t bytes = read(ctx->pipe_out, buffer, sizeof(buffer) - 1);
+
+                if (bytes > 0) {
+                    buffer[bytes] = '\0';
+                    ctx->response_buffer += buffer;
+                } else if (bytes == 0 || (bytes < 0 && errno != EAGAIN)) {
+                    // Le PHP a fini (EOF) ou erreur ! On nettoie le zombie :
+                    waitpid(ctx->pid, NULL, WNOHANG);
+
+                    t_httpResponse response;
+                    size_t header_end = ctx->response_buffer.find("\r\n\r\n");
+
+                    if (header_end != std::string::npos) {
+                        response.status = 200;
+
+                        // Parse les headers générés par le CGI (ex: Set-Cookie, Content-Type...)
+                        std::string cgi_headers = ctx->response_buffer.substr(0, header_end);
+                        size_t line_start = 0;
+                        size_t line_end = cgi_headers.find("\r\n");
+
+                        while (line_end != std::string::npos) {
+                            std::string line = cgi_headers.substr(line_start, line_end - line_start);
+                            size_t colon_pos = line.find(":");
+                            if (colon_pos != std::string::npos) {
+                                std::string key = line.substr(0, colon_pos);
+                                size_t val_start = line.find_first_not_of(" ", colon_pos + 1);
+                                std::string val = (val_start != std::string::npos) ? line.substr(val_start) : "";
+                                if (key == "Status") response.status = std::atoi(val.c_str());
+                                else response.headers[key] = val;
+                            }
+                            line_start = line_end + 2;
+                            line_end = cgi_headers.find("\r\n", line_start);
+                        }
+
+                        // Assigne le Body
+                        response.body = ctx->response_buffer.substr(header_end + 4);
+                    } else {
+                        response.status = 502; // Bad Gateway
+                        response.body = "<html><body>502 Bad Gateway</body></html>";
+                    }
+
+                    // On envoie la réponse au client via ta méthode
+                    sendResponse(ctx->client_fd, response.toString());
+
+                    // Nettoyage complet
+                    close(ctx->pipe_out);
+                    _cgi_contexts.erase(ctx->pipe_out);
+                    _poll_fds.erase(_poll_fds.begin() + i);
+                    delete ctx;
+                    i--;
+                }
+            }
+        }
+    }
 }
