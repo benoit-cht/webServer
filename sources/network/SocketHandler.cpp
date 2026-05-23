@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/23 13:33:39 by bchallat          #+#    #+#             */
-/*   Updated: 2026/05/22 18:02:47 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/05/23 16:05:48 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,7 @@ int SocketHandler::createServerSocket(int port)
   }
 
   std::cout << COLOR_GREEN << "Success : open socket to a port: " << port << COLOR_RESET << std::endl;
+  setNonBlocking(socket_fd);
   return( socket_fd );
 }
 
@@ -112,6 +113,7 @@ int SocketHandler::acceptConnection(int socket_fd, std::string& client_ip, int& 
     }
     else
     {
+      setNonBlocking(client_fd);
       inet_ntop(AF_INET, &(client_addr.sin_addr), ip_str, INET_ADDRSTRLEN);
       client_ip = std::string(ip_str);
       client_port = ntohs(client_addr.sin_port);

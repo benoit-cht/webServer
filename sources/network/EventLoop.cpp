@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:01:32 by bchallat          #+#    #+#             */
-/*   Updated: 2026/05/22 18:42:10 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/05/22 19:59:49 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,13 +132,12 @@ void EventLoop::run()
                   }
                   else {
                     handleCgiResponse(_poll_fds[i].fd);
-                  }
-
-             }
-          }
-     }
+                }
+            }
+        }
+        }
+    }
 }
-
 /* ************************************************************************** */
 
 void EventLoop::handleNewConnection(int server_fd)
