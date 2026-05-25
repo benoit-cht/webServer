@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpHandler.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 11:31:58 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/27 15:06:23 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/05/20 12:04:38 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,16 @@ class HttpHandler {
   private:
     static t_httpResponse        HandlerErrorHttp(int status);
 
+  public:
+		static t_httpRequest  setHttpRequest(const std::string& raw_request);
+		static t_httpResponse setHttpResponse(t_httpRequest request);
+    static t_httpResponse HandlerErrorHttp(int status);
+
+  private:
+    static t_httpResponse handleDelete(const std::string& path);
+    static bool           isDirectory(const std::string& path);
+    static t_httpResponse handleAutoIndex(const std::string& path);
+    static t_httpResponse handleUpload(const t_httpRequest& request);
 };
 
 # endif // !HTTPHANDLER_HPP 
