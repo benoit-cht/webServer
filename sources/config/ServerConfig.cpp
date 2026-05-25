@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 19:42:36 by lcluzan           #+#    #+#             */
-/*   Updated: 2026/05/23 17:47:47 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/05/25 20:41:41 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,18 @@ ServerConfig::ServerConfig() : /* i(0), */ port(80), server_name("localhost"), c
 ServerConfig::~ServerConfig() {}
 
 void	ServerConfig::printServerConfig(const size_t i) const {
-	std::cout << "virtual_servers[" << i << "].port=" << this->port << std::endl;
+	std::cout << "\nvirtual_servers[" << i << "].port=" << this->port << std::endl;
 	std::cout << "virtual_servers[" << i << "].server_name=" << this->server_name << std::endl;
 	std::cout << "virtual_servers[" << i << "].clients_max_body_size=" << this->client_max_body_size << std::endl;
-	std::cout << "virtual_servers[" << i << "].location.size()=" << this->location.size() << std::endl;
-	// for (size_t i = 0; i < this->location.size(); i++) {
-	// 	location.printLocationConfig();
-	// }
+
+	// std::cout << "virtual_servers[" << i << "].location.size()=" << this->location.size() << std::endl;
+	if (this->location.size() > 0) {
+		std::map<std::string, LocationConfig>::const_iterator	it;
+		for (it = location.begin();  it != location.end(); ++it) {
+			std::cout << "virtual_servers[" << i << "].location.KEY=" << it->first << std::endl;
+			it->second.printLocationConfig();
+		}
+	}
 }
 
 void	checkEmptyDirBlock(const t_block& curr_block) {
@@ -106,8 +111,14 @@ void	ServerConfig::loadFromBlock(const t_block& curr_block) {
 
 		if (curr_block.embed_block[i].name == "location") {
 			LocationConfig	new_loc;
+			new_loc.loadFromEmbedBlock(curr_block.embed_block[i]);
 
+			this->location[curr_block.embed_block[i].parameters[0]] = new_loc;
+		}
 
+		else {
+			std::cerr << "Config file error: unknown embedded block `" << curr_block.embed_block[i].name << "`" << std::endl;
+			exit (1);
 		}
 	}
 
