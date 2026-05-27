@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 19:42:36 by lcluzan           #+#    #+#             */
-/*   Updated: 2026/05/27 14:42:26 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/05/27 18:37:00 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,23 +92,20 @@ void	ServerConfig::loadFromBlock(const t_block& curr_block) {
 		exit(1);
 
 	}
-	if (curr_block.name == "server") {
-		serverDirCheck(curr_block);
-		for (size_t i = 0; i < curr_block.directives.size(); i++) {
-			if (curr_block.directives[i][0] == "listen") {
-				listenDirCheckAndLoad(curr_block.directives[i]);
-			}
-			else if (curr_block.directives[i][0] == "server_name") {
-				server_nameDirCheckAndLoad(curr_block.directives[i]);
-			}
-			else if (curr_block.directives[i][0] == "client_max_body_size") {
-				cmbsDirCheckAndLoad(curr_block.directives[i]);
-			}
-
+	serverDirCheck(curr_block);
+	for (size_t i = 0; i < curr_block.directives.size(); i++) {
+		if (curr_block.directives[i][0] == "listen") {
+			listenDirCheckAndLoad(curr_block.directives[i]);
+		}
+		else if (curr_block.directives[i][0] == "server_name") {
+			server_nameDirCheckAndLoad(curr_block.directives[i]);
+		}
+		else if (curr_block.directives[i][0] == "client_max_body_size") {
+			cmbsDirCheckAndLoad(curr_block.directives[i]);
 		}
 
-
 	}
+
 	for (size_t i = 0; i < curr_block.embed_block.size(); i++) {
 
 		if (curr_block.embed_block[i].name == "location") {

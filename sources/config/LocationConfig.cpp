@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:23:36 by tjacquel          #+#    #+#             */
-/*   Updated: 2026/05/27 15:48:31 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/05/27 20:08:35 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,11 @@ LocationConfig::~LocationConfig() { }
 
 void	LocationConfig::printLocationConfig() const {
 	std::cout << "    root=" << this->root << std::endl;
-	if (this->allow_methods.size() > 0) {
+	if (this->methods.size() > 0) {
 			std::cout << "    ";
-		for (size_t i = 0; i < this->allow_methods.size(); i++) {
-			std::cout << "allow_methods[" << i << "]=" << this->allow_methods[i];
-			if (i != this->allow_methods.size() - 1) {
+		for (size_t i = 0; i < this->methods.size(); i++) {
+			std::cout << "methods[" << i << "]=" << this->methods[i];
+			if (i != this->methods.size() - 1) {
 				std::cout << ", ";
 			}
 		}
@@ -195,26 +195,26 @@ void	LocationConfig::methodsDirCheckAndLoad(const std::vector<std::string> curr_
 	// std::cout << "allow_methodsDir.size()=" << curr_dir.size() << std::endl;
 
 	if (curr_dir.size() < 2) {
-		std::cerr << "Config file error: at least one argument expected for allow_methods directive, found " << curr_dir.size() - 1 << std::endl;
+		std::cerr << "Config file error: at least one argument expected for methods directive, found " << curr_dir.size() - 1 << std::endl;
 		exit (1);
 	}
 
 	for (size_t i = 1; i < curr_dir.size(); ++i) {
 		// std::cout << "allow_methodsDir.at(" << i << ")=" << curr_dir.at(i) << std::endl;
 		if (curr_dir.at(i) == "GET") {
-			allow_methods.push_back("GET");
+			methods.push_back("GET");
 		}
 		else if (curr_dir.at(i) == "POST") {
-			allow_methods.push_back("POST");
+			methods.push_back("POST");
 		}
 		else if (curr_dir.at(i) == "DELETE") {
-			allow_methods.push_back("DELETE");
+			methods.push_back("DELETE");
 		}
 		else if (curr_dir.at(i) == "UPLOAD") {
-			allow_methods.push_back("UPLOAD");
+			methods.push_back("UPLOAD");
 		}
 		else {
-			std::cerr << "Config file error: `" << curr_dir.at(i) << "` found in allow_methods directive is unsupported" << std::endl;
+			std::cerr << "Config file error: `" << curr_dir.at(i) << "` found in methods directive is unsupported" << std::endl;
 			exit (1);
 		}
 	}
@@ -243,7 +243,7 @@ void	LocationConfig::loadFromEmbedBlock(const t_block& embed_block) {
 	for (size_t i = 0; i < embed_block.directives.size(); i++) {
 		if (embed_block.directives[i][0] == "root")
 			{ rootDirCheckAndLoad(embed_block.directives[i]); }
-		else if (embed_block.directives[i][0] == "allow_methods") methodsDirCheckAndLoad(embed_block.directives[i]);
+		else if (embed_block.directives[i][0] == "methods") methodsDirCheckAndLoad(embed_block.directives[i]);
 		else if (embed_block.directives[i][0] == "index") {
 			indexDirCheckAndLoad(embed_block.directives[i]);
 		}

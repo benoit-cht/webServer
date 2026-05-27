@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:24:59 by tjacquel          #+#    #+#             */
-/*   Updated: 2026/05/26 20:24:05 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/05/27 20:08:35 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ public:
 
 private:
 	std::string					root;
-	std::vector<std::string>	allow_methods;
+	std::vector<std::string>	methods;
 	std::string					index;
 	bool						autoindex;
 	bool						upload_enable;

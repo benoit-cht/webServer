@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 19:26:05 by lcluzan           #+#    #+#             */
-/*   Updated: 2026/05/23 18:09:06 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/05/27 20:08:35 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@
 
 // private:
 // 	std::string					root;
-// 	std::vector<std::string>	allow_methods;
+// 	std::vector<std::string>	methods;
 // } ;
 
 class	ServerConfig {
