@@ -1,6 +1,12 @@
 >[!important] _note _
+# 📌 Introduction 
 
-# 1 Structure d’une requête HTTP
+Le protocole HTTP a été initialement spécifié au début des années 1990. Conçu pour être extensible, il a bénéficié de nombreux ajouts au fil des ans, ce qui a conduit à la dispersion de sa spécification dans de nombreux documents (au milieu d'extensions expérimentales abandonnées). Cette page répertorie les ressources pertinentes concernant HTTP. 
+
+>[!source] _Source de l'intro:_ [Developer.mozialla.org](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Resources_and_specifications).
+# 
+---
+# 🧠 Structure d’une requête HTTP
 
 >[!info] Format suivie d’une requête HTTP
 >~~~
@@ -42,13 +48,15 @@ Accept: */*
 | User-Agent     | Navigateur ou outil utilisé par le client (ex : curl/7.68.0).                    |
 | Content-Type   | Type de contenu pour les requêtes POST (ex : application/x-www-form-urlencoded). |
 | Content-Length | Taille du corps de la requête (pour POST)                                        |
-| Content-Length | Taille du corps de la requête (pour POST).                                       |
 | Connection     | Indique si la connexion doit être fermée après la réponse (ex : keep-alive).     |
-
-#  Ressources pour approfondir
+#  
+---
+#  🔎 Ressources pour approfondir
 
 - **[Beej's Guide to Network Programming](https://beej.us/guide/bgnet/html/)** : Explications sur les sockets et HTTP.
 - **[HTTP Request Parsing in C (GitHub)](https://github.com/)** : Chercher des projets comme `tinyhttpd`.
 - **[MDN Web Docs : Anatomy of an HTTP Request](https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages)** : Explication visuelle des requêtes HTTP.
 
->[!important] _ lien pour retourner a indexObs:_ [**index**](indexObs_WebServe)
+# 
+---
+>[!important] _ lien pour retourner a index:_ [**00-index-wiki**](00-index-wiki.md)

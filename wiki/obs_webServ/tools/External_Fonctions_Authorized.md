@@ -102,6 +102,5 @@ int epoll_create(int nb);
 >_Description de la fonction_
 
 ---
-
-
->[!important] _ lien pour retourner a indexObs:_ [**index**](indexObs_WebServe)
+#
+>[!important] _ lien pour retourner a indexObs:_ [**index**](indexObs_WebServe.md)

@@ -2,9 +2,12 @@
 >_Cette note regroupe l’ensemble des sources des recherches pour webserv_
 
 >[!info] Repertoire tools
->[sujet du projet](en.subject.webServ.pdf)
+>[sujet du projet](en.subject.webserveur.pdf)
 >[graph gestion des requette http Gaelle ](Http-method-gozon.png)
 >[graph server HTTP](Graph_Server_Http.md)
+>[Traduction du sujet](Traduction_Sujet_WebServeur)
+>[note sur les conteneur cpp](Les_Conteneur)
+>[README other](LucieLeBriquer-webserv-README)
 
 # Article de blog et guide
 

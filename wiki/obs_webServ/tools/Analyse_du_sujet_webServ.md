@@ -1,4 +1,4 @@
->[!important] _cette analyse est faite a apartire de la verssion 23.1:_ [**en.sujetWebServ**](en.subject.webServ.pdf)
+>[!important] _cette analyse est faite a apartire de la verssion 23.1:_ [**en.sujetWebServ**](en.subject.webserveur.pdf)
 
 #### 1. Resumer du projet
 
@@ -82,4 +82,4 @@ Erreurs courantes et solutions
 | Mauvaise gestion des requêtes HTTP (ex : parsing incorrect)        | Tester avec `telnet` et comparer avec NGINX.                                       |
 | Erreurs de configuration (ex : chemin incorrect pour les fichiers) | Valider le fichier de config au démarrage et fournir des messages d’erreur clairs. |
 
->[!important] _ lien pour retourner a indexObs:_ [**index**](indexObs_WebServe)
+>[!important] _ lien pour retourner a indexObs:_ [**index**](indexObs_WebServe.md)

@@ -1,5 +1,21 @@
 >[!important] _note _
-# Création du socketTCP/IP du server:
+#  📌 Introduction
+
+Ce concept de communication est fondamental pour Internet, car les sockets permettent l'échange de données entre les systèmes. 
+# 
+---
+# 🧠 Programmation de socket
+
+Un socket est un point de connexion de communication (noeud final) que vous pouvez nommer et utiliser dans un réseau. La programmation de socket indique comment utiliser les API socket pour établir des liaisons de communication entre des processus distants et locaux.
+
+Les processus qui utilisent un socket peuvent résider sur le même système ou sur des systèmes différents sur des réseaux différents. Les sockets sont utiles pour les applications autonomes et réseau. Les sockets vous permettent d'échanger des informations entre des processus sur la même machine ou sur un réseau, de distribuer le travail sur la machine la plus efficace et d'accéder facilement aux données centralisées. Les interfaces de programme d'application (API) de socket sont la norme réseau pour TCP/IP. Un large éventail de systèmes d'exploitation prennent en charge les API de socket. IBM i Les sockets prennent en charge plusieurs protocoles de transport et de réseau. Les fonctions système de socket et les fonctions réseau de socket sont autorisant les unités d'exécution multiples.
+
+Les programmeurs qui utilisent Integrated Language Environment® (ILE) C peuvent se référer à cette collection de thèmes pour développer des applications socket. Vous pouvez également coder l'API des sockets à partir d'autres langages ILE, tels que RPG.
+
+>[!source] _Source documentation IBM:_ [ibm.com/docs/fr](https://www.ibm.com/docs/fr/i/7.5.0?topic=communications-socket-programming).
+# 
+---
+# 💻 Création du socketTCP/IP du server:
 ## Creation de la socket:
 
 >[!info] Creation du socket TCP
@@ -35,7 +51,7 @@ struct sockaddr_in
 >_structure sockaddr_in_
 >- `sin_family` = `domain`
 >- `sin_port` = a port number
->- `sin_addr` = address for the socket (for example `inet_addr("127.0.0.1")` or const like `INADDR_ANY`) 
+>- `sin_addr` = address for the socket (for example `inet_addr("127.0.0.1")` or const like `INADDR_ANY`) [info](https://learn.microsoft.com/en-us/windows/win32/api/winsock2/ns-winsock2-in_addr)
 
 >[!info] Associer le socket à l'adresse et au port
 >~~~cpp
@@ -63,7 +79,7 @@ struct sockaddr_in
 >~~~cpp 
 	>close(sockfd);
 >~~~
-# Gestion des requêtes:
+## Gestion des requêtes:
 
 ### 1. Initialiser la structure pollfd pour surveiller les sockets
 
@@ -96,7 +112,6 @@ struct sockaddr_in
 >}
 >~~~
 
-## Boucle d’événements du socket
 ### 2.  attendre une activité sur les sockets ( Timeout infini )
 >[!info] Attendre une activité sur les socket
 >~~~ cpp
@@ -164,6 +179,7 @@ struct sockaddr_in
 >	}
 >}
 >~~~ 
-# —-
 
->[!important] _ lien pour retourner a indexObs:_ [**index**](indexObs_WebServe)
+#
+---
+>[!important] _ lien pour retourner a index:_ [**00-index-wiki**](00-index-wiki.md)
