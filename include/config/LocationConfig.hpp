@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:24:59 by tjacquel          #+#    #+#             */
-/*   Updated: 2026/05/25 20:49:53 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/05/26 20:24:05 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,10 @@
 # include <vector>
 # include <iostream>
 # include <map>
+# include <utility>
 # include <cstdlib>
 # include "ConfigParsing.hpp"
+# include "ConfigParsingUtils.hpp"
 
 class	LocationConfig {
 
@@ -31,7 +33,10 @@ public:
 	void	methodsDirCheckAndLoad(const std::vector<std::string> curr_dir);
 	void	indexDirCheckAndLoad(const std::vector<std::string> indexDir);
 	void	autoindexDirCheckAndLoad(const std::vector<std::string> autoindexDir);
-
+	void	uploadenbableDirCheckAndLoad(const std::vector<std::string> upload_enableDir);
+	void	uploadlocDirCheckAndLoad(const std::vector<std::string> upload_locDir);
+	void	returnDirCheckAndLoad(const std::vector<std::string> returnDir);
+	void	errorpageDirCheckAndLoad(const std::vector<std::string> error_pageDir);
 
 	void	printLocationConfig() const;
 

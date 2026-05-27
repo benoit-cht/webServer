@@ -6,13 +6,13 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 19:42:36 by lcluzan           #+#    #+#             */
-/*   Updated: 2026/05/25 20:41:41 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/05/27 14:42:26 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <config/ServerConfig.hpp>
 
-ServerConfig::ServerConfig() : /* i(0), */ port(80), server_name("localhost"), client_max_body_size(10000) {}
+ServerConfig::ServerConfig() : /* i(0), */ port(80), server_name("localhost"), client_max_body_size(8000000) {}
 
 ServerConfig::~ServerConfig() {}
 
@@ -81,7 +81,9 @@ void	ServerConfig::cmbsDirCheckAndLoad(const std::vector<std::string>& curr_dir)
 		std::cerr << "Config file error: single mandatory argument expected for client_max_body_size directive, found " << curr_dir.size() - 1 << " argument(s)." << std::endl;
 		exit(1);
 	}
-	this->client_max_body_size = atoi((curr_dir[1]).c_str());
+	// this->client_max_body_size = atoi((curr_dir[1]).c_str());
+	try { this->client_max_body_size = ft_stoi(curr_dir.at(1)); }
+	catch (std::exception& e) { std::cerr << "Config file error: " << e.what() << std::endl; exit (1); }
 }
 
 void	ServerConfig::loadFromBlock(const t_block& curr_block) {

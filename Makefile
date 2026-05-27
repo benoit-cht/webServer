@@ -6,7 +6,7 @@
 #    By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/20 09:10:14 by bchallat          #+#    #+#              #
-#    Updated: 2026/05/23 17:31:40 by tjacquel         ###   ########.fr        #
+#    Updated: 2026/05/26 20:24:31 by tjacquel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,6 +46,7 @@ SRC	=	webserver.cpp \
 			config/ServerConfig.cpp \
 			config/LocationConfig.cpp \
 			config/ConfigParsing.cpp \
+			config/ConfigParsingUtils.cpp \
 			network/SocketHandler.cpp\
 			network/ClientInfo.cpp \
 			network/ClientManager.cpp \

@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/05/23 17:28:48 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/05/27 15:54:19 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#define RUN_WITH_SERVER 0
+#define RUN_WITH_SERVER 1
 
 # include "../include/webserver.hpp"
 
