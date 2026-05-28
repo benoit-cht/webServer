@@ -93,7 +93,6 @@ static void inf_loop(std::vector<int> ports)
       handler_conection(loop);
     }
   }
-  loop.cleanup();
 }
 
 static void signal_handler(int signal)
