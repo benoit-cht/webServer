@@ -36,7 +36,6 @@ class HttpHandler {
 
   private:
     static bool                   isStaticFile(const std::string& path);
-    static void                  print_http_response(const t_httpResponse& response);
     static std::string           readFile(const std::string& path);
     static t_httpResponse        serveStaticFile(const std::string& path);
   

@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include "../request/utils_HandlerHttp.hpp"
+#include <request/HttpHandler.hpp>
 
 class CgiHandler {
     public:
