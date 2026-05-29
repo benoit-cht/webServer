@@ -55,7 +55,7 @@ void ClientManager::removeClient(int fd)
   if (close(fd) == -1)
     std::cerr << "close() " << std::endl;
   else
-    std::cout << COLOR_GREEN <<"Success : close fd client " << COLOR_RESET << std::endl;
+    std::cout << COLOR_CYAN <<"(Log Server) : close client fd=" << fd << COLOR_RESET << std::endl;
 
 
   std::vector<ClientInfo*>::iterator vec_it = std::find(_clients.begin(), _clients.end(), client);
