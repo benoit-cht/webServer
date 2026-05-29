@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include <request/HttpHandler.hpp>
-#include "../../include/cgi/CgiHandler.hpp"
 
 t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request)
 {
