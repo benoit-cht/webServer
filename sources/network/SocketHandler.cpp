@@ -58,12 +58,17 @@ static struct sockaddr_in  set_socket_addr(int port)
 
 int SocketHandler::createServerSocket(int port) 
 {
+  int opt = 1;
   int socket_fd = socket(AF_INET, SOCK_STREAM, 0);
   struct sockaddr_in socket_addr = set_socket_addr(port);
     
   if (socket_fd == -1)
     throw std::runtime_error("socket() " + std::string(strerror(errno)));
-
+  if (setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
+  {
+        close(socket_fd);
+        throw std::runtime_error("setsockopt(SO_REUSEADDR) " + std::string(strerror(errno)));
+  }
   if (bind(socket_fd, (struct sockaddr *)&socket_addr, sizeof(socket_addr)) == -1)
   {
     close(socket_fd);
