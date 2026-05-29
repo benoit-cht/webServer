@@ -62,8 +62,7 @@ SRC_REQUEST		=	request/HttpHandler.cpp \
 								request/httpResponse.cpp \
 								request/servStaticFile.cpp \
 								request/isStaticFile.cpp \
-
-SRC_CGI				=	cgi/CgiHandler.cpp \
+								request/CgiHandler.cpp \
 
 SRCS = ${addprefix ${SRCDIR}/, ${SRC}}
 OBJS = ${addprefix ${OBJDIR}/, $(SRC:.cpp=.o)}
