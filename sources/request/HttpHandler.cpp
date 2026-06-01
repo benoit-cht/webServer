@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/05/29 19:45:01 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/06/01 10:13:27 by ton_utilisate    ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,15 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request)
 	 // 1. Vérifier la méthode
 	if (request.method != "GET" && request.method != "POST" && request.method != "HEAD")
 	{
+    std::string body ="<html><body>400 Bad Request</body></html>";
     headers["Content-Type"] = "text/html";
-    return t_httpResponse(400, headers, "<html><body>400 Bad Request</body></html>");
+    headers["Connection"] = "close";
+    // Conversion de body.size() en string (C++98)
+    std::ostringstream oss;
+    oss << body.size();
+    headers["Content-Length"] = oss.str();
+
+    return t_httpResponse(400, headers, body);
   }
 
 	// 2. Analyser le chemin
