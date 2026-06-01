@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 11:31:58 by bchallat          #+#    #+#             */
-/*   Updated: 2026/05/29 18:10:36 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/06/01 10:52:38 by ton_utilisate    ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ class HttpHandler {
   public:
 		static t_httpRequest         setHttpRequest(const std::string& raw_request);
 		static t_httpResponse        setHttpResponse(t_httpRequest request);
+    static t_httpResponse        HandlerErrorHttp(int status);
 
   private:
     static bool                  descending_deriv(std::vector<t_token>& lexer);
@@ -44,8 +45,6 @@ class HttpHandler {
     static std::vector<std::string> buildCgiEnv(const t_httpRequest& request, const std::string& script_path);
     static std::string getCgiInterpreter(const std::string& path);
 
-  private:
-    static t_httpResponse        HandlerErrorHttp(int status);
 
 };
 
