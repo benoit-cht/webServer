@@ -27,7 +27,7 @@ sequenceDiagram
 
     Client->>Serveur: POST /submit HTTP/1.1
     Client->>Serveur: Content-Type: application/x-www-form-urlencoded
-    Client->>Serveur: Body: name=Benoit&age=25
+    Client->>Serveur: Body: name=Benoit&age=300
 
     Serveur->>Serveur: Parse la requête (méthode, headers, body)
     Serveur->>Serveur: Vérifie si l'URL correspond à une route CGI
