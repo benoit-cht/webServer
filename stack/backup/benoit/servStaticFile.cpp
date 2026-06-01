@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 17:31:55 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/01 11:12:19 by ton_utilisate    ###   ########.fr       */
+/*   Updated: 2026/06/01 12:24:47 by ton_utilisate    ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,17 +15,18 @@
 #include <fstream>   // Pour std::ifstream
 #include <sstream>   // Pour std::stringstream
                      //
-bool isSafePath(const std::string& path) {
-    // Empêche les chemins relatifs (comme "../")
-    return path.find("../") == std::string::npos;
+bool isSafePath(const std::string& path) 
+{
+  return (path.find("../") == std::string::npos); // Empêche les chemins relatifs (comme "../")
 }
 
-std::string getMimeType(const std::string& path) {
+std::string getMimeType(const std::string& path) 
+{
     // Implémentez la logique pour déterminer le type MIME
     if (path.find(".html") != std::string::npos) return "text/html";
     if (path.find(".css") != std::string::npos) return "text/css";
     // Ajoutez d'autres types MIME selon les besoins
-    return "text/plain";
+    return ("text/plain");
 }
 
 t_httpResponse HttpHandler::serveStaticFile(const std::string& path) 
