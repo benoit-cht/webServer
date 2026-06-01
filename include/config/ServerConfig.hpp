@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 19:26:05 by lcluzan           #+#    #+#             */
-/*   Updated: 2026/05/27 20:08:35 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/05/29 19:12:36 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,8 @@ public:
 	void	loadFromBlock(const t_block& block);
 
 	void	serverDirCheck(const t_block& curr_block);
+	void	handleAddress(const std::string& addrStr);
+	void	handlePort(const std::string& portStr);
 	void	listenDirCheckAndLoad(const std::vector<std::string>& curr_dir);
 	void	server_nameDirCheckAndLoad(const std::vector<std::string>& curr_dir);
 	void	cmbsDirCheckAndLoad(const std::vector<std::string>& curr_dir);
@@ -55,8 +57,9 @@ public:
 
 private:
 	// int			i;
-	int			port;
-	std::string	server_name;
+	std::string		ip;
+	size_t		port;
+	std::vector<std::string>	server_name;
 	std::string	host;
 	int			client_max_body_size;
 	std::map<std::string, LocationConfig>	location;

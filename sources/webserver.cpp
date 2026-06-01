@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/05/27 15:54:19 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/05/29 17:48:37 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,12 @@
 #include <cstdlib>
 #include <iostream>
 
-#define RUN_WITH_SERVER 1
+#define RUN_WITH_SERVER 0
 
 # include "../include/webserver.hpp"
 
 #if RUN_WITH_SERVER
-volatile sig_atomic_t g_should_exit = 0;
+volatile sig_atomic_t g_should_exit = 1;
 
 static void signal_handler(int signal)
 {
