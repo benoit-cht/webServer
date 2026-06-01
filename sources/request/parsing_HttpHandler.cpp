@@ -12,7 +12,7 @@
 
 #include <request/HttpHandler.hpp>
 
-#define RUN_WITH_SERVER 1
+#define RUN_WITH_SERVER 0
 
 
 /* ========================================================================== */

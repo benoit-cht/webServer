@@ -66,9 +66,8 @@ static void handler_conection(EventLoop &loop)
       }
       // 👇 Traitement Request HTTP
       t_httpRequest request = HttpHandler::setHttpRequest(buffer);
-      print_http_request(request);
       t_httpResponse response = HttpHandler::setHttpResponse(request);
-      print_http_response(response);
+
       std::string raw_response = response.toString();
       loop.sendResponse(fd, raw_response);
       if (response.status == 400)
@@ -76,7 +75,8 @@ static void handler_conection(EventLoop &loop)
         loop.removeClient(fd);
 
       }
-
+      print_http_request(request);
+      print_http_response(response);
     }
   }
 }
