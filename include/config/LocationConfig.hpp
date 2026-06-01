@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:24:59 by tjacquel          #+#    #+#             */
-/*   Updated: 2026/05/27 20:08:35 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/01 20:29:41 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <vector>
 # include <iostream>
 # include <map>
+# include <set>
 # include <utility>
 # include <cstdlib>
 # include "ConfigParsing.hpp"
@@ -42,7 +43,8 @@ public:
 
 private:
 	std::string					root;
-	std::vector<std::string>	methods;
+	std::set<std::string>		methods;
+	// USAGE: if (this->methods.find("POST") != this->methogA nd()) { // POST is allowed! [...] }
 	std::string					index;
 	bool						autoindex;
 	bool						upload_enable;

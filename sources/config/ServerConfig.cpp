@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 19:42:36 by lcluzan           #+#    #+#             */
-/*   Updated: 2026/05/29 21:37:00 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/01 19:30:49 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,6 @@ void	ServerConfig::serverDirCheck(const t_block& curr_block) {
 		std::cerr << "Config file error: cannot have empty directive block" << std::endl;
 		exit (1);
 	}
-	// this->i =
 }
 
 void	ServerConfig::handleAddress(const std::string& addrStr) {
@@ -65,7 +64,6 @@ void	ServerConfig::handleAddress(const std::string& addrStr) {
 	std::string			addrToken;
 
 	while (std::getline(iss, addrToken, '.')) {
-		std::cout << "addrToken=" << addrToken << std::endl;
 		if (addrToken.empty()) {
 			std::cerr << "Config file error: IPv4 address cannot be empty in " << addrStr << std::endl;
 			exit (1);
@@ -73,7 +71,7 @@ void	ServerConfig::handleAddress(const std::string& addrStr) {
 		addrVec.push_back(ft_stoi(addrToken));
 	}
 
-	if (addrVec.size() > 4) {
+	if (addrVec.size() != 4) {
 		std::cerr << "Config file error: IPv4 address format error" << std::endl;
 		exit (1);
 	}
@@ -92,7 +90,10 @@ void	ServerConfig::handleAddress(const std::string& addrStr) {
 void	ServerConfig::handlePort(const std::string& portStr) {
 	this->port = ft_stoi(portStr);
 
-	if (this->port )
+	if (this->port < 1 || this->port > 65535) {
+		std::cerr << "Config file error: port value must be within 1 and 65535, found " << this->port << std::endl;
+		exit(1);
+	}
 }
 
 void	ServerConfig::listenDirCheckAndLoad(const std::vector<std::string>& curr_dir) {
@@ -103,7 +104,6 @@ void	ServerConfig::listenDirCheckAndLoad(const std::vector<std::string>& curr_di
 	}
 
 	try {
-		std::cout << curr_dir.at(1) << std::endl;
 		size_t	foundDQuote = curr_dir.at(1).find(":");
 		if (foundDQuote != std::string::npos) {
 			std::string	addrStr = curr_dir.at(1).substr(0, foundDQuote);
@@ -130,21 +130,19 @@ void	ServerConfig::listenDirCheckAndLoad(const std::vector<std::string>& curr_di
 }
 
 void	ServerConfig::server_nameDirCheckAndLoad(const std::vector<std::string>& curr_dir) {
-	// std::cout << "server_name curr_dir.size()=" << curr_dir.size() << std::endl;
-	if (curr_dir.size() != 2) {
-		std::cerr << "Config file error: at least one argument expected for server_name directive, found " << curr_dir.size() - 1 << " argument(s)." << std::endl;
+	if (curr_dir.size() < 2) {
+		std::cerr << "Config file error: at least one argument expected for server_name directive" << std::endl;
 		exit(1);
 	}
-	if (this->server_name[0] != "") {
-		std::cout << "Config file error: multiples server_name directives found in server block directive" << std::endl;
-		exit(1);
+
+	if (this->server_name.size() == 1 && this->server_name[0] == "") {
+		this->server_name.clear();
 	}
-	else {
-		for (size_t i = 1; i < curr_dir.size(); ++i) {
+
+	for (size_t i = 1; i < curr_dir.size(); ++i) {
 			this->server_name.push_back(curr_dir[i]);
-		}
-		// this->server_name[1] = curr_dir[1];
 	}
+
 }
 
 void	ServerConfig::cmbsDirCheckAndLoad(const std::vector<std::string>& curr_dir) {
@@ -187,7 +185,7 @@ void	ServerConfig::loadFromBlock(const t_block& curr_block) {
 		}
 
 		else {
-			std::cerr << "Config file error: unknown embedded block `" << curr_block.embed_block[i].name << "`" << std::endl;
+			std::cerr << "Config file error: embedded block `" << curr_block.embed_block[i].name << "` is not supported" << std::endl;
 			exit (1);
 		}
 	}

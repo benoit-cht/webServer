@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:23:36 by tjacquel          #+#    #+#             */
-/*   Updated: 2026/05/27 20:08:35 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/01 19:38:40 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,14 @@ LocationConfig::~LocationConfig() { }
 void	LocationConfig::printLocationConfig() const {
 	std::cout << "    root=" << this->root << std::endl;
 	if (this->methods.size() > 0) {
-			std::cout << "    ";
-		for (size_t i = 0; i < this->methods.size(); i++) {
-			std::cout << "methods[" << i << "]=" << this->methods[i];
+		std::cout << "    methods=";
+		size_t	i = 0;
+		for (std::set<std::string>::const_iterator it = this->methods.begin(); it != this->methods.end(); ++it) {
+			std::cout << *it;
 			if (i != this->methods.size() - 1) {
 				std::cout << ", ";
 			}
+			i++;
 		}
 		std::cout << std::endl;
 	}
@@ -202,17 +204,17 @@ void	LocationConfig::methodsDirCheckAndLoad(const std::vector<std::string> curr_
 	for (size_t i = 1; i < curr_dir.size(); ++i) {
 		// std::cout << "allow_methodsDir.at(" << i << ")=" << curr_dir.at(i) << std::endl;
 		if (curr_dir.at(i) == "GET") {
-			methods.push_back("GET");
+			methods.insert("GET");
 		}
 		else if (curr_dir.at(i) == "POST") {
-			methods.push_back("POST");
+			methods.insert("POST");
 		}
 		else if (curr_dir.at(i) == "DELETE") {
-			methods.push_back("DELETE");
+			methods.insert("DELETE");
 		}
-		else if (curr_dir.at(i) == "UPLOAD") {
-			methods.push_back("UPLOAD");
-		}
+		// else if (curr_dir.at(i) == "UPLOAD") {
+		// 	methods.push_back("UPLOAD");
+		// }
 		else {
 			std::cerr << "Config file error: `" << curr_dir.at(i) << "` found in methods directive is unsupported" << std::endl;
 			exit (1);
@@ -237,6 +239,11 @@ void	LocationConfig::loadFromEmbedBlock(const t_block& embed_block) {
 	// }
 	if (embed_block.parameters.size() != 1) {
 		std::cerr << "Config file error: single mandatory parameter expected for location context directive, found " << embed_block.parameters.size() << std::endl;
+		exit (1);
+	}
+
+	if (!embed_block.embed_block.empty()) {
+		std::cerr << "Config file error: nested blocks within embedded location directive are not supported" << std::endl;
 		exit (1);
 	}
 

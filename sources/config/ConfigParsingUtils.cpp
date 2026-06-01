@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/26 19:54:50 by tjacquel          #+#    #+#             */
-/*   Updated: 2026/05/27 14:44:06 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/01 17:44:03 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,12 @@ bool	onlyDigits(const std::string string) {
 }
 
 int		ft_stoi(const std::string str) {
+
+	if (str.empty()) {
+		std::ostringstream	thw;
+		thw << "[ft_stoi]: empty string detected";
+		throw std::logic_error(thw.str());
+	}
 
 	if (!onlyDigits(str)) {
 		std::ostringstream	thw;

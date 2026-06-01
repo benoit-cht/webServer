@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/23 18:37:03 by tjacquel          #+#    #+#             */
-/*   Updated: 2026/05/23 17:52:48 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/01 16:40:56 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,10 @@ t_block		parseTokens(const std::vector<std::string>& tokens, size_t& i) {
 	i++;
 
 	while (i < tokens.size() && tokens[i] != "{") {
+		if (tokens.at(i) == "}" || tokens.at(i) == ";") {
+			std::cerr << "Config file error: unexpected token `" << tokens.at(i) << "`" << std::endl;
+			exit (1);
+		}
 		block.parameters.push_back(tokens[i]);
 		i++;
 	}
