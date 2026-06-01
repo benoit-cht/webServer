@@ -12,7 +12,7 @@
 
 #include <request/HttpHandler.hpp>
 
-#define RUN_WITH_SERVER 0
+#define RUN_WITH_SERVER 1
 
 
 /* ========================================================================== */
@@ -79,7 +79,7 @@ static void lx_tokenizer(std::vector<t_token>& lexer)
   {
     lexer.at(curr).type = CRLF;
   }
-  else if (lexer.at(curr - 1).type == CRLF || lexer.at(curr - 1).type == BODY)
+  else if (curr >= 8 && ( lexer.at(curr - 1).type == CRLF || lexer.at(curr - 1).type == BODY))
   {
     lexer.at(curr).type = BODY;
   }
