@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 19:26:05 by lcluzan           #+#    #+#             */
-/*   Updated: 2026/05/29 19:12:36 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/02 18:28:00 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@
 # include <cstdlib>
 # include "LocationConfig.hpp"
 # include "ConfigParsing.hpp"
+
+# define CLIENT_MAX_BODY_SIZE_LIMIT 2147483647
 
 // class	LocationConfig {
 
@@ -56,12 +58,11 @@ public:
 	void	printServerConfig(const size_t i) const;
 
 private:
-	// int			i;
-	std::string		ip;
-	size_t		port;
-	std::vector<std::string>	server_name;
-	std::string	host;
-	int			client_max_body_size;
+	// int									i;
+	std::string								host;
+	int										port;
+	std::vector<std::string>				server_name;
+	int										client_max_body_size;
 	std::map<std::string, LocationConfig>	location;
 
 } ;

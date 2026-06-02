@@ -6,13 +6,13 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 19:42:36 by lcluzan           #+#    #+#             */
-/*   Updated: 2026/06/01 19:30:49 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/02 18:48:16 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <config/ServerConfig.hpp>
 
-ServerConfig::ServerConfig() : /* i(0), */ip("0.0.0.0"), port(8000), client_max_body_size(8000000) {
+ServerConfig::ServerConfig() : /* i(0), */host("0.0.0.0"), port(8000), client_max_body_size(8000000) {
 	this->server_name.push_back("");
 }
 
@@ -21,7 +21,7 @@ ServerConfig::ServerConfig() : /* i(0), */ip("0.0.0.0"), port(8000), client_max_
 ServerConfig::~ServerConfig() {}
 
 void	ServerConfig::printServerConfig(const size_t i) const {
-	std::cout << "\nvirtual_servers[" << i << "].ip=" << this->ip << std::endl;
+	std::cout << "\nvirtual_servers[" << i << "].host=" << this->host << std::endl;
 	std::cout << "virtual_servers[" << i << "].port=" << this->port << std::endl;
 	for (size_t j = 0; j < this->server_name.size(); ++j) {
 		std::cout << "virtual_servers[" << i << "].server_name[" << j << "]=" << this->server_name[j] << std::endl;
@@ -83,7 +83,7 @@ void	ServerConfig::handleAddress(const std::string& addrStr) {
 		}
 	}
 
-	this->ip = addrStr;
+	this->host = addrStr;
 
 }
 
@@ -151,8 +151,44 @@ void	ServerConfig::cmbsDirCheckAndLoad(const std::vector<std::string>& curr_dir)
 		exit(1);
 	}
 	// this->client_max_body_size = atoi((curr_dir[1]).c_str());
-	try { this->client_max_body_size = ft_stoi(curr_dir.at(1)); }
-	catch (std::exception& e) { std::cerr << "Config file error: " << e.what() << std::endl; exit (1); }
+
+	std::string	arg = curr_dir.at(1);
+	char		last_char = arg.at(arg.length() - 1);
+	long long	multiplier = 1;
+
+	// kilobit
+	if (last_char == 'k' || last_char == 'K') {
+		multiplier = 1024;
+		arg = arg.substr(0, arg.length() - 1);
+	}
+	// megabit
+	else if (last_char == 'm' || last_char == 'M' ) {
+		multiplier = 1048576;
+		arg = arg.substr(0, arg.length() - 1);
+	}
+	// gigabit
+	else if (last_char == 'g' || last_char == 'G') {
+		multiplier = 1073741824;
+		arg = arg.substr(0, arg.length() - 1);
+	}
+
+	try {
+		int			base_value = ft_stoi(arg)	;
+		long long	final_value = static_cast<long long>(base_value) * multiplier;
+
+		if (final_value > CLIENT_MAX_BODY_SIZE_LIMIT) {
+			std::cerr << "Config file error: client_max_body_size exceeds or is equal to 2GB maximum limit" << std::endl;
+			exit (1);
+		}
+
+		this->client_max_body_size = static_cast<int>(final_value);
+
+	}
+	catch (std::exception& e) {
+		std::cerr << "Config file error: " << e.what() << std::endl;
+		exit (1);
+	}
+
 }
 
 void	ServerConfig::loadFromBlock(const t_block& curr_block) {
@@ -171,6 +207,10 @@ void	ServerConfig::loadFromBlock(const t_block& curr_block) {
 		}
 		else if (curr_block.directives[i][0] == "client_max_body_size") {
 			cmbsDirCheckAndLoad(curr_block.directives[i]);
+		}
+		else {
+			std::cout << "Config file error: directive `" << curr_block.directives[i][0] << "` found in server block is not supported" << std::endl;
+			exit (1);
 		}
 
 	}
