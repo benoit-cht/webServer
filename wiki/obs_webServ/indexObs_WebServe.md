@@ -47,3 +47,7 @@
 >
 >---
 > [Depo GitHub Nginx](https://github.com/nginx/nginx)
+
+# ObsWiki 
+---
+>[!info] link for 00-index-wiki.md -> [click here](ObsWiki/00-index-wiki.md)
