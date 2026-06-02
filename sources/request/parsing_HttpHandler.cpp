@@ -12,14 +12,11 @@
 
 #include <request/HttpHandler.hpp>
 
-#define RUN_WITH_SERVER 0
-
-
 /* ========================================================================== */
 /*                              -- LEXER --                                   */
 /* ========================================================================== */
 
-#if RUN_WITH_SERVER
+#if DEBUG_FLAG
 static std::string typeToString(t_type type)
 {
     switch (type) {
@@ -150,7 +147,7 @@ std::vector<t_token> HttpHandler::lexing(const std::string raw_request)
     lx_tokenizer(lexer);
   }
   
-#if RUN_WITH_SERVER
+#if DEBUG_FLAG
   printTokens(lexer);
 #endif  
   return ( lexer );

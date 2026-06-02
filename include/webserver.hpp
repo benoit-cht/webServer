@@ -16,6 +16,7 @@
 #define PORT 8080        // Port d'écoute du serveur
 #define MAX_CLIENTS 10   // Nombre max de clients simultanés
 #define BUFFER_SIZE 4096  // Taille du buffer pour lire les requêtes
+#define DEBUG_FLAG 0
 
 #include <sys/socket.h>  // Pour les sockets
 #include <netinet/in.h>  // Pour sockaddr_in

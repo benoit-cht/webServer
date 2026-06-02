@@ -126,6 +126,7 @@ static void print_http_request(const t_httpRequest& request) {
     std::cout << "Path: " << COLOR_YELLOW << request.path << COLOR_RESET << std::endl;
     std::cout << "Version: " << COLOR_YELLOW << request.version << COLOR_RESET << std::endl;
 
+#if DEBUG_FLAG
     // Affichage des en-têtes
     std::cout << COLOR_CYAN << "\n--- Headers ---" << COLOR_RESET << std::endl;
     if (request.headers.empty()) {
@@ -136,7 +137,6 @@ static void print_http_request(const t_httpRequest& request) {
             std::cout << it->first << ": " << COLOR_GREEN << it->second << COLOR_RESET << std::endl;
         }
     }
-
     // Affichage du body (si présent)
     std::cout << COLOR_CYAN << "\n--- Body ---" << COLOR_RESET << std::endl;
     if (request.body.empty()) {
@@ -144,7 +144,7 @@ static void print_http_request(const t_httpRequest& request) {
     } else {
         std::cout << COLOR_BLUE << request.body << COLOR_RESET << std::endl;
     }
-
+#endif
     std::cout << COLOR_CYAN << "===================\n" << COLOR_RESET << std::endl;
 }
 
@@ -163,6 +163,7 @@ static void print_http_response(const t_httpResponse& response) {
     }
     std::cout << COLOR_RESET << std::endl;
 
+#if DEBUG_FLAG
     // Affichage des en-têtes
     std::cout << COLOR_CYAN << "\n--- Headers ---" << COLOR_RESET << std::endl;
     if (response.headers.empty()) {
@@ -173,7 +174,6 @@ static void print_http_response(const t_httpResponse& response) {
             std::cout << it->first << ": " << COLOR_GREEN << it->second << COLOR_RESET << std::endl;
         }
     }
-
     // Affichage du body (si présent)
     std::cout << COLOR_CYAN << "\n--- Body ---" << COLOR_RESET << std::endl;
     if (response.body.empty()) {
@@ -181,7 +181,7 @@ static void print_http_response(const t_httpResponse& response) {
     } else {
         std::cout << COLOR_BLUE << response.body << COLOR_RESET << std::endl;
     }
-
+#endif 
     // Affichage de la réponse complète (optionnel)
     /*std::cout << COLOR_CYAN << "\n--- Full Response ---" << COLOR_RESET << std::endl;
     std::cout << COLOR_MAGENTA << response.toString() << COLOR_RESET << std::endl;*/
