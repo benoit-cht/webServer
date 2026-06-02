@@ -123,16 +123,28 @@ t_httpResponse HttpHandler::handler_methode_get(t_httpRequest& request)
     return (HandlerErrorHttp(500));
 }
 
+# include <fstream>
 t_httpResponse HttpHandler::handler_methode_post(t_httpRequest& request)
 {
   std::cout << COLOR_YELLOW << "Warnig : a methode post not implement " << COLOR_RESET << std::endl;
-  
-  if (request.path.find("/cgi-bin/") == 0 || request.path.find(".php") != std::string::npos || request.path.find(".py") != std::string::npos)
+
+  if (request.path.find("/upload-file") == 0)
+  {
+    std::ofstream fichier("sources/www/upload-file/exemple.txt");
+    if (fichier.is_open())
+    {
+      fichier << request.body;
+
+      fichier.close();
+      return (HttpHandler::serveStaticFile("404.html"));
+    }
+  }
+  else if (request.path.find("/cgi-bin/") == 0 || request.path.find(".php") != std::string::npos || request.path.find(".py") != std::string::npos)
   {
     return HttpHandler::executeCgi(request.path, request);
   }
-  else
-    return (HandlerErrorHttp(500));
+  
+  return (HandlerErrorHttp(500));
 
 }
 
