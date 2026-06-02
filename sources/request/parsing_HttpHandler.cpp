@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parsingHttp.cpp                                    :+:      :+:    :+:   */
+/*   parsing_HttpHandler.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/01 11:55:55 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/01 12:05:21 by ton_utilisate    ###   ########.fr       */
+/*   Updated: 2026/06/02 11:10:16 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,8 @@ static void lx_tokenizer(std::vector<t_token>& lexer)
 {
   int curr = lexer.size() - 1;
   int i = lexer.at(curr).value.size() - 1;
-  if (curr == 0 && (lexer.at(curr).value == "GET" || lexer.at(curr).value == "POST" || lexer.at(curr).value == "DELETE "))
 
+  if (curr == 0 && (lexer.at(curr).value == "GET" || lexer.at(curr).value == "POST" || lexer.at(curr).value == "DELETE "))
   {
     lexer.at(curr).type = METHOD;
   }
@@ -64,7 +64,7 @@ static void lx_tokenizer(std::vector<t_token>& lexer)
   {
     lexer.at(curr).type = VERSION;
   }
-  else if (curr >= 5 && !lexer.at(curr).value.empty() && lexer.at(curr).value.at(i) == ':')
+  else if (curr >= 5 && !lexer.at(curr).value.empty() && lexer.at(curr).value.at(i) == ':' && lexer.at(curr - 1).type != BODY)
   {
     lexer.at(curr).type = HEADER_KEY;
   }
@@ -138,8 +138,8 @@ static void  lx_write_value(const std::string raw_request, size_t& index, std::v
 
 std::vector<t_token> HttpHandler::lexing(const std::string raw_request)
 {
-  std::vector<t_token> lexer;
   size_t index = 0;
+  std::vector<t_token> lexer;
 
   while (index + 1 < raw_request.size())
   {
@@ -148,6 +148,7 @@ std::vector<t_token> HttpHandler::lexing(const std::string raw_request)
   }
   
 #if DEBUG_FLAG
+  std::cout << raw_request << std::endl;
   printTokens(lexer);
 #endif  
   return ( lexer );
