@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/01 11:03:22 by ton_utilisate    ###   ########.fr       */
+/*   Updated: 2026/06/02 10:11:02 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request)
   return ( request );
 }
 
-/* ************************************************************************** */
+/* ========================================================================== */
 
 t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request)
 {
@@ -42,19 +42,19 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request)
 	{
     return (HandlerErrorHttp(400));
   }
-  else if (request.path == "/")
+    //else if (HttpHandler::isStaticFile(request.path))
+  else if (request.method == "GET")
   {
-    return HttpHandler::serveStaticFile("index.html");
+    return (HttpHandler::handler_methode_get(request));
   }
-  else if (request.path.find("/cgi-bin/") == 0 ||
-          request.path.find(".php") != std::string::npos ||
-          request.path.find(".py") != std::string::npos)
+  else if (request.method == "POST")
   {
-    return HttpHandler::executeCgi(request.path, request);
+    return (HttpHandler::handler_methode_post(request));
   }
-  else if (HttpHandler::isStaticFile(request.path))
+  else if (request.method == "DELETE")
   {
-    return HttpHandler::serveStaticFile(request.path);
+    std::cout << COLOR_YELLOW << "Warnig : a methode delete not implement " << COLOR_RESET << std::endl;
+    //return (HttpHandler::handler_methode_delete(request));
   }
   else
   {
@@ -63,9 +63,7 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request)
 	return ( response );
 }
 
-/* ************************************************************************** */
-
-
+/* ========================================================================== */
 
 t_httpResponse HttpHandler::HandlerErrorHttp(int status)
 {
@@ -103,6 +101,46 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status)
   return (t_httpResponse(status, headers, body));
 }
 
+/* ========================================================================== */
+/*                          -- HTTP METHODE --                                */
+/* ========================================================================== */
+
+t_httpResponse HttpHandler::handler_methode_get(t_httpRequest& request)
+{
+  if (request.path == "/")
+  {
+    return HttpHandler::serveStaticFile("index.html");
+  }
+  else if (HttpHandler::isStaticFile(request.path))
+  {
+    return (HttpHandler::serveStaticFile(request.path));
+  }
+  else if (request.path.find("/cgi-bin/") == 0 || request.path.find(".php") != std::string::npos || request.path.find(".py") != std::string::npos)
+  {
+    return HttpHandler::executeCgi(request.path, request);
+  }
+  else
+    return (HandlerErrorHttp(500));
+}
+
+t_httpResponse HttpHandler::handler_methode_post(t_httpRequest& request)
+{
+  std::cout << COLOR_YELLOW << "Warnig : a methode post not implement " << COLOR_RESET << std::endl;
+  
+  if (request.path.find("/cgi-bin/") == 0 || request.path.find(".php") != std::string::npos || request.path.find(".py") != std::string::npos)
+  {
+    return HttpHandler::executeCgi(request.path, request);
+  }
+  else
+    return (HandlerErrorHttp(500));
+
+}
+
+/*t_httpResponse HttpHandler::handler_methode_delete(t_httpRequest& request)
+{
+  
+  return (HandlerErrorHttp(500));
+}*/
 
 /* ************************************************************************** */
 /*                                                                            */

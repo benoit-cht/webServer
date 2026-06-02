@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 11:31:58 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/01 15:40:40 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/06/02 09:58:31 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,11 +30,16 @@ class HttpHandler {
 		static t_httpResponse        setHttpResponse(t_httpRequest request);
     static t_httpResponse        HandlerErrorHttp(int status);
 
+  private :
+    static t_httpResponse        handler_methode_get(t_httpRequest& request);
+    static t_httpResponse        handler_methode_post(t_httpRequest& request);
+    static t_httpResponse        handler_methode_delete(t_httpRequest& request);
+
   private:
     static bool                  descending_deriv(std::vector<t_token>& lexer);
     static t_httpRequest         struct_http_request(std::vector<t_token>& lexer);
     static std::vector<t_token>  lexing(const std::string raw_request);
-
+  
   private:
     static bool                  isStaticFile(const std::string& path);
     static std::string           readFile(const std::string& path);
