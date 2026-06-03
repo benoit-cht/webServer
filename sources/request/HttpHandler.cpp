@@ -143,10 +143,12 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest& request)
       
       response.status = 201;
       response.headers["Content-Type"] = request.headers["Content-Type"];
-
+      
+      std::cout << COLOR_GREEN << "Success : Created file " << ROOT + request.path + "exple.txt" << COLOR_RESET << std::endl;
       return (response);
     }
   }
+  std::cout << COLOR_YELLOW << "Warnig : Faile Created file " << ROOT + request.path + "exple.txt" << COLOR_RESET << std::endl;
   return (HandlerErrorHttp(500));
 
 }
