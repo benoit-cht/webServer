@@ -3,14 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>Supprimer un fichier</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; text-align: center; }
-        input, button { padding: 8px; margin: 5px; }
-        button { background-color: #d9534f; color: white; border: none; cursor: pointer; }
-        #result { margin-top: 20px; }
-    </style>
+    <link rel="stylesheet" href="styles/style.css">
+
 </head>
 <body>
+    <header>
+        <h1>Delete</h1>
+    </header>
+    
+    <nav>
+        <a href="index.html">Accueil</a>
+        <a href="about.html">À propos</a>
+        <a href="services.html">Services</a>
+        <a href="blog.html">Blog</a>
+        <a href="test_cgi.html">FORM</a>
+        <a href="upload.html">upload</a>
+        <a href="delete.html">delete</a>
+    </nav>
+
     <h1>Supprimer un fichier</h1>
     <input type="text" id="filepath" placeholder="/upload/fichier.txt" required>
     <button onclick="deleteFile()">Supprimer</button>

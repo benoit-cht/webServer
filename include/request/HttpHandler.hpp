@@ -13,6 +13,8 @@
 # ifndef HANDLERHTTP_HPP
 # define HANDLERHTTP_HPP
 
+#define FRONT_V2 0
+
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
@@ -52,6 +54,13 @@ class HttpHandler {
 
 
 };
+
+#if FRONT_V2 
+  #define ROOT "stack/www/"
+#else
+  #define ROOT "sources/www/"
+#endif
+
 
 # endif // !HTTPHANDLER_HPP
 

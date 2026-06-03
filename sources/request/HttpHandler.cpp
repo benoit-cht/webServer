@@ -134,7 +134,7 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest& request)
 
   if (request.path.find("/upload") == 0)
   {
-    std::string link = "sources/www" + request.path + "exemple.txt";
+    std::string link = ROOT + request.path + "exemple.txt";
     std::ofstream fichier(link.c_str());
     if (fichier.is_open())
     {
@@ -156,7 +156,7 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest& request)
 t_httpResponse HttpHandler::handler_methode_delete(t_httpRequest& request)
 {
   std::cout << COLOR_YELLOW << "Warnig : a methode delete not implement " << request.path << COLOR_RESET << std::endl;
-  std::string link = "sources/www" + request.path;
+  std::string link = ROOT + request.path;
   if(remove(link.c_str()) == 0) 
   {
     std::cout << COLOR_GREEN << "Success: " << link <<" is delete !" << COLOR_RESET << std::endl;

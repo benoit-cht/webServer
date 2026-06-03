@@ -102,7 +102,7 @@ t_httpResponse HttpHandler::serveStaticFile(const std::string& path)
       return (HandlerErrorHttp(403));
     }
 
-    std::string full_path = "./sources/www/" + path; // Assurez-vous que le chemin est correct
+    std::string full_path = ROOT + path; // Assurez-vous que le chemin est correct
     std::ifstream file(full_path.c_str(), std::ios::binary);
 
     if (!file.is_open())
