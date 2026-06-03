@@ -96,6 +96,8 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status)
   else if (status == 501)
     body ="<html><body>501 Not Implemented</body></html>";
 
+  else if (status == 204)
+    body ="";
 
   oss << body.size();
   headers["Content-Length"] = oss.str();
@@ -162,13 +164,13 @@ t_httpResponse HttpHandler::handler_methode_delete(t_httpRequest& request)
   if(remove(link.c_str()) == 0) 
   {
     std::cout << COLOR_GREEN << "Success: " << link <<" is delete !" << COLOR_RESET << std::endl;
-    return (HttpHandler::serveStaticFile("404.html"));
+    return (HandlerErrorHttp(204));
   }
   else
   {
     std::cout << "Le fichier n'a pas été supprimer a cause qu'il n'existe pas, un droit d'accès refusé,..." << std::endl;
   }  
-  return (HandlerErrorHttp(500));
+  return (HandlerErrorHttp(404));
 }
 
 /* ************************************************************************** */
