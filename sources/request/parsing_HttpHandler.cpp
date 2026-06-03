@@ -52,7 +52,7 @@ static void lx_tokenizer(std::vector<t_token>& lexer)
   int curr = lexer.size() - 1;
   int i = lexer.at(curr).value.size() - 1;
 
-  if (curr == 0 && (lexer.at(curr).value == "GET" || lexer.at(curr).value == "POST" || lexer.at(curr).value == "DELETE "))
+  if (curr == 0 && (lexer.at(curr).value == "GET" || lexer.at(curr).value == "POST" || lexer.at(curr).value == "DELETE"))
   {
     lexer.at(curr).type = METHOD;
   }
