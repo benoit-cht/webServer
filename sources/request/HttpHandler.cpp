@@ -38,7 +38,7 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request)
 	t_httpResponse                      response;
   std::map<std::string, std::string>  headers;
 
-	if (request.method != "GET" && request.method != "POST" && request.method != "HEAD")
+	if (request.method != "GET" && request.method != "POST" && request.method != "DELETE")
 	{
     return (HandlerErrorHttp(400));
   }
@@ -53,8 +53,7 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request)
   }
   else if (request.method == "DELETE")
   {
-    std::cout << COLOR_YELLOW << "Warnig : a methode delete not implement " << COLOR_RESET << std::endl;
-    //return (HttpHandler::handler_methode_delete(request));
+    return (HttpHandler::handler_methode_delete(request));
   }
   else
   {
@@ -128,9 +127,10 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest& request)
 {
   std::cout << COLOR_YELLOW << "Warnig : a methode post not implement " << COLOR_RESET << std::endl;
 
-  if (request.path.find("/upload-file") == 0)
+  if (request.path.find("/upload") == 0)
   {
-    std::ofstream fichier("sources/www/upload-file/exemple.txt");
+    std::string link = "sources/www" + request.path;
+    std::ofstream fichier(link.c_str());
     if (fichier.is_open())
     {
       fichier << request.body;
@@ -148,11 +148,21 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest& request)
 
 }
 
-/*t_httpResponse HttpHandler::handler_methode_delete(t_httpRequest& request)
+t_httpResponse HttpHandler::handler_methode_delete(t_httpRequest& request)
 {
-  
+  std::cout << COLOR_YELLOW << "Warnig : a methode delete not implement " << request.path << COLOR_RESET << std::endl;
+  std::string link = "sources/www" + request.path;
+  if(remove(link.c_str()) == 0) 
+  {
+    std::cout << "Le fichier TEMP.BAK a été supprimer correctement !" << std::endl;
+    return (HttpHandler::serveStaticFile("404.html"));
+  }
+  else
+  {
+    std::cout << "Le fichier n'a pas été supprimer a cause qu'il n'existe pas, un droit d'accès refusé,..." << std::endl;
+  }  
   return (HandlerErrorHttp(500));
-}*/
+}
 
 /* ************************************************************************** */
 /*                                                                            */
