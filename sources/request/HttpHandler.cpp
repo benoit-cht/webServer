@@ -42,7 +42,7 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request)
 	{
     return (HandlerErrorHttp(400));
   }
-    //else if (HttpHandler::isStaticFile(request.path))
+  //else if (HttpHandler::isStaticFile(request.path))
   else if (request.method == "GET")
   {
     return (HttpHandler::handler_methode_get(request));
@@ -122,6 +122,8 @@ t_httpResponse HttpHandler::handler_methode_get(t_httpRequest& request)
     return (HandlerErrorHttp(500));
 }
 
+/* ========================================================================== */
+
 # include <fstream>
 t_httpResponse HttpHandler::handler_methode_post(t_httpRequest& request)
 {
@@ -147,6 +149,8 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest& request)
   return (HandlerErrorHttp(500));
 
 }
+
+/* ========================================================================== */
 
 t_httpResponse HttpHandler::handler_methode_delete(t_httpRequest& request)
 {
