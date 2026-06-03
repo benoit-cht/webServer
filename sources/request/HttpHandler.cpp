@@ -42,7 +42,10 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request)
 	{
     return (HandlerErrorHttp(400));
   }
-  //else if (HttpHandler::isStaticFile(request.path))
+  else if (request.path.find("/cgi-bin/") == 0 || request.path.find(".php") != std::string::npos || request.path.find(".py") != std::string::npos)
+  {
+    return HttpHandler::executeCgi(request.path, request);
+  }
   else if (request.method == "GET")
   {
     return (HttpHandler::handler_methode_get(request));
@@ -82,7 +85,7 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status)
     body ="<html><body>403 Forbidden</body></html>";
     
   else if (status == 404)
-    body ="<html><body>404 Not Found</body></html>";
+    return (HttpHandler::serveStaticFile("404.html"));
 
   else if (status == 405)
     body ="<html><body>405 Method Not Allowed</body></html>";
@@ -114,12 +117,8 @@ t_httpResponse HttpHandler::handler_methode_get(t_httpRequest& request)
   {
     return (HttpHandler::serveStaticFile(request.path));
   }
-  else if (request.path.find("/cgi-bin/") == 0 || request.path.find(".php") != std::string::npos || request.path.find(".py") != std::string::npos)
-  {
-    return HttpHandler::executeCgi(request.path, request);
-  }
   else
-    return (HandlerErrorHttp(500));
+    return (HandlerErrorHttp(404));
 }
 
 /* ========================================================================== */
@@ -127,25 +126,27 @@ t_httpResponse HttpHandler::handler_methode_get(t_httpRequest& request)
 # include <fstream>
 t_httpResponse HttpHandler::handler_methode_post(t_httpRequest& request)
 {
+  std::string                         body;
+  t_httpResponse                      response;
+  std::map<std::string, std::string>  headers;
+
   std::cout << COLOR_YELLOW << "Warnig : a methode post not implement " << COLOR_RESET << std::endl;
 
   if (request.path.find("/upload") == 0)
   {
-    std::string link = "sources/www" + request.path;
+    std::string link = "sources/www" + request.path + "exemple.txt";
     std::ofstream fichier(link.c_str());
     if (fichier.is_open())
     {
       fichier << request.body;
-
       fichier.close();
-      return (HttpHandler::serveStaticFile("404.html"));
+      
+      response.status = 201;
+      response.headers["Content-Type"] = request.headers["Content-Type"];
+
+      return (response);
     }
   }
-  else if (request.path.find("/cgi-bin/") == 0 || request.path.find(".php") != std::string::npos || request.path.find(".py") != std::string::npos)
-  {
-    return HttpHandler::executeCgi(request.path, request);
-  }
-  
   return (HandlerErrorHttp(500));
 
 }
@@ -158,7 +159,7 @@ t_httpResponse HttpHandler::handler_methode_delete(t_httpRequest& request)
   std::string link = "sources/www" + request.path;
   if(remove(link.c_str()) == 0) 
   {
-    std::cout << "Le fichier TEMP.BAK a été supprimer correctement !" << std::endl;
+    std::cout << COLOR_GREEN << "Success: " << link <<" is delete !" << COLOR_RESET << std::endl;
     return (HttpHandler::serveStaticFile("404.html"));
   }
   else
