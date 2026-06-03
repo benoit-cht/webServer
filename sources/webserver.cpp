@@ -163,7 +163,6 @@ static void print_http_response(const t_httpResponse& response) {
     }
     std::cout << COLOR_RESET << std::endl;
 
-#if DEBUG_FLAG
     // Affichage des en-têtes
     std::cout << COLOR_CYAN << "\n--- Headers ---" << COLOR_RESET << std::endl;
     if (response.headers.empty()) {
@@ -174,6 +173,7 @@ static void print_http_response(const t_httpResponse& response) {
             std::cout << it->first << ": " << COLOR_GREEN << it->second << COLOR_RESET << std::endl;
         }
     }
+#if DEBUG_FLAG
     // Affichage du body (si présent)
     std::cout << COLOR_CYAN << "\n--- Body ---" << COLOR_RESET << std::endl;
     if (response.body.empty()) {
