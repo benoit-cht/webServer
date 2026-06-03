@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Supprimer un fichier</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; text-align: center; }
+        input, button { padding: 8px; margin: 5px; }
+        button { background-color: #d9534f; color: white; border: none; cursor: pointer; }
+        #result { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Supprimer un fichier</h1>
+    <input type="text" id="filepath" placeholder="/upload/fichier.txt" required>
+    <button onclick="deleteFile()">Supprimer</button>
+    <div id="result"></div>
+
+    <script>
+        function deleteFile() {
+            const filepath = document.getElementById('filepath').value;
+            const url = '/upload/' + encodeURIComponent(filepath);
+
+            fetch(url, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById('result').innerHTML =
+                        `<p style="color: green;">Fichier supprimé : ${filepath}</p>`;
+                } else {
+                    document.getElementById('result').innerHTML =
+                        `<p style="color: red;">Erreur : ${response.statusText}</p>`;
+                }
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML =
+                    `<p style="color: red;">Erreur réseau : ${error.message}</p>`;
+            });
+        }
+    </script>
+</body>
+</html>
