@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserver.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:39:42 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/20 19:27:09 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/05/23 17:29:34 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@
 #include "./network/EventLoop.hpp"
 #include <request/HttpHandler.hpp>
 # include "./ServerConfig.hpp"
+# include "./config/ServerConfig.hpp"
+# include "./config/LocationConfig.hpp"
 //#include "./request/RequestHttp.hpp"
 
 # endif
