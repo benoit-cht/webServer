@@ -21,9 +21,10 @@ volatile sig_atomic_t g_should_exit = 0;
 static void inf_loop(std::vector<int> ports);
 static void initVerctorOfPort(std::vector<int>& ports);
 static void signal_handler(int signal);
+#if DEBUG_FLAG
 static void print_http_request(const t_httpRequest& request);
 static void print_http_response(const t_httpResponse& response);
-
+#endif
 
 int main()
 {
@@ -58,6 +59,7 @@ static void handler_conection(EventLoop &loop)
     {
       char buffer[4096];
       ssize_t bytes_read = loop.readFromClient(fd, buffer, sizeof(buffer));
+      std::cout << buffer << "\n ==============================="<< std::endl;
       if (bytes_read <= 0) 
       {
         loop.removeClient(fd);
@@ -65,18 +67,22 @@ static void handler_conection(EventLoop &loop)
         continue;
       }
       // 👇 Traitement Request HTTP
+      
       t_httpRequest request = HttpHandler::setHttpRequest(buffer);
       t_httpResponse response = HttpHandler::setHttpResponse(request);
-
+      
       std::string raw_response = response.toString();
       loop.sendResponse(fd, raw_response);
-      if (response.status == 400)
+        }
+      /*if (response.status == 400)
       {
         loop.removeClient(fd);
 
       }
-      print_http_request(request);
-      print_http_response(response);
+      */
+      //print_http_request(request);
+      //print_http_response(response);
+
     }
   }
 }
@@ -119,6 +125,7 @@ static void initVerctorOfPort(std::vector<int>& ports)
 
 /* ==================================================================================================*/
 
+#if DEBUG_FLAG
 static void print_http_request(const t_httpRequest& request) {
     // Affichage de la méthode, du chemin et de la version
     std::cout << COLOR_CYAN << "\n=== HTTP Request ===" << COLOR_RESET << std::endl;
@@ -136,7 +143,6 @@ static void print_http_request(const t_httpRequest& request) {
             std::cout << it->first << ": " << COLOR_GREEN << it->second << COLOR_RESET << std::endl;
         }
     }
-#if DEBUG_FLAG
     // Affichage du body (si présent)
     std::cout << COLOR_CYAN << "\n--- Body ---" << COLOR_RESET << std::endl;
     if (request.body.empty()) {
@@ -144,11 +150,11 @@ static void print_http_request(const t_httpRequest& request) {
     } else {
         std::cout << COLOR_BLUE << request.body << COLOR_RESET << std::endl;
     }
-#endif
     std::cout << COLOR_CYAN << "===================\n" << COLOR_RESET << std::endl;
 }
+#endif
 
-
+#if DEBUG_FLAG
 static void print_http_response(const t_httpResponse& response) {
     // Affichage du statut
     std::cout << COLOR_CYAN << "\n=== HTTP Response ===" << COLOR_RESET << std::endl;
@@ -173,7 +179,6 @@ static void print_http_response(const t_httpResponse& response) {
             std::cout << it->first << ": " << COLOR_GREEN << it->second << COLOR_RESET << std::endl;
         }
     }
-#if DEBUG_FLAG
     // Affichage du body (si présent)
     std::cout << COLOR_CYAN << "\n--- Body ---" << COLOR_RESET << std::endl;
     if (response.body.empty()) {
@@ -181,10 +186,10 @@ static void print_http_response(const t_httpResponse& response) {
     } else {
         std::cout << COLOR_BLUE << response.body << COLOR_RESET << std::endl;
     }
-#endif 
     // Affichage de la réponse complète (optionnel)
     /*std::cout << COLOR_CYAN << "\n--- Full Response ---" << COLOR_RESET << std::endl;
     std::cout << COLOR_MAGENTA << response.toString() << COLOR_RESET << std::endl;*/
 
     std::cout << COLOR_CYAN << "====================\n" << COLOR_RESET << std::endl;
 }
+#endif
