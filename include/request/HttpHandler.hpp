@@ -58,7 +58,7 @@ class HttpHandler {
 };
 
 #if FRONT_V2 
-  #define ROOT "stack/www/"
+  #define ROOT "tech-stack/www/"
 #else
   #define ROOT "sources/www/"
 #endif
