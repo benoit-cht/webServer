@@ -126,7 +126,6 @@ static void print_http_request(const t_httpRequest& request) {
     std::cout << "Path: " << COLOR_YELLOW << request.path << COLOR_RESET << std::endl;
     std::cout << "Version: " << COLOR_YELLOW << request.version << COLOR_RESET << std::endl;
 
-#if DEBUG_FLAG
     // Affichage des en-têtes
     std::cout << COLOR_CYAN << "\n--- Headers ---" << COLOR_RESET << std::endl;
     if (request.headers.empty()) {
@@ -137,6 +136,7 @@ static void print_http_request(const t_httpRequest& request) {
             std::cout << it->first << ": " << COLOR_GREEN << it->second << COLOR_RESET << std::endl;
         }
     }
+#if DEBUG_FLAG
     // Affichage du body (si présent)
     std::cout << COLOR_CYAN << "\n--- Body ---" << COLOR_RESET << std::endl;
     if (request.body.empty()) {
