@@ -6,14 +6,14 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/23 18:37:03 by tjacquel          #+#    #+#             */
-/*   Updated: 2026/06/04 16:21:27 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/04 17:14:12 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <config/ServerConfig.hpp>
 #include <config/ConfigParsing.hpp>
 
-void		printParserBlocks(const t_block& curr_block, const std::string& prefix, int indent_level) {
+static void		printParserBlocks(const t_block& curr_block, const std::string& prefix, int indent_level) {
 	std::string	indent(indent_level * 4, ' ');
 
 	std::cout << indent << prefix << ".name=" << curr_block.name << "\n";
@@ -58,23 +58,24 @@ void		printParserBlocks(const t_block& curr_block, const std::string& prefix, in
 
 }
 
-void		printTokens(std::vector<std::string>& tokens) {
+static void		printTokens(std::vector<std::string>& tokens) {
 	for (size_t i = 0; i < tokens.size(); i++) {
 		std::cout << "token[" << i << "]=" << "`" << tokens[i] << "`" << std::endl;
 	}
 }
 
-void		printLines(std::vector<std::string>& lines) {
+static void		printLines(std::vector<std::string>& lines) {
 	for (size_t i = 0; i < lines.size(); i++) {
 
 	}
 }
 
-void		linterBlock(const t_block& curr_block, size_t& i) {
+static void		linterBlock(const t_block& curr_block, size_t& i) {
+	std::ostringstream	thw;
 	if (curr_block.directives.empty() && curr_block.embed_block.empty()) {
-		std::cerr << "Config file error: cannot have empty directive block" << std::endl;
-		std::cerr << "    Found no directive or embed block within: block[" << i << "]=" << curr_block.name << std::endl;
-		exit (1);
+		thw << "Config file error: cannot have empty directive block\n";
+		thw << "    Found no directive or embed block within: block[" << i << "]=" << curr_block.name;
+		throw std::logic_error(thw.str());
 	}
 	if (!curr_block.embed_block.empty()) {
 		for (size_t j = 0; j < curr_block.embed_block.size(); j++) {
@@ -83,21 +84,22 @@ void		linterBlock(const t_block& curr_block, size_t& i) {
 	}
 }
 
-void		paramCheck(const t_block& curr_block) {
+static void		paramCheck(const t_block& curr_block) {
+	std::ostringstream	thw;
 	if (curr_block.name == "server") {
 		if (!curr_block.parameters.empty()) {
-			std::cerr << "Config file error: no parameter expected for server directive" << std::endl;
-			exit (1);
+			thw << "Config file error: no parameter expected for server directive";
+			throw std::logic_error(thw.str());
 		}
 	}
 	if (curr_block.name == "location") {
 		if (curr_block.parameters.empty()) {
-			std::cerr << "Config file error: filepath parameter expected for location directive" << std::endl;
-			exit (1);
+			thw << "Config file error: filepath parameter expected for location directive";
+			throw std::logic_error(thw.str());
 		}
 		else if (curr_block.parameters.size() > 1) {
-			std::cerr << "Config file error: single parameter exepected for location directive" << std::endl;
-			exit (1);
+			thw << "Config file error: single parameter exepected for location directive";
+			throw std::logic_error(thw.str());
 		}
 	}
 	if (!curr_block.embed_block.empty()) {
@@ -107,16 +109,17 @@ void		paramCheck(const t_block& curr_block) {
 	}
 }
 
-t_block		parseTokens(const std::vector<std::string>& tokens, size_t& i) {
-	t_block	block;
+static t_block		parseTokens(const std::vector<std::string>& tokens, size_t& i) {
+	t_block				block;
+	std::ostringstream	thw;
 
 	block.name = tokens[i];
 	i++;
 
 	while (i < tokens.size() && tokens[i] != "{") {
 		if (tokens.at(i) == "}" || tokens.at(i) == ";") {
-			std::cerr << "Config file error: unexpected token `" << tokens.at(i) << "`" << std::endl;
-			exit (1);
+			thw << "Config file error: unexpected token `" << tokens.at(i) << "`";
+			throw std::logic_error(thw.str());
 		}
 		block.parameters.push_back(tokens[i]);
 		i++;
@@ -143,8 +146,8 @@ t_block		parseTokens(const std::vector<std::string>& tokens, size_t& i) {
 				i++;
 			}
 			else {
-				std::cerr << "Config file error: missing `;` before key token or EOF at tokens[" << i << "]=" << tokens[i] << std::endl;
-				exit (1);
+				thw << "Config file error: missing `;` before key token or EOF at tokens[" << i << "]=" << tokens[i];
+				throw std::logic_error(thw.str());
 			}
 		}
 	}
@@ -156,7 +159,7 @@ t_block		parseTokens(const std::vector<std::string>& tokens, size_t& i) {
 	return (block);
 }
 
-void	astBuilder(std::vector<t_block>& block, std::vector<std::string>& tokens) {
+static void	astBuilder(std::vector<t_block>& block, std::vector<std::string>& tokens) {
 	std::ostringstream	thw;
 	size_t i = 0;
 	while (i < tokens.size()) {
@@ -170,12 +173,12 @@ void	astBuilder(std::vector<t_block>& block, std::vector<std::string>& tokens) {
 	}
 
 	if (block.empty()) {
-		std::cerr << "Config file error: no valid block constructed" << std::endl;
-		return (1);
+		thw << "Config file error: no valid block constructed";
+		throw std::logic_error(thw.str());
 	}
 }
 
-void	syntaxLinter(std::vector<std::string> tokens) {
+static void	syntaxLinter(std::vector<std::string> tokens) {
 	int	bracket_count = 0;
 	std::ostringstream	thw;
 	for (size_t i = 0; i < tokens.size(); i++) { // bracket counting
@@ -236,7 +239,7 @@ void	syntaxLinter(std::vector<std::string> tokens) {
 
 }
 
-void	loadTokens(std::vector<std::string>& tokens, std::vector<std::string>& lines, const char* filepath) {
+static void	loadTokens(std::vector<std::string>& tokens, std::vector<std::string>& lines, const char* filepath) {
 	for (size_t i = 0; i < lines.size(); i++) {
 		size_t j = 0;
 		while (j < lines[i].size()) {
@@ -269,7 +272,7 @@ void	loadTokens(std::vector<std::string>& tokens, std::vector<std::string>& line
 	}
 }
 
-void	loadConfigLines(std::vector<std::string>& lines, std::ifstream& inFile) {
+static void	loadConfigLines(std::vector<std::string>& lines, std::ifstream& inFile) {
 	std::string line;
 	while (std::getline(inFile, line)) {
 		// strip all comments from lines
@@ -281,19 +284,8 @@ void	loadConfigLines(std::vector<std::string>& lines, std::ifstream& inFile) {
 	}
 }
 
-// void	configHandleFile(std::ifstream& inFile, const char* filepath) {
-// 	if (!inFile.is_open()) {
-// 		std::ostringstream	thw;
-// 		thw << "cannot open input file `" << filepath << "`";
-// 		throw std::runtime_error(thw.str());
-// 	}
-// }
-
 void	confParsingHandler(const char* filepath, std::vector<ServerConfig>& virtual_servers) {
-
-	(void) virtual_servers;
 	std::ifstream inFile(filepath);
-	// configHandleFile(inFile, filepath);
 	if (!inFile.is_open()) {
 		std::ostringstream	thw;
 		thw << "cannot open input file `" << filepath << "`";
@@ -314,10 +306,15 @@ void	confParsingHandler(const char* filepath, std::vector<ServerConfig>& virtual
 	std::vector<t_block>	block;
 	astBuilder(block, tokens);
 
-	// std::vector<ServerConfig>	virtual_servers;
 	for (size_t i = 0; i < block.size(); i++) {
 		ServerConfig		new_server;
 		new_server.loadFromBlock(block.at(i));
-		virtual_servers.push_back(new_server);
+		virtual_servers.push_back(new_server);	
 	}
+
+if (PRINT) {
+	for (size_t i = 0; i < virtual_servers.size(); i++) {
+		virtual_servers[i].printServerConfig(i);
+	}
+}
 }

@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 19:42:36 by lcluzan           #+#    #+#             */
-/*   Updated: 2026/06/03 15:09:14 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/04 17:10:22 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,22 +44,24 @@ void	ServerConfig::printServerConfig(const size_t i) const {
 }
 
 void	checkEmptyDirBlock(const t_block& curr_block) {
+	std::ostringstream	thw;
 	if (curr_block.directives.empty()) {
-		std::cerr << "Config file error: cannot have empty directive block" << std::endl;
-		exit (1);
+		thw << "Config file error: cannot have empty directive block";
+		throw std::logic_error(thw.str());
 	}
 }
 
 void	ServerConfig::serverDirCheck(const t_block& curr_block) {
+	std::ostringstream	thw;
 	// std::cout << "curr_block.directives.size()=" << curr_block.directives.size() << std::endl;
 	// std::cout << "curr_block.embed_block[0].directives.size()=" << curr_block.embed_block[0].directives.size() << std::endl;
 	if (!curr_block.parameters.empty()) {
-		std::cerr << "Config file error: no parameter expected for server directive" << std::endl;
-		exit (1);
+		thw << "Config file error: no parameter expected for server directive";
+		throw std::logic_error(thw.str());
 	}
 	if (curr_block.directives.empty() && !curr_block.embed_block.empty()) {
-		std::cerr << "Config file error: cannot have empty directive block" << std::endl;
-		exit (1);
+		thw << "Config file error: cannot have empty directive block";
+		throw std::logic_error(thw.str());
 	}
 }
 
@@ -67,24 +69,25 @@ void	ServerConfig::handleAddress(const std::string& addrStr) {
 	std::istringstream	iss(addrStr);
 	std::vector<int>	addrVec;
 	std::string			addrToken;
+	std::ostringstream	thw;
 
 	while (std::getline(iss, addrToken, '.')) {
 		if (addrToken.empty()) {
-			std::cerr << "Config file error: IPv4 address cannot be empty in " << addrStr << std::endl;
-			exit (1);
+			thw << "Config file error: IPv4 address cannot be empty in " << addrStr;
+			throw std::logic_error(thw.str());
 		}
 		addrVec.push_back(ft_stoi(addrToken));
 	}
 
 	if (addrVec.size() != 4) {
-		std::cerr << "Config file error: IPv4 address format error" << std::endl;
-		exit (1);
+		thw << "Config file error: IPv4 address format error";
+		throw std::logic_error(thw.str());
 	}
 
 	for (size_t i = 0; i < addrVec.size(); ++i) {
 		if (addrVec.at(i) < 0 || addrVec.at(i) > 255) {
-			std::cerr << "Config file error: IPv4 address range must be between 0 and 255, found " << addrVec.at(i) << std::endl;
-			exit (1);
+			thw << "Config file error: IPv4 address range must be between 0 and 255, found " << addrVec.at(i);
+			throw std::logic_error(thw.str());
 		}
 	}
 
@@ -93,51 +96,53 @@ void	ServerConfig::handleAddress(const std::string& addrStr) {
 }
 
 void	ServerConfig::handlePort(const std::string& portStr) {
+	std::ostringstream	thw;
+
 	this->port = ft_stoi(portStr);
 
 	if (this->port < 1 || this->port > 65535) {
-		std::cerr << "Config file error: port value must be within 1 and 65535, found " << this->port << std::endl;
-		exit(1);
+		thw << "Config file error: port value must be within 1 and 65535, found " << this->port;
+		throw std::logic_error(thw.str());
 	}
 }
 
 void	ServerConfig::listenDirCheckAndLoad(const std::vector<std::string>& curr_dir) {
 	// std::cout << "listen curr_dir.size()=" << curr_dir.size() << std::endl;
+	std::ostringstream	thw;
 	if (curr_dir.size() > 2) {
-		std::cerr << "Config file error: at least one argument expected for listen directive, found " << curr_dir.size() - 1 << " arguments." << std::endl;
-		exit (1);
+		thw << "Config file error: at least one argument expected for listen directive, found " << curr_dir.size() - 1 << " arguments.";
+		throw std::logic_error(thw.str());
 	}
 
-	try {
-		size_t	foundDQuote = curr_dir.at(1).find(":");
-		if (foundDQuote != std::string::npos) {
-			std::string	addrStr = curr_dir.at(1).substr(0, foundDQuote);
-			std::string	portStr = curr_dir.at(1).substr(foundDQuote+1);
-			handleAddress(addrStr);
-			handlePort(portStr);
+	// try {
+	size_t	foundDQuote = curr_dir.at(1).find(":");
+	if (foundDQuote != std::string::npos) {
+		std::string	addrStr = curr_dir.at(1).substr(0, foundDQuote);
+		std::string	portStr = curr_dir.at(1).substr(foundDQuote+1);
+		handleAddress(addrStr);
+		handlePort(portStr);
+	}
+	else {
+		size_t	foundDot = curr_dir.at(1).find(".");
+		if (foundDot != std::string::npos) {
+			handleAddress(curr_dir.at(1));
 		}
 		else {
-			size_t	foundDot = curr_dir.at(1).find(".");
-			if (foundDot != std::string::npos) {
-				handleAddress(curr_dir.at(1));
-			}
-			else {
-				handlePort(curr_dir.at(1));
-			}
+			handlePort(curr_dir.at(1));
 		}
-		// this->port = ft_stoi(curr_dir[1]);
 	}
-	catch (std::exception& e) {
-		std::cerr << "Config file error: " << e.what() << std::endl;
-		exit (1);
-	}
-	// this->port = atoi((curr_dir[1]).c_str());
+	// }
+	// catch (std::exception& e) {
+	// 	std::cerr << "Config file error: " << e.what() << std::endl;
+	// 	exit (1);
+	// }
 }
 
 void	ServerConfig::server_nameDirCheckAndLoad(const std::vector<std::string>& curr_dir) {
 	if (curr_dir.size() < 2) {
-		std::cerr << "Config file error: at least one argument expected for server_name directive" << std::endl;
-		exit(1);
+		std::ostringstream	thw;
+		thw << "Config file error: at least one argument expected for server_name directive";
+		throw std::logic_error(thw.str());
 	}
 
 	if (this->server_name.size() == 1 && this->server_name[0] == "") {
@@ -151,11 +156,11 @@ void	ServerConfig::server_nameDirCheckAndLoad(const std::vector<std::string>& cu
 }
 
 void	ServerConfig::cmbsDirCheckAndLoad(const std::vector<std::string>& curr_dir) {
+	std::ostringstream	thw;
 	if (curr_dir.size() != 2) {
-		std::cerr << "Config file error: single mandatory argument expected for client_max_body_size directive, found " << curr_dir.size() - 1 << " argument(s)." << std::endl;
-		exit(1);
+		thw << "Config file error: single mandatory argument expected for client_max_body_size directive, found " << curr_dir.size() - 1 << " argument(s).";
+		throw std::logic_error(thw.str());
 	}
-	// this->client_max_body_size = atoi((curr_dir[1]).c_str());
 
 	std::string	arg = curr_dir.at(1);
 	char		last_char = arg.at(arg.length() - 1);
@@ -177,30 +182,30 @@ void	ServerConfig::cmbsDirCheckAndLoad(const std::vector<std::string>& curr_dir)
 		arg = arg.substr(0, arg.length() - 1);
 	}
 
-	try {
+	// try {
 		int			base_value = ft_stoi(arg)	;
 		long long	final_value = static_cast<long long>(base_value) * multiplier;
 
 		if (final_value > CLIENT_MAX_BODY_SIZE_LIMIT) {
-			std::cerr << "Config file error: client_max_body_size exceeds or is equal to 2GB maximum limit" << std::endl;
-			exit (1);
+			thw << "Config file error: client_max_body_size exceeds or is equal to 2GB maximum limit";
+			throw std::logic_error(thw.str());
 		}
 
 		this->client_max_body_size = static_cast<int>(final_value);
 
-	}
-	catch (std::exception& e) {
-		std::cerr << "Config file error: " << e.what() << std::endl;
-		exit (1);
-	}
+	// }
+	// catch (std::exception& e) {
+	// 	std::cerr << "Config file error: " << e.what() << std::endl;
+	// 	exit (1);
+	// }
 
 }
 
 void	ServerConfig::loadFromBlock(const t_block& curr_block) {
+	std::ostringstream	thw;
 	if (curr_block.name != "server") {
-		std::cerr << "Config file error: expected server directive block, found " << curr_block.name << std::endl;
-		exit(1);
-
+		thw << "Config file error: expected server directive block, found " << curr_block.name;
+		throw std::logic_error(thw.str());
 	}
 	serverDirCheck(curr_block);
 	for (size_t i = 0; i < curr_block.directives.size(); i++) {
@@ -214,8 +219,8 @@ void	ServerConfig::loadFromBlock(const t_block& curr_block) {
 			cmbsDirCheckAndLoad(curr_block.directives[i]);
 		}
 		else {
-			std::cout << "Config file error: directive `" << curr_block.directives[i][0] << "` found in server block is not supported" << std::endl;
-			exit (1);
+			thw << "Config file error: directive `" << curr_block.directives[i][0] << "` found in server block is not supported";
+			throw std::logic_error(thw.str());
 		}
 
 	}
@@ -230,8 +235,8 @@ void	ServerConfig::loadFromBlock(const t_block& curr_block) {
 		}
 
 		else {
-			std::cerr << "Config file error: embedded block `" << curr_block.embed_block[i].name << "` is not supported" << std::endl;
-			exit (1);
+			thw << "Config file error: embedded block `" << curr_block.embed_block[i].name << "` is not supported";
+			throw std::logic_error(thw.str());
 		}
 	}
 

@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 19:26:05 by lcluzan           #+#    #+#             */
-/*   Updated: 2026/06/02 18:28:00 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/04 16:37:31 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,11 +66,5 @@ private:
 	std::map<std::string, LocationConfig>	location;
 
 } ;
-
-t_block		parseTokens(const std::vector<std::string>& tokens, size_t& i);
-void		printParserBlocks(const t_block& curr_block, const std::string& prefix, int indent_level);
-void		printParserEmbedBlocks(const std::vector<t_block>& embed_block, size_t& i);
-void		linterBlock(const t_block& curr_block, size_t& i);
-void		paramCheck(const t_block& curr_block);
 
 #endif

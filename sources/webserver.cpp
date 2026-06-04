@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/04 15:31:15 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/04 16:33:43 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,15 +54,13 @@ int main (int av, char *ag[]) {
 #if RUN_WITH_SERVER
 	std::signal(SIGINT, signal_handler);// Enregistrer le gestionnaire de signal
 #endif
-	std::string filename  = ag[1];
 
-	// 1
 	try {
+
 	std::vector<ServerConfig>	virtual_servers;
 	confParsingHandler(ag[1], virtual_servers);
-	// 2
-	// std::vector<ServerConfig>	virtual_servers = confParsingHandler(ag[1]);
 
+	/* std::string filename  = ag[1];
 	std::ifstream inFile(filename.c_str());
 	if (!inFile.is_open()) {
 		std::cerr << "Error: cannot open input file " << filename << std::endl;
@@ -205,7 +203,7 @@ int main (int av, char *ag[]) {
 		new_server.loadFromBlock(block.at(i));
 		virtual_servers.push_back(new_server);
 	}
-
+ */
 
 #if RUN_WITH_SERVER
   initVerctorOfPort(ports);
