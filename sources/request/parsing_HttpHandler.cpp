@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include <request/HttpHandler.hpp>
+#include <webserver.hpp>
 
 /* ========================================================================== */
 /*                              -- LEXER --                                   */
@@ -254,6 +255,8 @@ static void   st_write_in_struct(t_httpRequest& request, t_token token)
     request.path = token.value;
   else if (token.type == VERSION)
     request.version = token.value;
+  else if (token.type == BODY && token.value == "")
+    request.body += '\n';
   else if (token.type == BODY)
     request.body += token.value;
 }

@@ -171,7 +171,7 @@ t_post_methode HttpHandler::post_parse_header_request(t_httpRequest request)
   if (!request.headers["Content-Length"].empty()) {
 
     parsing.bodyLength = request.headers["Content-Length"];
-    std::cout << " .bodyLength : " << parsing.bodyLength << request.body.length() << std::endl; 
+    std::cout << " .bodyLength : " << parsing.bodyLength  << std::endl; 
   }
 
   pos_boundary = request.headers["Content-Type"].find("boundary=");
@@ -180,7 +180,10 @@ t_post_methode HttpHandler::post_parse_header_request(t_httpRequest request)
     parsing.boundary = request.headers["Content-Type"].substr(pos_boundary + 9);
     std::cout << " .boundary : " << parsing.boundary << std::endl; 
   }
-
+  parsing.body = request.body;
+  parsing.body.erase(parsing.body.find(parsing.boundary), parsing.boundary.length());
+  parsing.body.erase(parsing.body.find(parsing.boundary), parsing.boundary.length());
+  std::cout << ".body : " << parsing.body << std::endl;
   return (parsing);
 }
 
