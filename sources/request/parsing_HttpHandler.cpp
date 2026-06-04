@@ -229,7 +229,8 @@ static void   init_hash_table_header(t_httpRequest& request, std::vector<t_token
   {
     if (lexer[index].type == HEADER_KEY)
     {
-      h_key = lexer[index].value;
+      h_key = lexer[index].value ;
+      h_key.erase(std::remove(h_key.begin(), h_key.end(), ':'), h_key.end());
     }
     else if (lexer[index].type == HEADER_VALUE && !h_key.empty())
     {
