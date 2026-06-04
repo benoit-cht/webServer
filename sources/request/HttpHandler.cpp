@@ -27,7 +27,7 @@ t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request)
   {
     std::cout << COLOR_YELLOW << "Warging : bad request " << COLOR_RESET << std::endl;
   }
-
+  
   return ( request );
 }
 
@@ -126,7 +126,7 @@ t_httpResponse HttpHandler::handler_methode_get(t_httpRequest& request)
 /* ========================================================================== */
 
 # include <fstream>
-t_httpResponse HttpHandler::handler_methode_post(t_httpRequest& request)
+t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request)
 {
   std::string                         body;
   t_httpResponse                      response;
@@ -138,8 +138,12 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest& request)
   {
     std::string link = ROOT + request.path + "exemple.txt";
     std::ofstream fichier(link.c_str());
+    
+    HttpHandler::post_parse_header_request(request);
+
     if (fichier.is_open())
     {
+
       fichier << request.body;
       fichier.close();
       

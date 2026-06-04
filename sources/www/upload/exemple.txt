@@ -1,0 +1,6 @@
+------geckoformboundarye312ee3a5a714ef73fa68ea611618f2dContent-Disposition: form-data; name="file"; filename="README.md"Content-Type: text/markdown# webServer
+This project has been created as part of the 42 curriculum
+
+![alt](wiki/obs_webServ/tools/Graph_Server_Http.png)
+![alt](wiki/obs_webServ/tools/group.png)
+------geckoformboundarye312ee3a5a714ef73fa68ea611618f2d--

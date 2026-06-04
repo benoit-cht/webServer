@@ -154,10 +154,35 @@ bool HttpHandler::isStaticFile(const std::string& path)
 }
 
 /* ========================================================================== */
-/*                          -- CODE HTTP 200-204 --                           */
+/*                          -- tools of POST METHODE  --                      */
 /* ========================================================================== */
 
+// fonction pour parser le body 
+//
+// fonction pour cree le post 
+//
+// creation de la struct reponsse
 
+t_post_methode HttpHandler::post_parse_header_request(t_httpRequest request)
+{
+  size_t          pos_boundary = 0;
+  t_post_methode  parsing;
+  
+  if (!request.headers["Content-Length"].empty()) {
+
+    parsing.bodyLength = request.headers["Content-Length"];
+    std::cout << " .bodyLength : " << parsing.bodyLength << request.body.length() << std::endl; 
+  }
+
+  pos_boundary = request.headers["Content-Type"].find("boundary=");
+  if (pos_boundary != 0) {
+    
+    parsing.boundary = request.headers["Content-Type"].substr(pos_boundary + 9);
+    std::cout << " .boundary : " << parsing.boundary << std::endl; 
+  }
+
+  return (parsing);
+}
 
 /* ************************************************************************** */
 /*                                                                            */
