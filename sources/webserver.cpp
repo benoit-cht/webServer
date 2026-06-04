@@ -22,9 +22,10 @@ static void inf_loop(std::vector<int> ports);
 static void initVerctorOfPort(std::vector<int>& ports);
 static void signal_handler(int signal);
 #if DEBUG_FLAG
-static void print_http_request(const t_httpRequest& request);
-static void print_http_response(const t_httpResponse& response);
+//static void print_http_request(const t_httpRequest& request);
+//static void print_http_response(const t_httpResponse& response);
 #endif
+std::string readFullHttpRequest(int fd, EventLoop& loop) ;
 
 int main()
 {
@@ -57,23 +58,18 @@ static void handler_conection(EventLoop &loop)
     } 
     else 
     {
-      char buffer[4096];
-      ssize_t bytes_read = loop.readFromClient(fd, buffer, sizeof(buffer));
-      std::cout << buffer << "\n ==============================="<< std::endl;
-      if (bytes_read <= 0) 
-      {
-        loop.removeClient(fd);
-        std::cout << COLOR_CYAN << "(Log Client) : client déconnecté (fd=" << fd << ")." << COLOR_RESET << std::endl;
-        continue;
-      }
+      std::string string_request;
+
+      string_request = readFullHttpRequest(fd, loop);
+
+      
       // 👇 Traitement Request HTTP
       
-      t_httpRequest request = HttpHandler::setHttpRequest(buffer);
+      t_httpRequest request = HttpHandler::setHttpRequest(string_request.c_str());
       t_httpResponse response = HttpHandler::setHttpResponse(request);
       
       std::string raw_response = response.toString();
       loop.sendResponse(fd, raw_response);
-        }
       /*if (response.status == 400)
       {
         loop.removeClient(fd);
@@ -193,3 +189,69 @@ static void print_http_response(const t_httpResponse& response) {
     std::cout << COLOR_CYAN << "====================\n" << COLOR_RESET << std::endl;
 }
 #endif
+
+std::string readFullHttpRequest(int fd, EventLoop& loop) {
+    std::string request;
+    char buffer[4096];
+    ssize_t bytes_read;
+    bool headers_ended = false;
+    size_t content_length = 0;
+    size_t body_bytes_read = 0;
+
+    while (true) {
+        // Lire un morceau de données
+        bytes_read = loop.readFromClient(fd, buffer, sizeof(buffer));
+        if (bytes_read <= 0) {
+            if (bytes_read == 0) {
+                // Client a fermé la connexion
+                std::cout << COLOR_RED << "Client disconnected (fd=" << fd << ")" << COLOR_RESET << std::endl;
+            } else {
+                // Erreur de lecture
+                std::cerr << "Error reading from client (fd=" << fd << ")" << std::endl;
+            }
+            return ""; // Retourner une chaîne vide en cas d'erreur
+        }
+
+        // Ajouter les données lues à la requête
+        request.append(buffer, bytes_read);
+
+        // Si on n'a pas encore trouvé la fin des headers
+        if (!headers_ended) {
+            // Chercher \r\n\r\n (fin des headers)
+            size_t header_end_pos = request.find("\r\n\r\n");
+            if (header_end_pos != std::string::npos) {
+                headers_ended = true;
+                // Extraire Content-Length
+                size_t content_length_pos = request.find("Content-Length: ");
+                if (content_length_pos != std::string::npos) {
+                    size_t start = content_length_pos + 16; // "Content-Length: " = 16 chars
+                    size_t end = request.find("\r\n", start);
+                    if (end != std::string::npos) {
+                        std::string length_str = request.substr(start, end - start);
+                        content_length = atoi(length_str.c_str());
+                    }
+                }
+                // Si pas de Content-Length, on suppose que c'est une requête sans body (ex: GET)
+                else {
+                    content_length = 0;
+                }
+            }
+        }
+
+        // Si les headers sont terminés et qu'on a un Content-Length
+        if (headers_ended) {
+            // Calculer la taille du body déjà reçu
+            size_t header_end_pos = request.find("\r\n\r\n");
+            if (header_end_pos != std::string::npos) {
+                body_bytes_read = request.size() - (header_end_pos + 4); // +4 pour \r\n\r\n
+            }
+
+            // Si on a reçu tout le body, on arrête
+            if (body_bytes_read >= content_length) {
+                break;
+            }
+        }
+    }
+
+    return request;
+}
