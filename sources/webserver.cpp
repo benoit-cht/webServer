@@ -70,12 +70,12 @@ static void handler_conection(EventLoop &loop)
       
       std::string raw_response = response.toString();
       loop.sendResponse(fd, raw_response);
-      /*if (response.status == 400)
+      if (response.status == 400)
       {
         loop.removeClient(fd);
 
       }
-      */
+      
       //print_http_request(request);
       //print_http_response(response);
 
