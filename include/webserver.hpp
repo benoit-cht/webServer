@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:39:42 by bchallat          #+#    #+#             */
-/*   Updated: 2026/05/23 17:29:34 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/04 18:34:45 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@
 #include "./network/ClientManager.hpp"
 #include "./network/EventLoop.hpp"
 #include <request/HttpHandler.hpp>
-# include "./ServerConfig.hpp"
 # include "./config/ServerConfig.hpp"
 # include "./config/LocationConfig.hpp"
 //#include "./request/RequestHttp.hpp"
