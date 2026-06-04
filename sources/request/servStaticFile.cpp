@@ -10,7 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/request/utils_HandlerHttp.hpp"
+//#include "../../include/request/utils_HandlerHttp.hpp"
+#include <request/HttpHandler.hpp>
 #include <fstream>   // Pour std::ifstream
 #include <sstream>   // Pour std::stringstream
                      //
@@ -27,7 +28,7 @@ std::string getMimeType(const std::string& path) {
     return "text/plain";
 }
 
-t_httpResponse serveStaticFile(const std::string& path) 
+t_httpResponse HttpHandler::serveStaticFile(const std::string& path) 
 {
     if (!isSafePath(path)) 
     {

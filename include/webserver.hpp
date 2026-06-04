@@ -31,6 +31,8 @@
 #include "./network/ClientInfo.hpp"
 #include "./network/ClientManager.hpp"
 #include "./network/EventLoop.hpp"
+#include <request/HttpHandler.hpp>
+# include "./ServerConfig.hpp"
 # include "./config/ServerConfig.hpp"
 # include "./config/LocationConfig.hpp"
 //#include "./request/RequestHttp.hpp"

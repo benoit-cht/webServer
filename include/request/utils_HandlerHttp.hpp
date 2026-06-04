@@ -13,10 +13,6 @@
 #ifndef UTILS_HANDLERHTTP_HPP
 #define UTILS_HANDLERHTTP_HPP
 
-/*------------------------------------*/
-/*             include                */
-/*------------------------------------*/
-
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
@@ -24,13 +20,8 @@
 #include <map>
 #include <vector>
 
-#include "./../log/colorLog.hpp"
-
-/*------------------------------------*/
-/*          definition struct         */
-/*------------------------------------*/
-
-typedef enum e_type
+#include <log/colorLog.hpp>
+enum t_type
 {
 	METHOD,
 	PATH,
@@ -43,18 +34,18 @@ typedef enum e_type
 	WHITESPACE,
 	UNKNOWN
 
-} t_type;
+};
 
-typedef struct s_token
+struct t_token
 {
 	t_type       type;
 	std::string  value;
-  s_token(t_type t, const std::string& v) : type(t), value(v) {}
-  ~s_token(void){};
+  t_token(t_type t, const std::string& v) : type(t), value(v) {}
+  ~t_token(void){};
 
-} t_token;
+};
 
-typedef struct s_httpRequest
+struct t_httpRequest
 {
 	std::string                        method;
   std::string                        path;
@@ -62,38 +53,21 @@ typedef struct s_httpRequest
   std::map<std::string, std::string> headers;
   std::string                        body;
 
-}   t_httpRequest;
+};
 
-typedef struct s_httpResponse
+struct t_httpResponse
 {
 	int                                status;
   std::map<std::string, std::string> headers;
 	std::string                        body;
 
-  s_httpResponse();
-  s_httpResponse(int status, const std::map<std::string, std::string>& headers, const std::string& body);
+  t_httpResponse();
+  t_httpResponse(int status, const std::map<std::string, std::string>& headers, const std::string& body);
   std::string toString() const;
 
-} t_httpResponse;
-
-/*------------------------------------*/
-/*    prototype fonction parsing      */
-/*------------------------------------*/
-
-bool                  req_descending_deriv(std::vector<t_token>& lexer);
-t_httpRequest         req_struct_http_request(std::vector<t_token>& lexer);
-std::vector<t_token>  req_lexing(const std::string raw_request);
-
-/*------------------------------------*/
-/*    prototype fonction response     */
-/*------------------------------------*/
-
-std::string readFile(const std::string& path);
-t_httpResponse serveStaticFile(const std::string& path);
-void print_http_response(const t_httpResponse& response);
+};
 
 #endif // !UTILS_HANDLERHTTP_HPP
-
 
 /* ************************************************************************** */
 /*                                                                            */

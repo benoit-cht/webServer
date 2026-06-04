@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   rep_descending_deriv.cpp                           :+:      :+:    :+:   */
+/*   descending_deriv.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/08 02:15:38 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/08 02:48:53 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/04/27 14:11:53 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/request/utils_HandlerHttp.hpp"
+#include <request/HttpHandler.hpp>
 
 static bool dd_first_line(const std::vector<t_token>& lexer)
 {
@@ -54,7 +54,7 @@ static bool dd_header_body(const std::vector<t_token>& lexer)
   return (true);
 }
 
-bool  req_descending_deriv(std::vector<t_token>& lexer)
+bool  HttpHandler::descending_deriv(std::vector<t_token>& lexer)
 {
   if (!dd_first_line(lexer))
     return ( false );

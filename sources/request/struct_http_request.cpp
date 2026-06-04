@@ -1,45 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   req_struct_http_request.cpp                        :+:      :+:    :+:   */
+/*   struct_http_request.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/08 12:24:05 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/08 12:58:06 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/04/27 14:19:29 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/request/utils_HandlerHttp.hpp"
-
-static void print_http_request(const t_httpRequest& request) {
-    // Affichage de la méthode, du chemin et de la version
-    std::cout << COLOR_CYAN << "\n=== HTTP Request ===" << COLOR_RESET << std::endl;
-    std::cout << "Method: " << COLOR_YELLOW << request.method << COLOR_RESET << std::endl;
-    std::cout << "Path: " << COLOR_YELLOW << request.path << COLOR_RESET << std::endl;
-    std::cout << "Version: " << COLOR_YELLOW << request.version << COLOR_RESET << std::endl;
-
-    // Affichage des en-têtes
-    std::cout << COLOR_CYAN << "\n--- Headers ---" << COLOR_RESET << std::endl;
-    if (request.headers.empty()) {
-        std::cout << COLOR_RED << "No headers." << COLOR_RESET << std::endl;
-    } else {
-        for (std::map<std::string, std::string>::const_iterator it = request.headers.begin();
-             it != request.headers.end(); ++it) {
-            std::cout << it->first << ": " << COLOR_GREEN << it->second << COLOR_RESET << std::endl;
-        }
-    }
-
-    // Affichage du body (si présent)
-    std::cout << COLOR_CYAN << "\n--- Body ---" << COLOR_RESET << std::endl;
-    if (request.body.empty()) {
-        std::cout << COLOR_RED << "No body." << COLOR_RESET << std::endl;
-    } else {
-        std::cout << COLOR_BLUE << request.body << COLOR_RESET << std::endl;
-    }
-
-    std::cout << COLOR_CYAN << "===================\n" << COLOR_RESET << std::endl;
-}
+#include <request/HttpHandler.hpp>
 
 static void   init_hash_table_header(t_httpRequest& request, std::vector<t_token>& lexer)
 {
@@ -79,7 +50,7 @@ static void   st_write_in_struct(t_httpRequest& request, t_token token)
     request.body += token.value;
 }
 
-t_httpRequest req_struct_http_request(std::vector<t_token>& lexer)
+t_httpRequest HttpHandler::struct_http_request(std::vector<t_token>& lexer)
 {
   size_t        indx = 0;
   t_httpRequest request;
@@ -91,7 +62,6 @@ t_httpRequest req_struct_http_request(std::vector<t_token>& lexer)
   }
   
   init_hash_table_header(request, lexer);
-  print_http_request(request);
   return (request);
 }
 

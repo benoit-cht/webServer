@@ -1,43 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   req_lexing.cpp                                     :+:      :+:    :+:   */
+/*   lexing.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 14:25:13 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/25 18:09:12 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/04/27 14:14:27 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/request/utils_HandlerHttp.hpp"
-
-/*
-static std::string typeToString(t_type type)
-{
-    switch (type) {
-        case METHOD: return "METHOD";
-        case PATH: return "PATH";
-        case VERSION: return "VERSION";
-        case HEADER_KEY: return "HEADER_KEY";
-        case HEADER_VALUE: return "HEADER_VALUE";
-        case COLON: return "COLON";
-        case CRLF: return "CRLF";
-        case BODY: return "BODY";
-        case WHITESPACE: return "WHITESPACE";
-        case UNKNOWN: return "UNKNOWN";
-        default: return "UNKNOWN";
-    }
-}
-
-static void printTokens(const std::vector<t_token>& lexer)
-{
-    for (std::vector<t_token>::const_iterator it = lexer.begin(); it != lexer.end(); ++it)
-    {
-        const t_token& token = *it;
-        std::cout << "Token type: " << typeToString(token.type) << ", value: \"" << token.value << "\"" << std::endl;
-    }
-} */
+#include <request/HttpHandler.hpp>
 
 static void lx_tokenizer(std::vector<t_token>& lexer)
 {
@@ -109,26 +82,26 @@ static void  lx_write_value(const std::string raw_request, size_t& index, std::v
 
   if(raw_request[index] == 32)
   {
-    s_token temp(WHITESPACE, " ");
+    t_token temp(WHITESPACE, " ");
     lexer.push_back(temp);
     index++;
   }
   else if (index > 2 && raw_request[index - 2] == ':')
   {
     str = lx_header_value(raw_request, index);
-    s_token temp(UNKNOWN, str);
+    t_token temp(UNKNOWN, str);
     lexer.push_back(temp);
 
   }
   else
   {
     str = lx_value(raw_request, index);
-    s_token temp(UNKNOWN, str);
+    t_token temp(UNKNOWN, str);
     lexer.push_back(temp);
   }
 }
 
-std::vector<t_token> req_lexing(const std::string raw_request)
+std::vector<t_token> HttpHandler::lexing(const std::string raw_request)
 {
   std::vector<t_token> lexer;
   size_t index = 0;

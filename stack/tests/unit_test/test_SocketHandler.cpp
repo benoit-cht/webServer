@@ -1,5 +1,5 @@
 #define CATCH_CONFIG_MAIN
-#include "include/catch.hpp"
+#include "../include/catch.hpp"
 #include <network/SocketHandler.hpp>
 #include <sys/socket.h>
 #include <unistd.h>
