@@ -6,17 +6,15 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 19:42:36 by lcluzan           #+#    #+#             */
-/*   Updated: 2026/06/02 18:48:16 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/03 15:09:14 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <config/ServerConfig.hpp>
 
-ServerConfig::ServerConfig() : /* i(0), */host("0.0.0.0"), port(8000), client_max_body_size(8000000) {
+ServerConfig::ServerConfig() : host("0.0.0.0"), port(8000), client_max_body_size(8000000) {
 	this->server_name.push_back("");
 }
-
-
 
 ServerConfig::~ServerConfig() {}
 
@@ -28,7 +26,6 @@ void	ServerConfig::printServerConfig(const size_t i) const {
 	}
 	std::cout << "virtual_servers[" << i << "].clients_max_body_size=" << this->client_max_body_size << std::endl;
 
-	// std::cout << "virtual_servers[" << i << "].location.size()=" << this->location.size() << std::endl;
 	if (this->location.size() > 0) {
 		std::map<std::string, LocationConfig>::const_iterator	it;
 		for (it = location.begin();  it != location.end(); ++it) {
@@ -36,6 +33,14 @@ void	ServerConfig::printServerConfig(const size_t i) const {
 			it->second.printLocationConfig();
 		}
 	}
+
+// Usage in main
+/*
+	for (size_t i = 0; i < virtual_servers.size(); i++) {
+		virtual_servers[i].printServerConfig(i);
+	}
+*/
+
 }
 
 void	checkEmptyDirBlock(const t_block& curr_block) {

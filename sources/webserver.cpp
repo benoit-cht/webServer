@@ -6,15 +6,13 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/05/29 17:48:37 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/04 15:31:15 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <csignal>
 #include <cstdlib>
 #include <iostream>
-
-#define RUN_WITH_SERVER 0
 
 # include "../include/webserver.hpp"
 
@@ -47,18 +45,23 @@ static void initVerctorOfPort(std::vector<int>& ports)
 } */
 #endif
 
-int main (int av, char *ag[])
-// int main()
-{
+int main (int av, char *ag[]) {
 	if (av != 2) {
-		std::cout << "c'est pas bon kevin" << std::endl;
-		return (1);
+		std::cout << "Usage: ./webserv [configuration file]" << std::endl;
+		return (EXIT_FAILURE);
 	}
 	std::vector<int> ports;
 #if RUN_WITH_SERVER
 	std::signal(SIGINT, signal_handler);// Enregistrer le gestionnaire de signal
 #endif
 	std::string filename  = ag[1];
+
+	// 1
+	try {
+	std::vector<ServerConfig>	virtual_servers;
+	confParsingHandler(ag[1], virtual_servers);
+	// 2
+	// std::vector<ServerConfig>	virtual_servers = confParsingHandler(ag[1]);
 
 	std::ifstream inFile(filename.c_str());
 	if (!inFile.is_open()) {
@@ -68,6 +71,8 @@ int main (int av, char *ag[])
 
 	std::string line;
 	std::vector<std::string>liiines;
+
+	// skip all comments
 	while (std::getline(inFile, line)) {
 		size_t  hashPos = line.find("#");
 		if (hashPos != std::string::npos) {
@@ -175,38 +180,6 @@ int main (int av, char *ag[])
 		std::cerr << "Config file error: last token is not a closing bracket" << std::endl;
 		return (1);
 	}
-	// std::cout << "directiveblocks_count=" << directiveblocks_count << std::endl;
-
-	// std::vector<t_block>	parser;
-	// t_block buffer;
-	// in_brackets = false;
-	// bracket_count = 0;
-	// for (size_t i = 0; i < tokens.size(); i++) {
-	// 	if (i + 1 < tokens.size() && tokens[i] == "server") {
-	// 		buffer.context = tokens[i];
-	// 		parser.push_back(buffer);
-	// 	}
-	// 	if (i + 2 < tokens.size() && tokens[i] == "location") {
-	// 		buffer.context = tokens[i];
-	// 		parser.push_back(buffer);
-	// 	}
-	// 	// else if (i > 0 && tokens[i] == ";" ) {
-	// 	// 	size_t sc_pos = i;
-	// 	// 	size_t	j = i;
-	// 	// 	while (j > 0 && tokens[j] != ";" && tokens[j] != "}" && tokens[j] != "{") {
-	// 	// 		j--;
-	// 	// 	}
-	// 	// 	j++;
-	// 	// 	size_t nbegin = j;
-	// 	// 	while (j < sc_pos - nbegin) {
-	// 	// 		buffer.directives.push_back(tokens[j]);
-	// 	// 		// parser[i].directives.push_back(tokens[j]);
-	// 	// 		j++;
-	// 	// 	}
-	// 	// 	parser[i].directives.push_back(buffer.directives[i]);
-	// 	// 	// buffer.directives
-	// 	// }
-	// }
 
 	std::vector<t_block>	block;
 	size_t i = 0;
@@ -225,89 +198,27 @@ int main (int av, char *ag[])
 		return (1);
 	}
 
-	// std::cout << "block.size()=" << block.size() << std::endl;
-	// for (size_t i = 0; i < block.size(); i++) {
-	// 	std::cout << "block[" << i << "].name=" << block[i].name << std::endl;
-	// 	for (size_t j = 0; j < block[i].parameters.size(); j++) {
-	// 		std::cout << "block[" << i << "].parameters[" << j << "]=" << block[i].parameters[j] << std::endl;
-	// 	}
-	// 	for (size_t k = 0; k < block[i].directives.size(); k++) {
-	// 		for (size_t ka = 0; ka < block[i].directives[k].size(); ka++) {
-	// 			std::cout << "    block[" << i << "].directives[" << k << "][" << ka << "]=" << block[i].directives[k][ka] << std::endl;
-	// 		}
-	// 	}
-	// 	for (size_t l = 0; l < block[i].embed_block.size(); l++) {
-	// 		std::cout << "    block[" << i << "].embed_block[" << l << "].name=" << block[i].embed_block[l].name << std::endl;
-	// 		for (size_t la = 0; la < block[i].embed_block[l].parameters.size(); la++) {
-	// 			std::cout << "    block[" << i << "].embed_block[" << l << "].parameters[" << la << "]=" << block[i].embed_block[l].parameters[la] << std::endl;
-	// 		}
-	// 		for (size_t lb = 0; lb < block[i].embed_block[l].directives.size(); lb++) {
-	// 			for (size_t lba = 0; lba < block[i].embed_block[l].directives[lb].size(); lba++) {
-	// 				std::cout << "        block[" << i << "].embed_block[" << l << "].directives[" << lb << "][" << lba << "]=" << block[i].embed_block[l].directives[lb][lba] << std::endl;
-	// 			}
-	// 		}
 
-	// 	}
-	// }
-
-	for (size_t i = 0; i < block.size(); i++) {
-		std::stringstream	ss;
-		ss << "block[" << i << "]";
-		std::string			base_prefix = ss.str();
-
-		printParserBlocks(block[i], base_prefix, 0);
-		std::cout << "\n";
-	}
-
-/* 	for (size_t i = 0; i < block.size(); i++) {
-		// if (block[i].directives.empty() && block[i].embed_block.empty()) {
-		// 	std::cerr << "Config file error: cannot have empty directive block" << std::endl;
-		// 	return (1);
-		// }
-		linterBlock(block[i], i);
-	}
-
-	for (size_t i = 0; i < block.size(); i++) {
-		paramCheck(block[i]);
-		// if (block[i].name == "server") {
-		// 	if (!block[i].parameters.empty()) {
-		// 		std::cerr << "Config file error: no parameter expected for server directive" << std::endl;
-		// 		return (1);
-		// 	}
-		// }
-		// if (block[i].name == "location") {
-		// 	if (block[i].parameters.empty()) {
-		// 		std::cerr << "Config file error: filepath parameter expected for location directive" << std::endl;
-		// 		return (1);
-		// 	}
-		// }
-	} */
-
-	std::vector<ServerConfig>	virtual_servers;
+	// std::vector<ServerConfig>	virtual_servers;
 	for (size_t i = 0; i < block.size(); i++) {
 		ServerConfig		new_server;
 		new_server.loadFromBlock(block.at(i));
 		virtual_servers.push_back(new_server);
 	}
 
-	for (size_t i = 0; i < virtual_servers.size(); i++) {
-		virtual_servers[i].printServerConfig(i);
-	}
-
-
 
 #if RUN_WITH_SERVER
   initVerctorOfPort(ports);
-  try {
       EventLoop loop(ports);  // Créer une instance de EventLoop
       loop.run();
       //runEventLoop(loop);
+#endif
+
   } catch (const std::exception& e) {
-      std::cerr << COLOR_RED << "Error : " << e.what() << COLOR_RESET << std::endl;
+      std::cerr << COLOR_RED << "Error: " << e.what() << COLOR_RESET << std::endl;
       return EXIT_FAILURE ;
   }
   return EXIT_SUCCESS ;
-#endif
 }
 
 
