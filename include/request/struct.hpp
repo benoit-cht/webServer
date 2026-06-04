@@ -73,7 +73,7 @@ struct t_httpResponse {
 
 struct t_post_methode {
   
-  int             bodyLength;
+  std::string     bodyLength;
   std::string     nameFile;
   std::string     boundary;
   std::string     body;
