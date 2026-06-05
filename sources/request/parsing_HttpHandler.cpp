@@ -236,7 +236,7 @@ static void lx_tokenizer(std::vector<t_token>& lexer)
         else if (i > 0)
         {
             // Si le token précédent est un COLON, alors c'est une HEADER_VALUE
-            if (i > 0 && lexer[i - 1].type == COLON)
+            if (i > 0 && lexer[i - 3].type == COLON)
             {
                 token.type = HEADER_VALUE;
             }
@@ -425,21 +425,36 @@ static bool dd_header_line(const std::vector<t_token>& lexer)
 {
   size_t index = 5;
   
-  while (index < lexer.size())
+  while (index < lexer.size() && lexer[index].type != CRLF)
   {
-    if (index + 3 >= lexer.size())
-      return (false);
+    if (index + 5 >= lexer.size())
+    {
+      std::cout << COLOR_RED << "Error : here 1" << COLOR_RESET << std::endl;
+      return ( false );
+    }
 
     if(lexer[index].type != HEADER_KEY)
-      return (false);
+    {
+      std::cout << COLOR_RED << "Error : here 2" << lexer[index].value << COLOR_RESET << std::endl;
+      return ( false );
+    }
     if (lexer[index + 1].type != COLON)
-      return (false);
-    if (lexer[index + 2].type != HEADER_VALUE)
-      return (false);
-    if(lexer[index + 3].type != CRLF)
-      return (false);
+    {
+      std::cout << COLOR_RED << "Error : here 3" << lexer[index + 1].value <<COLOR_RESET << std::endl;
+      return ( false );
+    }
+    if (lexer[index + 4].type != HEADER_VALUE)
+    {
+      std::cout << COLOR_RED << "Error : here 4" << lexer[index + 4].value <<COLOR_RESET << std::endl;
+      return ( false );
+    }
+    if(lexer[index + 5].type != CRLF)
+    {
+      std::cout << COLOR_RED << "Error : here 5" << lexer[index + 5].value <<COLOR_RESET << std::endl;
+      return ( false );
+    }
 
-    index += 4;
+    index += 6;
   }
   return ( true );
 }
@@ -463,8 +478,8 @@ static bool dd_end_of_headers(const std::vector<t_token>& lexer)
     // Vérifie que les deux derniers tokens sont des CRLF (fin des headers)
     if (lexer.size() < 2)
         return false;
-    size_t last = lexer.size() - 1;
-    size_t prev = lexer.size() - 2;
+    size_t last = lexer.size() - 2;
+    size_t prev = lexer.size() - 3;
     return (lexer[last].type == CRLF && lexer[prev].type == CRLF);
 }
 
