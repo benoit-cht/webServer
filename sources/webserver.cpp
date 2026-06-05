@@ -22,8 +22,8 @@ static void inf_loop(std::vector<int> ports);
 static void initVerctorOfPort(std::vector<int>& ports);
 static void signal_handler(int signal);
 #if DEBUG_FLAG
-//static void print_http_request(const t_httpRequest& request);
-//static void print_http_response(const t_httpResponse& response);
+static void print_http_request(const t_httpRequest& request);
+static void print_http_response(const t_httpResponse& response);
 #endif
 std::string readFullHttpRequest(int fd, EventLoop& loop) ;
 
@@ -75,10 +75,10 @@ static void handler_conection(EventLoop &loop)
         loop.removeClient(fd);
 
       }
-      
-      //print_http_request(request);
-      //print_http_response(response);
-
+#if DEBUG_FLAG
+      print_http_request(request);
+      print_http_response(response);
+#endif
     }
   }
 }
