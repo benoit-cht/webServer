@@ -130,16 +130,18 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request)
 {
   std::string                         body;
   t_httpResponse                      response;
+  t_post_methode                      parsing;
   std::map<std::string, std::string>  headers;
 
+
   std::cout << COLOR_YELLOW << "Warnig : a methode post not implement " << COLOR_RESET << std::endl;
+  parsing = HttpHandler::post_parse_header_request(request);
 
   if (request.path.find("/upload") == 0)
   {
-    std::string link = ROOT + request.path + "exemple.txt";
+    std::string link = ROOT + request.path + parsing.nameFile;
     std::ofstream fichier(link.c_str());
     
-    HttpHandler::post_parse_header_request(request);
 
     if (fichier.is_open())
     {
@@ -150,7 +152,7 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request)
       response.status = 201;
       response.headers["Content-Type"] = request.headers["Content-Type"];
       
-      std::cout << COLOR_GREEN << "Success : Created file " << ROOT + request.path + "exple.txt" << COLOR_RESET << std::endl;
+      std::cout << COLOR_GREEN << "Success : Created file " << ROOT + request.path + parsing.nameFile << COLOR_RESET << std::endl;
       return (response);
     }
   }

@@ -171,19 +171,64 @@ t_post_methode HttpHandler::post_parse_header_request(t_httpRequest request)
   if (!request.headers["Content-Length"].empty()) {
 
     parsing.bodyLength = request.headers["Content-Length"];
-    std::cout << " .bodyLength : " << parsing.bodyLength  << std::endl; 
+    std::cout << COLOR_MAGENTA << "bodyLength : " << parsing.bodyLength  << COLOR_RESET << std::endl; 
   }
 
   pos_boundary = request.headers["Content-Type"].find("boundary=");
   if (pos_boundary != 0) {
     
     parsing.boundary = request.headers["Content-Type"].substr(pos_boundary + 9);
-    std::cout << " .boundary : " << parsing.boundary << std::endl; 
+    std::cout << COLOR_MAGENTA << "boundary : " << parsing.boundary << COLOR_RESET <<std::endl; 
   }
+
+  for (size_t start = 0, end = 0; start + end < request.body.size(); start += end) {
+
+    size_t  key_pos = request.body.find("Content-", start);
+    size_t  ope_pos = request.body.find(":", key_pos);
+    end = request.body.find("\n", key_pos);
+
+    std::string key = request.body.substr(key_pos, ope_pos - key_pos);
+    std::string value = request.body.substr(ope_pos, end - ope_pos);
+
+    parsing.headers[key] = value;
+    std::cout << COLOR_MAGENTA << key << parsing.headers[key] << COLOR_RESET << std::endl;
+    
+  }
+
+    std::string str = parsing.headers["Content-Disposition"];
+
+    size_t filename_pos = str.find("filename=\"");
+    if (filename_pos != std::string::npos) {
+
+        size_t start_quote = filename_pos + 10; // 9 = longueur de "filename=\""
+        size_t end_quote = str.find("\"", start_quote);
+
+        if (end_quote != std::string::npos) {
+
+            parsing.nameFile = str.substr(start_quote, end_quote - start_quote);
+            std::cout << COLOR_MAGENTA << "Nom du fichier : " << parsing.nameFile << parsing.nameFile.length() << COLOR_RESET << std::endl;
+
+        } else {
+          
+          std::cerr << "Erreur : Guillemet fermant manquant." << std::endl;
+        }
+    } else {
+        
+      std::cerr << "Erreur : 'filename=\"' non trouvé dans Content-Type." << std::endl;
+    }
+
+  // clear body 
   parsing.body = request.body;
   parsing.body.erase(parsing.body.find(parsing.boundary), parsing.boundary.length());
   parsing.body.erase(parsing.body.find(parsing.boundary), parsing.boundary.length());
-  std::cout << ".body : " << parsing.body << std::endl;
+  for (std::map<std::string, std::string>::iterator it = parsing.headers.begin(); it != parsing.headers.end(); ++it) {
+
+    parsing.body.erase(parsing.body.find(it->first), it->first.length());
+    parsing.body.erase(parsing.body.find(it->second), it->second.length());
+
+  }
+  std::cout << COLOR_MAGENTA << "body : " << parsing.body << COLOR_RESET <<std::endl;
+
   return (parsing);
 }
 
