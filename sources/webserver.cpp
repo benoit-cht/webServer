@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/01 10:14:50 by ton_utilisate    ###   ########.fr       */
+/*   Updated: 2026/06/04 18:40:02 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,35 +16,63 @@
 
 # include "../include/webserver.hpp"
 
-volatile sig_atomic_t g_should_exit = 0;
+#if RUN_WITH_SERVER
 
+volatile sig_atomic_t g_should_exit = 0;
 static void inf_loop(std::vector<int> ports);
-static void initVerctorOfPort(std::vector<int>& ports);
-static void signal_handler(int signal);
-#if DEBUG_FLAG
-static void print_http_request(const t_httpRequest& request);
-static void print_http_response(const t_httpResponse& response);
-#endif
+static void print_http_request(const t_httpRequest& request); 
+static void print_http_response(const t_httpResponse& response); 
 std::string readFullHttpRequest(int fd, EventLoop& loop) ;
 
-int main()
+/* ==================================================================================================*/
+
+static void signal_handler(int signal)
 {
-	
-	std::signal(SIGINT, signal_handler);// Enregistrer le gestionnaire de signal
-  std::vector<int> ports;
-  initVerctorOfPort(ports);
+  if (signal == SIGINT)
+  {
+    std::cout << COLOR_YELLOW << " \nWarning : Reçu SIGINT (Ctrl+C), arrêt du serveur... " << COLOR_RESET << std::endl;
+    g_should_exit = 1;
+  }
+}
+
+static void initVerctorOfPort(std::vector<int>& ports)
+{
+  ports.push_back(8080);
+  //ports.push_back(8081);
+  //ports.push_back(8082);
+}
+
+#endif
+
+int main (int av, char *ag[]) {
+	if (av != 2) {
+		std::cout << "Usage: ./webserv [configuration file]" << std::endl;
+		return (EXIT_FAILURE);
+	}
+
+#if RUN_WITH_SERVER
+		std::signal(SIGINT, signal_handler);// Enregistrer le gestionnaire de signal
+#endif
 
 try {
-      inf_loop(ports);
+	std::vector<ServerConfig>	virtual_servers;
+	confParsingHandler(ag[1], virtual_servers);
+
+#if RUN_WITH_SERVER
+	std::vector<int> ports;
+	initVerctorOfPort(ports);
+	inf_loop(ports);
+#endif
 
     } catch (const std::exception& e) {
-        
+
       std::cerr << COLOR_RED << "Error: " << e.what() << COLOR_RESET << std::endl;
       return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;
 }
 
+#if RUN_WITH_SERVER
 static void handler_conection(EventLoop &loop)
 {
   std::vector<int> activeFds = loop.getActiveFds();
@@ -75,10 +103,8 @@ static void handler_conection(EventLoop &loop)
         loop.removeClient(fd);
 
       }
-#if DEBUG_FLAG 
       print_http_request(request);
       print_http_response(response);
-#endif 
 
     }
   }
@@ -104,25 +130,9 @@ static void inf_loop(std::vector<int> ports)
   }
 }
 
-static void signal_handler(int signal)
-{
-  if (signal == SIGINT)
-  {
-    std::cout << COLOR_YELLOW << " \nWarning : Reçu SIGINT (Ctrl+C), arrêt du serveur... " << COLOR_RESET << std::endl;
-    g_should_exit = 1;
-  }
-}
-
-static void initVerctorOfPort(std::vector<int>& ports)
-{
-  ports.push_back(8080);
-  ports.push_back(8081);
-  ports.push_back(8082);
-}
 
 /* ==================================================================================================*/
 
-#if DEBUG_FLAG
 static void print_http_request(const t_httpRequest& request) {
     // Affichage de la méthode, du chemin et de la version
     std::cout << COLOR_CYAN << "\n=== HTTP Request ===" << COLOR_RESET << std::endl;
@@ -149,9 +159,7 @@ static void print_http_request(const t_httpRequest& request) {
     }
     std::cout << COLOR_CYAN << "===================\n" << COLOR_RESET << std::endl;
 }
-#endif
 
-#if DEBUG_FLAG
 static void print_http_response(const t_httpResponse& response) {
     // Affichage du statut
     std::cout << COLOR_CYAN << "\n=== HTTP Response ===" << COLOR_RESET << std::endl;
@@ -189,7 +197,8 @@ static void print_http_response(const t_httpResponse& response) {
 
     std::cout << COLOR_CYAN << "====================\n" << COLOR_RESET << std::endl;
 }
-#endif
+
+/* ==================================================================================================*/
 
 std::string readFullHttpRequest(int fd, EventLoop& loop) {
     std::string request;
@@ -256,3 +265,5 @@ std::string readFullHttpRequest(int fd, EventLoop& loop) {
 
     return request;
 }
+#endif
+
