@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:23:36 by tjacquel          #+#    #+#             */
-/*   Updated: 2026/06/08 14:48:56 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/08 16:47:00 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,13 @@ std::map<int, std::string>	LocationConfig::getErrorPage() const {
 
 std::string				LocationConfig::getCgiPass() const {
 	return (this->cgi_pass);
+}
+
+bool					LocationConfig::checkMethod(const std::string& str) const {
+	if (this->methods.find(str) != this->methods.end()) {
+		return (true);
+	}
+	return (false);
 }
 
 void	LocationConfig::printLocationConfig() const {
@@ -239,7 +246,7 @@ void	LocationConfig::methodsDirCheckAndLoad(const std::vector<std::string>& curr
 
 	for (size_t i = 1; i < curr_dir.size(); ++i) {
 		// std::cout << "allow_methodsDir.at(" << i << ")=" << curr_dir.at(i) << std::endl;
-		if (curr_dir.at(i) == "GET") {
+/* 		if (curr_dir.at(i) == "GET") {
 			methods.insert("GET");
 		}
 		else if (curr_dir.at(i) == "POST") {
@@ -254,7 +261,8 @@ void	LocationConfig::methodsDirCheckAndLoad(const std::vector<std::string>& curr
 		else {
 			thw << "Config file error: `" << curr_dir.at(i) << "` found in methods directive is unsupported";
 			throw std::logic_error(thw.str());
-		}
+		} */
+		methods.insert(curr_dir.at(i));
 	}
 }
 

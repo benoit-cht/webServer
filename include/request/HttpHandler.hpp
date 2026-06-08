@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpHandler.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 11:31:58 by bchallat          #+#    #+#             */
-/*   Updated: 2026/04/27 15:06:23 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/08 16:15:56 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,15 @@
 
 #include <log/colorLog.hpp>
 #include <request/struct.hpp>
+#include <config/LocationConfig.hpp>
+
+class ServerConfig;
 
 class HttpHandler {
-	
+
   public:
-		static t_httpRequest         setHttpRequest(const std::string& raw_request);
-		static t_httpResponse        setHttpResponse(t_httpRequest request);
+		static t_httpRequest         setHttpRequest(const std::string& raw_request, const std::vector<ServerConfig>& servers);
+		static t_httpResponse        setHttpResponse(t_httpRequest request, const std::vector<ServerConfig>& servers);
 
   private:
     static bool                  descending_deriv(std::vector<t_token>& lexer);
@@ -39,13 +42,13 @@ class HttpHandler {
     static void                  print_http_response(const t_httpResponse& response);
     static std::string           readFile(const std::string& path);
     static t_httpResponse        serveStaticFile(const std::string& path);
-  
+
   private:
     static t_httpResponse        HandlerErrorHttp(int status);
 
 };
 
-# endif // !HTTPHANDLER_HPP 
+# endif // !HTTPHANDLER_HPP
 
 /* ************************************************************************** */
 /*                                                                            */

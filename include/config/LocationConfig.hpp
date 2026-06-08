@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:24:59 by tjacquel          #+#    #+#             */
-/*   Updated: 2026/06/08 14:40:03 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/08 15:18:23 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,8 @@ public:
 	std::pair<int, std::string>	getRedirect() const;
 	std::map<int, std::string>	getErrorPage() const;
 	std::string					getCgiPass() const;
+
+	bool						checkMethod(const std::string& str) const;
 
 	// Printing method
 	void						printLocationConfig() const;
