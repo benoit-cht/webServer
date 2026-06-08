@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 19:42:36 by lcluzan           #+#    #+#             */
-/*   Updated: 2026/06/04 17:10:22 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/08 14:14:18 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,6 +156,7 @@ void	ServerConfig::server_nameDirCheckAndLoad(const std::vector<std::string>& cu
 }
 
 void	ServerConfig::cmbsDirCheckAndLoad(const std::vector<std::string>& curr_dir) {
+	// I chose to rewrite client_max_body_size if there was a new directive
 	std::ostringstream	thw;
 	if (curr_dir.size() != 2) {
 		thw << "Config file error: single mandatory argument expected for client_max_body_size directive, found " << curr_dir.size() - 1 << " argument(s).";
