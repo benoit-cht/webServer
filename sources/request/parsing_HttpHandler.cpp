@@ -16,7 +16,6 @@
 /* ========================================================================== */
 /*                              -- LEXER --                                   */
 /* ========================================================================== */
-
 #if DEBUG_FLAG
 static std::string typeToString(t_type type)
 {
@@ -44,9 +43,6 @@ static void printTokens(const std::vector<t_token>& lexer)
     }
 }
 
-#endif
-/* =========================================================================== */
-
 static void print_hash(const std::vector<std::string>& hash)
 {
     for (size_t i = 0; i < hash.size(); ++i)
@@ -54,6 +50,8 @@ static void print_hash(const std::vector<std::string>& hash)
         std::cout << "Line " << i << ": \"" << hash[i] << "\"" << std::endl;
     }
 }
+#endif
+/* =========================================================================== */
 
 static std::vector<std::string> lx_hash_request(const std::string& raw_request)
 {
@@ -81,7 +79,6 @@ static std::vector<std::string> lx_hash_request(const std::string& raw_request)
   }
   
   std::cout << raw_request << std::endl;
-  print_hash(hash);
 
   return ( hash );
 }
@@ -140,6 +137,7 @@ static std::vector<t_token> lx_vector_line(const std::string& str)
                     tokens.push_back(t_token(COLON, ":"));
                     // Ajoute la valeur du header (inclut les ":" suivants)
                     tokens.push_back(t_token(UNKNOWN, str.substr(colon_pos + 1, next_pos - colon_pos - 1)));
+                    //tokens.push_back(t_token(UNKNOWN, str.substr(colon_pos + 1, next_pos - crlf_pos - 1)));
                     in_header_value = true;  // On est maintenant dans une valeur de header
                 }
                 else
@@ -151,7 +149,8 @@ static std::vector<t_token> lx_vector_line(const std::string& str)
             else
             {
                 // On est dans une valeur de header, on ajoute tout jusqu'au délimiteur
-                tokens.push_back(t_token(UNKNOWN, str.substr(start, next_pos - start)));
+                //tokens.push_back(t_token(UNKNOWN, str.substr(start, next_pos - start)));
+                tokens.push_back(t_token(UNKNOWN, str.substr(start, crlf_pos - start)));
             }
         }
 
@@ -257,7 +256,7 @@ static std::string extract_body(const std::string& raw_request)
     // Si "\r\n\r\n" n'est pas trouvé, il n'y a pas de body
     if (body_start == std::string::npos)
     {
-        return "";  // Retourne une chaîne vide
+        return ( "" );  // Retourne une chaîne vide
     }
 
     // Extrait tout ce qui suit "\r\n\r\n"
@@ -291,7 +290,10 @@ std::vector<t_token> HttpHandler::lexing(const std::string raw_request)
   }
 
   lexer.push_back(t_token(BODY, extract_body(raw_request)));
+#if DEBUG_FLAG
+  print_hash(hash);
   printTokens(lexer);
+#endif 
   return ( lexer );
 }
 
