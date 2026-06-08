@@ -6,14 +6,15 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/02 10:11:02 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/08 17:08:22 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <request/HttpHandler.hpp>
 
-t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request)
+t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request, const std::vector<ServerConfig>& servers)
 {
+	(void)				servers;
 	t_httpRequest       request;
 	std::vector<t_token>   lexer;
 
@@ -33,10 +34,11 @@ t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request)
 
 /* ========================================================================== */
 
-t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request)
+t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const std::vector<ServerConfig>& servers)
 {
 	t_httpResponse                      response;
   std::map<std::string, std::string>  headers;
+  (void) servers;
 
 	if (request.method != "GET" && request.method != "POST" && request.method != "DELETE")
 	{

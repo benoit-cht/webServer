@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/04 18:40:02 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/08 16:40:02 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,10 @@
 #if RUN_WITH_SERVER
 
 volatile sig_atomic_t g_should_exit = 0;
-static void inf_loop(std::vector<int> ports);
 static void print_http_request(const t_httpRequest& request); 
 static void print_http_response(const t_httpResponse& response); 
 std::string readFullHttpRequest(int fd, EventLoop& loop) ;
+static void inf_loop(std::vector<int> ports, std::vector<ServerConfig>& servers);
 
 /* ==================================================================================================*/
 
@@ -35,9 +35,14 @@ static void signal_handler(int signal)
   }
 }
 
-static void initVerctorOfPort(std::vector<int>& ports)
+static void initVerctorOfPort(std::vector<int>& ports, const std::vector<ServerConfig>& virtual_servers)
 {
-  ports.push_back(8080);
+	// std::cout << "virtual_servers.size()=" << virtual_servers.size() << std::endl;
+	for (size_t i = 0; i < virtual_servers.size(); ++i) {
+		// std::cout << "virtual_servers[i].getPort()=" << virtual_servers[i].getPort() << std::endl;
+		ports.push_back(virtual_servers[i].getPort());
+	}
+//   ports.push_back(8080);
   //ports.push_back(8081);
   //ports.push_back(8082);
 }
@@ -60,8 +65,8 @@ try {
 
 #if RUN_WITH_SERVER
 	std::vector<int> ports;
-	initVerctorOfPort(ports);
-	inf_loop(ports);
+	initVerctorOfPort(ports, virtual_servers);
+	inf_loop(ports, virtual_servers);
 #endif
 
     } catch (const std::exception& e) {
@@ -73,7 +78,7 @@ try {
 }
 
 #if RUN_WITH_SERVER
-static void handler_conection(EventLoop &loop)
+static void handler_conection(EventLoop &loop, std::vector<ServerConfig>& servers)
 {
   std::vector<int> activeFds = loop.getActiveFds();
   
@@ -92,10 +97,10 @@ static void handler_conection(EventLoop &loop)
 
       
       // 👇 Traitement Request HTTP
-      
-      t_httpRequest request = HttpHandler::setHttpRequest(string_request.c_str());
-      t_httpResponse response = HttpHandler::setHttpResponse(request);
-      
+	  // a quel server rattacher les fd ? il faut bien iterer dans les server
+      t_httpRequest request = HttpHandler::setHttpRequest(string_request, servers);
+      t_httpResponse response = HttpHandler::setHttpResponse(request, servers);
+
       std::string raw_response = response.toString();
       loop.sendResponse(fd, raw_response);
       if (response.status == 400)
@@ -110,7 +115,7 @@ static void handler_conection(EventLoop &loop)
   }
 }
 
-static void inf_loop(std::vector<int> ports)
+static void inf_loop(std::vector<int> ports, std::vector<ServerConfig>& servers)
 {
   EventLoop loop(ports);
   loop.setupServerSockets();
@@ -125,7 +130,7 @@ static void inf_loop(std::vector<int> ports)
     }
     else
     {
-      handler_conection(loop);
+      handler_conection(loop, servers);
     }
   }
 }
@@ -150,6 +155,7 @@ static void print_http_request(const t_httpRequest& request) {
             std::cout << it->first << ": " << COLOR_GREEN << it->second << COLOR_RESET << std::endl;
         }
     }
+#if DEBUG_FLAG
     // Affichage du body (si présent)
     std::cout << COLOR_CYAN << "\n--- Body ---" << COLOR_RESET << std::endl;
     if (request.body.empty()) {
@@ -157,6 +163,7 @@ static void print_http_request(const t_httpRequest& request) {
     } else {
         std::cout << COLOR_BLUE << request.body << COLOR_RESET << std::endl;
     }
+#endif 
     std::cout << COLOR_CYAN << "===================\n" << COLOR_RESET << std::endl;
 }
 
@@ -184,6 +191,7 @@ static void print_http_response(const t_httpResponse& response) {
             std::cout << it->first << ": " << COLOR_GREEN << it->second << COLOR_RESET << std::endl;
         }
     }
+#if DEBUG_FLAG
     // Affichage du body (si présent)
     std::cout << COLOR_CYAN << "\n--- Body ---" << COLOR_RESET << std::endl;
     if (response.body.empty()) {
@@ -195,6 +203,7 @@ static void print_http_response(const t_httpResponse& response) {
     /*std::cout << COLOR_CYAN << "\n--- Full Response ---" << COLOR_RESET << std::endl;
     std::cout << COLOR_MAGENTA << response.toString() << COLOR_RESET << std::endl;*/
 
+#endif 
     std::cout << COLOR_CYAN << "====================\n" << COLOR_RESET << std::endl;
 }
 

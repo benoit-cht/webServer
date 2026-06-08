@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 19:42:36 by lcluzan           #+#    #+#             */
-/*   Updated: 2026/06/08 14:14:18 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/08 14:41:19 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,26 @@ ServerConfig::ServerConfig() : host("0.0.0.0"), port(8000), client_max_body_size
 }
 
 ServerConfig::~ServerConfig() {}
+
+std::string								ServerConfig::getHost() const {
+	return (this->host);
+}
+
+int										ServerConfig::getPort() const {
+	return (this->port);
+}
+
+std::vector<std::string>				ServerConfig::getServerName() const {
+	return (this->server_name);
+}
+
+int										ServerConfig::getClientMaxBodySize() const {
+	return (this->client_max_body_size);
+}
+
+std::map<std::string, LocationConfig>	ServerConfig::getLocationConfig() const {
+	return (this->location);
+}
 
 void	ServerConfig::printServerConfig(const size_t i) const {
 	std::cout << "\nvirtual_servers[" << i << "].host=" << this->host << std::endl;
@@ -53,8 +73,7 @@ void	checkEmptyDirBlock(const t_block& curr_block) {
 
 void	ServerConfig::serverDirCheck(const t_block& curr_block) {
 	std::ostringstream	thw;
-	// std::cout << "curr_block.directives.size()=" << curr_block.directives.size() << std::endl;
-	// std::cout << "curr_block.embed_block[0].directives.size()=" << curr_block.embed_block[0].directives.size() << std::endl;
+
 	if (!curr_block.parameters.empty()) {
 		thw << "Config file error: no parameter expected for server directive";
 		throw std::logic_error(thw.str());
@@ -107,14 +126,12 @@ void	ServerConfig::handlePort(const std::string& portStr) {
 }
 
 void	ServerConfig::listenDirCheckAndLoad(const std::vector<std::string>& curr_dir) {
-	// std::cout << "listen curr_dir.size()=" << curr_dir.size() << std::endl;
 	std::ostringstream	thw;
 	if (curr_dir.size() > 2) {
 		thw << "Config file error: at least one argument expected for listen directive, found " << curr_dir.size() - 1 << " arguments.";
 		throw std::logic_error(thw.str());
 	}
 
-	// try {
 	size_t	foundDQuote = curr_dir.at(1).find(":");
 	if (foundDQuote != std::string::npos) {
 		std::string	addrStr = curr_dir.at(1).substr(0, foundDQuote);
@@ -131,11 +148,6 @@ void	ServerConfig::listenDirCheckAndLoad(const std::vector<std::string>& curr_di
 			handlePort(curr_dir.at(1));
 		}
 	}
-	// }
-	// catch (std::exception& e) {
-	// 	std::cerr << "Config file error: " << e.what() << std::endl;
-	// 	exit (1);
-	// }
 }
 
 void	ServerConfig::server_nameDirCheckAndLoad(const std::vector<std::string>& curr_dir) {
@@ -183,23 +195,15 @@ void	ServerConfig::cmbsDirCheckAndLoad(const std::vector<std::string>& curr_dir)
 		arg = arg.substr(0, arg.length() - 1);
 	}
 
-	// try {
-		int			base_value = ft_stoi(arg)	;
-		long long	final_value = static_cast<long long>(base_value) * multiplier;
+	int			base_value = ft_stoi(arg)	;
+	long long	final_value = static_cast<long long>(base_value) * multiplier;
 
-		if (final_value > CLIENT_MAX_BODY_SIZE_LIMIT) {
-			thw << "Config file error: client_max_body_size exceeds or is equal to 2GB maximum limit";
-			throw std::logic_error(thw.str());
-		}
+	if (final_value > CLIENT_MAX_BODY_SIZE_LIMIT) {
+		thw << "Config file error: client_max_body_size exceeds or is equal to 2GB maximum limit";
+		throw std::logic_error(thw.str());
+	}
 
-		this->client_max_body_size = static_cast<int>(final_value);
-
-	// }
-	// catch (std::exception& e) {
-	// 	std::cerr << "Config file error: " << e.what() << std::endl;
-	// 	exit (1);
-	// }
-
+	this->client_max_body_size = static_cast<int>(final_value);
 }
 
 void	ServerConfig::loadFromBlock(const t_block& curr_block) {
