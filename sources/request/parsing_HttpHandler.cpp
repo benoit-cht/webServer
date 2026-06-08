@@ -45,9 +45,258 @@ static void printTokens(const std::vector<t_token>& lexer)
 }
 
 #endif
-
 /* =========================================================================== */
 
+static void print_hash(const std::vector<std::string>& hash)
+{
+    for (size_t i = 0; i < hash.size(); ++i)
+    {
+        std::cout << "Line " << i << ": \"" << hash[i] << "\"" << std::endl;
+    }
+}
+
+static std::vector<std::string> lx_hash_request(const std::string& raw_request)
+{
+  size_t start = 0;
+  size_t end = 0;
+  std::vector<std::string> hash;
+
+  while (start < raw_request.size())
+  {
+    // Cherche le prochain \r\n
+    end = raw_request.find("\r\n", start);
+
+    // Si aucun \r\n n'est trouvé, on ajoute le reste de la chaîne et on sort
+    if (end == std::string::npos)
+    {
+      hash.push_back(raw_request.substr(start));
+      return ( hash );
+    }
+
+    // Extrait la sous-chaîne entre start et end
+    hash.push_back(raw_request.substr(start, end - start + 2));
+
+    // Passe à la position après \r\n
+    start = end + 2;
+  }
+  
+  std::cout << raw_request << std::endl;
+  print_hash(hash);
+
+  return ( hash );
+}
+
+static std::vector<t_token> lx_vector_line(const std::string& str)
+{
+    std::vector<t_token> tokens;
+    size_t start = 0;
+    bool in_header_value = false;  // Flag pour indiquer qu'on est dans une valeur de header
+
+    while (start < str.size())
+    {
+        // Cherche les délimiteurs : espace ou \r\n
+        size_t space_pos = str.find(' ', start);
+        size_t crlf_pos = str.find("\r\n", start);
+
+        // Détermine le prochain délimiteur le plus proche
+        size_t next_pos = std::string::npos;
+        bool is_crlf = false;
+
+        // Vérifie si \r\n est présent et est le premier délimiteur
+        if (crlf_pos != std::string::npos)
+        {
+            next_pos = crlf_pos;
+            is_crlf = true;
+        }
+
+        // Compare avec l'espace
+        if (space_pos != std::string::npos &&
+            (next_pos == std::string::npos || space_pos < next_pos))
+        {
+            next_pos = space_pos;
+            is_crlf = false;
+        }
+
+        // Si aucun délimiteur n'est trouvé, prends le reste de la chaîne
+        if (next_pos == std::string::npos)
+        {
+            tokens.push_back(t_token(UNKNOWN, str.substr(start)));
+            break;
+        }
+
+        // Extrait le token avant le délimiteur
+        if (next_pos > start)
+        {
+            // Si on est dans une valeur de header, on ne découpe pas sur ":"
+            if (!in_header_value)
+            {
+                // Cherche le premier ":" dans la sous-chaîne
+                size_t colon_pos = str.find(':', start);
+                if (colon_pos != std::string::npos && colon_pos < next_pos)
+                {
+                    // Ajoute la clé du header
+                    tokens.push_back(t_token(UNKNOWN, str.substr(start, colon_pos - start)));
+                    // Ajoute le ":"
+                    tokens.push_back(t_token(COLON, ":"));
+                    // Ajoute la valeur du header (inclut les ":" suivants)
+                    tokens.push_back(t_token(UNKNOWN, str.substr(colon_pos + 1, next_pos - colon_pos - 1)));
+                    in_header_value = true;  // On est maintenant dans une valeur de header
+                }
+                else
+                {
+                    // Ajoute le token (pas de ":" trouvé)
+                    tokens.push_back(t_token(UNKNOWN, str.substr(start, next_pos - start)));
+                }
+            }
+            else
+            {
+                // On est dans une valeur de header, on ajoute tout jusqu'au délimiteur
+                tokens.push_back(t_token(UNKNOWN, str.substr(start, next_pos - start)));
+            }
+        }
+
+        // Ajoute le délimiteur comme token
+        if (is_crlf)
+        {
+            tokens.push_back(t_token(CRLF, "\r\n"));
+            start = next_pos + 2;
+            in_header_value = false;  // Réinitialise pour la prochaine ligne
+        }
+        else if (str[next_pos] == ' ')
+        {
+            tokens.push_back(t_token(WHITESPACE, " "));
+            start = next_pos + 1;
+        }
+    }
+
+    return tokens;
+}
+
+static std::vector<t_token> lx_write_value(const std::vector<std::string>& hash)
+{
+    std::vector<t_token> lexer;
+    size_t index = 0;
+
+    while (index < hash.size())
+    {
+        // Convertit la ligne actuelle en tokens
+        std::vector<t_token> line_tokens = lx_vector_line(hash[index]);
+        lexer.insert(lexer.end(), line_tokens.begin(), line_tokens.end());
+
+        // Vérifie si les deux derniers tokens sont des CRLF (fin des headers)
+        if (lexer.size() >= 2 &&
+            lexer[lexer.size() - 1].type == CRLF &&
+            lexer[lexer.size() - 2].type == CRLF)
+        {
+            break;  // Arrête la boucle : fin des headers détectée
+        }
+
+        index++;
+    }
+
+    return lexer;
+}
+
+static void lx_tokenizer(std::vector<t_token>& lexer)
+{
+    if (lexer.empty()) return;
+
+    // Parcourt tous les tokens pour les typer
+    for (size_t i = 0; i < lexer.size(); ++i)
+    {
+        t_token& token = lexer[i];
+
+        // --- Typage de la Request Line (ex: "GET / HTTP/1.1\r\n")
+        if (i == 0 && (token.value == "GET" || token.value == "POST" || token.value == "DELETE"))
+        {
+            token.type = METHOD;
+        }
+        else if (i == 2 && !token.value.empty() && token.value[0] == '/')
+        {
+            token.type = PATH;
+        }
+        else if (i == 4 && token.value == "HTTP/1.1")
+        {
+            token.type = VERSION;
+        }
+        // --- Typage des headers (ex: "Host: localhost\r\n")
+        else if (token.value == ":")
+        {
+            token.type = COLON;
+        }
+        else if (token.value == " ")
+        {
+            token.type = WHITESPACE;
+        }
+        else if (token.value == "\r\n")
+        {
+            token.type = CRLF;
+        }
+        // --- Typage des clés et valeurs de headers
+        else if (i > 0)
+        {
+            // Si le token précédent est un COLON, alors c'est une HEADER_VALUE
+            if (i > 0 && lexer[i - 3].type == COLON)
+            {
+                token.type = HEADER_VALUE;
+            }
+            // Si le token suivant est un COLON, alors c'est une HEADER_KEY
+            else if (i + 1 < lexer.size() && lexer[i + 1].type == COLON)
+            {
+                token.type = HEADER_KEY;
+            }
+        }
+    }
+}
+
+static std::string extract_body(const std::string& raw_request)
+{
+    // Cherche la position de "\r\n\r\n" (fin des headers)
+    size_t body_start = raw_request.find("\r\n\r\n");
+
+    // Si "\r\n\r\n" n'est pas trouvé, il n'y a pas de body
+    if (body_start == std::string::npos)
+    {
+        return "";  // Retourne une chaîne vide
+    }
+
+    // Extrait tout ce qui suit "\r\n\r\n"
+    return raw_request.substr(body_start + 4);  // +4 pour sauter "\r\n\r\n"
+}
+
+std::vector<t_token> HttpHandler::lexing(const std::string raw_request)
+{
+  std::vector<t_token>      lexer;
+  std::vector<std::string>  hash;
+
+  hash = lx_hash_request(raw_request);
+  if (hash.empty())
+  {
+    std::cerr << COLOR_RED << "ERROR:: has request lexer failure" << COLOR_RESET << std::endl;
+    return ( lexer ); 
+  }
+
+  lexer = lx_write_value(hash);
+  if (lexer.empty())
+  {
+    std::cerr << COLOR_RED << "ERROR:: write value in lexer failure" << COLOR_RESET << std::endl;
+    return( lexer );
+  }
+
+  lx_tokenizer(lexer);
+  if (lexer.empty())
+  {
+    std::cerr << COLOR_RED << "ERROR:: tokenizer in lexer failure" << COLOR_RESET << std::endl;
+    return( lexer );
+  }
+
+  lexer.push_back(t_token(BODY, extract_body(raw_request)));
+  printTokens(lexer);
+  return ( lexer );
+}
+
+/* =========================================================================== */
+/*
 static void lx_tokenizer(std::vector<t_token>& lexer)
 {
   int curr = lexer.size() - 1;
@@ -154,7 +403,7 @@ std::vector<t_token> HttpHandler::lexing(const std::string raw_request)
 #endif  
   return ( lexer );
 }
-
+*/
 /* ========================================================================== */
 /*                        -- DESCENDING_DERIV --                              */
 /* ========================================================================== */
@@ -176,23 +425,41 @@ static bool dd_header_line(const std::vector<t_token>& lexer)
 {
   size_t index = 5;
   
-  while (index < lexer.size() && lexer[index].type != BODY)
+  while (index < lexer.size() && lexer[index].type != CRLF)
   {
-    if (index + 3 >= lexer.size())
-      return (false);
+    if (index + 5 >= lexer.size())
+    {
+      std::cout << COLOR_RED << "Error : here 1" << COLOR_RESET << std::endl;
+      return ( false );
+    }
+
     if(lexer[index].type != HEADER_KEY)
-      return (false);
-    if(lexer[index + 1].type != WHITESPACE)
-      return (false);
-    if(lexer[index + 2].type != HEADER_VALUE)
-      return (false);
-    if(lexer[index + 3].type != CRLF)
-      return (false);
-    index += 4;
+    {
+      std::cout << COLOR_RED << "Error : here 2" << lexer[index].value << COLOR_RESET << std::endl;
+      return ( false );
+    }
+    if (lexer[index + 1].type != COLON)
+    {
+      std::cout << COLOR_RED << "Error : here 3" << lexer[index + 1].value <<COLOR_RESET << std::endl;
+      return ( false );
+    }
+    if (lexer[index + 4].type != HEADER_VALUE)
+    {
+      std::cout << COLOR_RED << "Error : here 4" << lexer[index + 4].value <<COLOR_RESET << std::endl;
+      return ( false );
+    }
+    if(lexer[index + 5].type != CRLF)
+    {
+      std::cout << COLOR_RED << "Error : here 5" << lexer[index + 5].value <<COLOR_RESET << std::endl;
+      return ( false );
+    }
+
+    index += 6;
   }
   return ( true );
 }
 
+/*
 static bool dd_header_body(const std::vector<t_token>& lexer)
 {
   size_t index = 0;
@@ -204,15 +471,35 @@ static bool dd_header_body(const std::vector<t_token>& lexer)
     return (false);
   return (true);
 }
+*/
+
+static bool dd_end_of_headers(const std::vector<t_token>& lexer)
+{
+    // Vérifie que les deux derniers tokens sont des CRLF (fin des headers)
+    if (lexer.size() < 2)
+        return false;
+    size_t last = lexer.size() - 2;
+    size_t prev = lexer.size() - 3;
+    return (lexer[last].type == CRLF && lexer[prev].type == CRLF);
+}
 
 bool  HttpHandler::descending_deriv(std::vector<t_token>& lexer)
 {
   if (!dd_first_line(lexer))
+  {
+    std::cout << COLOR_RED << "Error : descending deriv bad first line" << COLOR_RESET << std::endl;
     return ( false );
+  }
   if (!dd_header_line(lexer))
+  {
+    std::cout << COLOR_RED << "Error : descending deriv bad header line" << COLOR_RESET << std::endl;
     return ( false );
-  if (!dd_header_body(lexer))
-    return ( false );
+  }
+  if (!dd_end_of_headers(lexer))  // Vérifie la fin des headers
+  { 
+    std::cout << COLOR_RED << "Error : descending deriv bad end of header" << COLOR_RESET << std::endl;
+    return (false);
+  }
   return ( true );
 }
 

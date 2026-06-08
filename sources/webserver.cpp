@@ -79,6 +79,7 @@ static void handler_conection(EventLoop &loop)
       print_http_request(request);
       print_http_response(response);
 #endif 
+
     }
   }
 }
