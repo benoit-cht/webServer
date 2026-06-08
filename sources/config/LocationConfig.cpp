@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:23:36 by tjacquel          #+#    #+#             */
-/*   Updated: 2026/06/04 17:37:18 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/08 14:48:56 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,42 @@
 LocationConfig::LocationConfig() : root(""), autoindex(false), upload_enable(false), redirect(0, "") { }
 
 LocationConfig::~LocationConfig() { }
+
+std::string		LocationConfig::getRoot() const {
+	return (this->root);
+}
+
+std::set<std::string>	LocationConfig::getMethods() const {
+	return (this->methods);
+}
+
+std::string				LocationConfig::getIndex() const {
+	return (this->index);
+}
+
+bool					LocationConfig::getAutoindex() const {
+	return (this->autoindex);
+}
+
+bool					LocationConfig::getUploadEnable() const {
+	return (this->upload_enable);
+}
+
+std::string				LocationConfig::getUploadLoc() const {
+	return (this->upload_loc);
+}
+
+std::pair<int, std::string>	LocationConfig::getRedirect() const {
+	return (this->redirect);
+}
+
+std::map<int, std::string>	LocationConfig::getErrorPage() const {
+	return (this->error_page);
+}
+
+std::string				LocationConfig::getCgiPass() const {
+	return (this->cgi_pass);
+}
 
 void	LocationConfig::printLocationConfig() const {
 	std::cout << "    root=" << this->root << std::endl;
@@ -40,20 +76,11 @@ void	LocationConfig::printLocationConfig() const {
 		std::cout << "    upload_loc=" << this->upload_loc << std::endl;
 	}
 
-	// if (this->redirect.size() > 0) {
-	// 	// std::cout << "    redirect ";
-	// 	std::map<int, std::string>::const_iterator	it;
-	// 	for (it = this->redirect.begin(); it != this->redirect.end(); ++it) {
-	// 		std::cout << "    redirect ";
-	// 		std::cout << it->first << "=" << it->second << std::endl;
-	// 	}
-	// }
 	if (this->redirect.first != 0) {
 		std::cout << "    redirect " << redirect.first << "=" << redirect.second << std::endl;
 	}
 
 	if (this->error_page.size() > 0) {
-		// std::cout << "    error_page ";
 		std::map<int, std::string>::const_iterator it;
 		for (it = this->error_page.begin(); it != this->error_page.end(); ++it) {
 			std::cout << "    error_page " << it->first << "=" << it->second << std::endl;
@@ -77,7 +104,6 @@ void	LocationConfig::parseCgiPass(const std::vector<std::string>& cgiPassDir) {
 
 void	LocationConfig::errorpageDirCheckAndLoad(const std::vector<std::string>& error_pageDir) {
 	std::ostringstream	thw;
-	// std::cout << "error_pageDir.size()=" << error_pageDir.size() << std::endl;
 	if (error_pageDir.size() < 3) {
 		thw << "Config file error: at least two arguments expected for error_page directive, found " << error_pageDir.size() - 1;
 		throw std::logic_error(thw.str());
@@ -87,13 +113,7 @@ void	LocationConfig::errorpageDirCheckAndLoad(const std::vector<std::string>& er
 	size_t	i = 1;
 	for (; i < error_pageDir.size(); i++) {
 		if (onlyDigits(error_pageDir[i])) {
-			// try {
 			err_code.push_back(ft_stoi(error_pageDir[i]));
-			// }
-			// catch (std::exception& e) {
-				// std::cerr << "Config file error: " << e.what() << std::endl;
-				// exit (1);
-			// }
 		}
 		else {
 			break ;
@@ -136,20 +156,13 @@ void	LocationConfig::redirectDirCheckAndLoad(const std::vector<std::string>& ret
 	}
 
 	// Duplicate check
-	// if (!this->redirect.empty()) {
 	if (this->redirect.first != 0) {
 		thw << "Config file error: redirect directive duplicate detected";
 		throw std::logic_error(thw.str());
 	}
 
 	int	code;
-	// try {
 	code = ft_stoi(returnDir.at(1));
-	// }
-	// catch (std::exception& e) {
-	// 	std::cout << "Config file error: " << e.what() << std::endl;
-	// 	exit (1);
-	// }
 
 	// Status code value check
 	if (code < 300 || code > 399) {
@@ -158,7 +171,6 @@ void	LocationConfig::redirectDirCheckAndLoad(const std::vector<std::string>& ret
 	}
 
 	std::string	uri = returnDir.at(2);
-	// this->redirect.insert(std::pair<int, std::string>(code, uri));
 	this->redirect.first = code;
 	this->redirect.second = uri;
 }
@@ -219,7 +231,6 @@ void	LocationConfig::indexDirCheckAndLoad(const std::vector<std::string>& indexD
 
 void	LocationConfig::methodsDirCheckAndLoad(const std::vector<std::string>& curr_dir) {
 	std::ostringstream	thw;
-	// std::cout << "allow_methodsDir.size()=" << curr_dir.size() << std::endl;
 
 	if (curr_dir.size() < 2) {
 		thw << "Config file error: at least one argument expected for methods directive, found " << curr_dir.size() - 1;
@@ -250,7 +261,6 @@ void	LocationConfig::methodsDirCheckAndLoad(const std::vector<std::string>& curr
 void	LocationConfig::rootDirCheckAndLoad(const std::vector<std::string>& rootDirective) {
 	std::ostringstream	thw;
 
-	// std::cout << "rootDirective.size()=" << rootDirective.size() << std::endl;
 	if (rootDirective.size() != 2) {
 		thw << "Config file error: single mandatory argument expected for root directive, found " << rootDirective.size() - 1;
 		throw std::logic_error(thw.str());
