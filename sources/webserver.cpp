@@ -16,41 +16,31 @@
 
 # include "../include/webserver.hpp"
 
+
+/* ========================================================================== */
+/*                    -- definition and prototype --                          */
+/* ========================================================================== */
 #if RUN_WITH_SERVER
 
 volatile sig_atomic_t g_should_exit = 0;
-static void print_http_request(const t_httpRequest& request); 
-static void print_http_response(const t_httpResponse& response); 
-std::string readFullHttpRequest(int fd, EventLoop& loop) ;
-static void inf_loop(std::vector<int> ports);
 
-/* ==================================================================================================*/
-
-static void signal_handler(int signal)
-{
-  if (signal == SIGINT)
-  {
-    std::cout << COLOR_YELLOW << " \nWarning : Reçu SIGINT (Ctrl+C), arrêt du serveur... " << COLOR_RESET << std::endl;
-    g_should_exit = 1;
-  }
-}
-
-static void initVerctorOfPort(std::vector<int>& ports, const std::vector<ServerConfig>& virtual_servers)
-{
-	// std::cout << "virtual_servers.size()=" << virtual_servers.size() << std::endl;
-	for (size_t i = 0; i < virtual_servers.size(); ++i) {
-		// std::cout << "virtual_servers[i].getPort()=" << virtual_servers[i].getPort() << std::endl;
-		ports.push_back(virtual_servers[i].getPort());
-	}
-//   ports.push_back(8080);
-  //ports.push_back(8081);
-  //ports.push_back(8082);
-}
+static void           signal_handler(int signal);
+static void           print_http_request(const t_httpRequest& request); 
+static void           print_http_response(const t_httpResponse& response); 
+std::string           readFullHttpRequest(int fd, EventLoop& loop) ;
+static void           inf_loop(std::vector<int> ports);
+static int            getPortServer(int fd);
+static void initVerctorOfPort(std::vector<int>& ports, const std::vector<ServerConfig>& virtual_servers);
 
 #endif
+/* ========================================================================== */
+/*                           -- main focntion --                              */
+/* ========================================================================== */
 
-int main (int av, char *ag[]) {
+int main (int av, char *ag[]) 
+{
 	if (av != 2) {
+
 		std::cout << "Usage: ./webserv [configuration file]" << std::endl;
 		return (EXIT_FAILURE);
 	}
@@ -77,7 +67,84 @@ try {
     return EXIT_SUCCESS;
 }
 
+
+/* ========================================================================== */
+/*                           -- Loop of event --                              */
+/* ========================================================================== */
 #if RUN_WITH_SERVER
+
+
+static void handler_conection(EventLoop &loop)
+{
+  std::vector<int> activeFds = loop.getActiveFds();
+  
+  for (size_t i = 0; i < activeFds.size(); i++) 
+  {
+    int fd = activeFds[i];
+    if (loop.isServerFd(fd)) {
+
+      loop.acceptNewConnection(fd);
+    } else {
+
+      std::string string_request;
+      string_request = readFullHttpRequest(fd, loop);
+      
+      std::cout << "Server port for fd=" << fd << ": " << getPortServer(fd) << std::endl;
+
+      t_httpRequest request = HttpHandler::setHttpRequest(string_request);
+      t_httpResponse response = HttpHandler::setHttpResponse(request);
+
+      std::string raw_response = response.toString();
+      loop.sendResponse(fd, raw_response);
+
+      if (response.status == 400)
+      {
+        loop.removeClient(fd);
+      }
+
+      print_http_request(request);
+      print_http_response(response);
+
+    }
+  }
+}
+
+static void inf_loop(std::vector<int> ports)
+{
+  int       ret = -1;
+  EventLoop loop(ports);
+
+  loop.setupServerSockets();
+  while (!g_should_exit) {
+
+    ret = loop.waitForActivity();
+    if (ret == -1)
+      std::cerr << COLOR_RED << "Error: poll() failed (interrupted system call?)" << COLOR_RESET << std::endl;
+    else
+      handler_conection(loop);
+  }
+}
+
+/* ========================================================================== */
+/*                                                                            */
+/* ========================================================================== */
+
+static void signal_handler(int signal)
+{
+  if (signal == SIGINT)
+  {
+    std::cout << COLOR_YELLOW << " \nWarning : Reçu SIGINT (Ctrl+C), arrêt du serveur... " << COLOR_RESET << std::endl;
+    g_should_exit = 1;
+  }
+}
+
+	// std::cout << "virtual_servers.size()=" << virtual_servers.size() << std::endl;
+		// std::cout << "virtual_servers[i].getPort()=" << virtual_servers[i].getPort() << std::endl;
+static void initVerctorOfPort(std::vector<int>& ports, const std::vector<ServerConfig>& virtual_servers)
+{
+	for (size_t i = 0; i < virtual_servers.size(); ++i)
+    ports.push_back(virtual_servers[i].getPort());
+}
 
 static int  getPortServer(int fd)
 {
@@ -90,67 +157,9 @@ static int  getPortServer(int fd)
   return ( ntohs(server_addr.sin_port) );
 }
 
-static void handler_conection(EventLoop &loop)
-{
-  std::vector<int> activeFds = loop.getActiveFds();
-  
-  for (size_t i = 0; i < activeFds.size(); i++) 
-  {
-    int fd = activeFds[i];
-    if (loop.isServerFd(fd)) {
-      loop.acceptNewConnection(fd);
-    }
-    else 
-    {
-      std::string string_request;
-
-      string_request = readFullHttpRequest(fd, loop);
-
-      
-      // 👇 Traitement Request HTTP
-	  // a quel server rattacher les fd ? il faut bien iterer dans les server
-      
-      std::cout << "Server port for fd=" << fd << ": " << getPortServer(fd) << std::endl;
-
-      t_httpRequest request = HttpHandler::setHttpRequest(string_request);
-      t_httpResponse response = HttpHandler::setHttpResponse(request);
-
-      std::string raw_response = response.toString();
-      loop.sendResponse(fd, raw_response);
-      if (response.status == 400)
-      {
-        loop.removeClient(fd);
-
-      }
-      print_http_request(request);
-      print_http_response(response);
-
-    }
-  }
-}
-
-static void inf_loop(std::vector<int> ports)
-{
-  EventLoop loop(ports);
-  loop.setupServerSockets();
-
-  while (!g_should_exit) 
-  {
-    int ret = loop.waitForActivity();
-    if (ret == -1)
-    {
-      std::cerr << COLOR_RED << "Error: poll() failed (interrupted system call?)" << COLOR_RESET << std::endl;
-      break;
-    }
-    else
-    {
-      handler_conection(loop);
-    }
-  }
-}
-
-
-/* ==================================================================================================*/
+/* ========================================================================== */
+/*                 -- print fonction for request/response --                  */
+/* ========================================================================== */
 
 static void print_http_request(const t_httpRequest& request) {
     // Affichage de la méthode, du chemin et de la version
@@ -221,7 +230,9 @@ static void print_http_response(const t_httpResponse& response) {
     std::cout << COLOR_CYAN << "====================\n" << COLOR_RESET << std::endl;
 }
 
-/* ==================================================================================================*/
+/* ========================================================================== */
+/*                                                                            */
+/* ========================================================================== */
 
 std::string readFullHttpRequest(int fd, EventLoop& loop) {
     std::string request;
