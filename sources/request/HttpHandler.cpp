@@ -12,9 +12,8 @@
 
 #include <request/HttpHandler.hpp>
 
-t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request, const std::vector<ServerConfig>& servers)
+t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request)
 {
-	(void)				servers;
 	t_httpRequest       request;
 	std::vector<t_token>   lexer;
 
@@ -34,11 +33,10 @@ t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request, const
 
 /* ========================================================================== */
 
-t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const std::vector<ServerConfig>& servers)
+t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request)
 {
 	t_httpResponse                      response;
   std::map<std::string, std::string>  headers;
-  (void) servers;
 
 	if (request.method != "GET" && request.method != "POST" && request.method != "DELETE")
 	{

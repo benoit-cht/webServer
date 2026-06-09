@@ -22,7 +22,7 @@ volatile sig_atomic_t g_should_exit = 0;
 static void print_http_request(const t_httpRequest& request); 
 static void print_http_response(const t_httpResponse& response); 
 std::string readFullHttpRequest(int fd, EventLoop& loop) ;
-static void inf_loop(std::vector<int> ports, std::vector<ServerConfig>& servers);
+static void inf_loop(std::vector<int> ports);
 
 /* ==================================================================================================*/
 
@@ -66,7 +66,7 @@ try {
 #if RUN_WITH_SERVER
 	std::vector<int> ports;
 	initVerctorOfPort(ports, virtual_servers);
-	inf_loop(ports, virtual_servers);
+	inf_loop(ports);
 #endif
 
     } catch (const std::exception& e) {
@@ -85,12 +85,12 @@ static int  getPortServer(int fd)
   socklen_t server_addr_len = sizeof(server_addr);
   
   if (getsockname(fd, (struct sockaddr *)&server_addr, &server_addr_len) == -1)
-        std::cerr << "getsockname() failed: " << strerror(errno) << std::endl;
+        std::cerr << COLOR_RED << "getsockname() failed: " << strerror(errno) << COLOR_RESET << std::endl;
 
   return ( ntohs(server_addr.sin_port) );
 }
 
-static void handler_conection(EventLoop &loop, std::vector<ServerConfig>& servers)
+static void handler_conection(EventLoop &loop)
 {
   std::vector<int> activeFds = loop.getActiveFds();
   
@@ -99,7 +99,6 @@ static void handler_conection(EventLoop &loop, std::vector<ServerConfig>& server
     int fd = activeFds[i];
     if (loop.isServerFd(fd)) {
       loop.acceptNewConnection(fd);
-      std::cout << "Server port for fd=" << fd << ": " << getPortServer(fd) << std::endl;
     }
     else 
     {
@@ -110,8 +109,11 @@ static void handler_conection(EventLoop &loop, std::vector<ServerConfig>& server
       
       // 👇 Traitement Request HTTP
 	  // a quel server rattacher les fd ? il faut bien iterer dans les server
-      t_httpRequest request = HttpHandler::setHttpRequest(string_request, servers);
-      t_httpResponse response = HttpHandler::setHttpResponse(request, servers);
+      
+      std::cout << "Server port for fd=" << fd << ": " << getPortServer(fd) << std::endl;
+
+      t_httpRequest request = HttpHandler::setHttpRequest(string_request);
+      t_httpResponse response = HttpHandler::setHttpResponse(request);
 
       std::string raw_response = response.toString();
       loop.sendResponse(fd, raw_response);
@@ -127,7 +129,7 @@ static void handler_conection(EventLoop &loop, std::vector<ServerConfig>& server
   }
 }
 
-static void inf_loop(std::vector<int> ports, std::vector<ServerConfig>& servers)
+static void inf_loop(std::vector<int> ports)
 {
   EventLoop loop(ports);
   loop.setupServerSockets();
@@ -142,7 +144,7 @@ static void inf_loop(std::vector<int> ports, std::vector<ServerConfig>& servers)
     }
     else
     {
-      handler_conection(loop, servers);
+      handler_conection(loop);
     }
   }
 }

@@ -32,8 +32,8 @@ class ServerConfig;
 class HttpHandler {
 
   public:
-		static t_httpRequest         setHttpRequest(const std::string& raw_request, const std::vector<ServerConfig>& servers);
-		static t_httpResponse        setHttpResponse(t_httpRequest request, const std::vector<ServerConfig>& servers);
+		static t_httpRequest         setHttpRequest(const std::string& raw_request);
+		static t_httpResponse        setHttpResponse(t_httpRequest request);
     static t_httpResponse        HandlerErrorHttp(int status);
 
   private :
