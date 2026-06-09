@@ -28,9 +28,9 @@ static void           signal_handler(int signal);
 static void           print_http_request(const t_httpRequest& request); 
 static void           print_http_response(const t_httpResponse& response); 
 std::string           readFullHttpRequest(int fd, EventLoop& loop) ;
-static void           inf_loop(std::vector<int> ports);
+static void           inf_loop(std::vector<int> ports, const std::vector<ServerConfig>& config);
 static int            getPortServer(int fd);
-static void initVerctorOfPort(std::vector<int>& ports, const std::vector<ServerConfig>& virtual_servers);
+static void           initVerctorOfPort(std::vector<int>& ports, const std::vector<ServerConfig>& virtual_servers);
 
 #endif
 /* ========================================================================== */
@@ -56,7 +56,7 @@ try {
 #if RUN_WITH_SERVER
 	std::vector<int> ports;
 	initVerctorOfPort(ports, virtual_servers);
-	inf_loop(ports);
+	inf_loop(ports, virtual_servers);
 #endif
 
     } catch (const std::exception& e) {
@@ -74,7 +74,7 @@ try {
 #if RUN_WITH_SERVER
 
 
-static void handler_conection(EventLoop &loop)
+static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& vec_config)
 {
   std::vector<int> activeFds = loop.getActiveFds();
   
@@ -89,10 +89,12 @@ static void handler_conection(EventLoop &loop)
       std::string string_request;
       string_request = readFullHttpRequest(fd, loop);
       
+      ( void )     vec_config;
+      ServerConfig config; 
       std::cout << "Server port for fd=" << fd << ": " << getPortServer(fd) << std::endl;
 
       t_httpRequest request = HttpHandler::setHttpRequest(string_request);
-      t_httpResponse response = HttpHandler::setHttpResponse(request);
+      t_httpResponse response = HttpHandler::setHttpResponse(request, config);
 
       std::string raw_response = response.toString();
       loop.sendResponse(fd, raw_response);
@@ -109,7 +111,7 @@ static void handler_conection(EventLoop &loop)
   }
 }
 
-static void inf_loop(std::vector<int> ports)
+static void inf_loop(std::vector<int> ports, const std::vector<ServerConfig>& vec_config)
 {
   int       ret = -1;
   EventLoop loop(ports);
@@ -121,7 +123,7 @@ static void inf_loop(std::vector<int> ports)
     if (ret == -1)
       std::cerr << COLOR_RED << "Error: poll() failed (interrupted system call?)" << COLOR_RESET << std::endl;
     else
-      handler_conection(loop);
+      handler_conection(loop,vec_config);
   }
 }
 

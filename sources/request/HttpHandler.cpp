@@ -33,8 +33,9 @@ t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request)
 
 /* ========================================================================== */
 
-t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request)
+t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerConfig& config)
 {
+  (void)                              config;
 	t_httpResponse                      response;
   std::map<std::string, std::string>  headers;
 
