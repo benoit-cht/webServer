@@ -31,6 +31,7 @@ std::string           readFullHttpRequest(int fd, EventLoop& loop) ;
 static void           inf_loop(std::vector<int> ports, const std::vector<ServerConfig>& config);
 static int            getPortServer(int fd);
 static void           initVerctorOfPort(std::vector<int>& ports, const std::vector<ServerConfig>& virtual_servers);
+static ServerConfig  getConfigForHandler(const std::vector<ServerConfig>& vec_config, int port);
 
 #endif
 /* ========================================================================== */
@@ -74,6 +75,22 @@ try {
 #if RUN_WITH_SERVER
 
 
+static ServerConfig  getConfigForHandler(const std::vector<ServerConfig>& vec_config, int port)
+{
+  ServerConfig  config;
+
+  for (std::vector<ServerConfig>::const_iterator it = vec_config.begin(); it != vec_config.end(); it++) {
+    
+    if (it->getPort() == port) {
+
+      config = *it;
+      return ( config );
+    }
+  }
+
+  return ( config );
+}
+
 static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& vec_config)
 {
   std::vector<int> activeFds = loop.getActiveFds();
@@ -89,8 +106,8 @@ static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& 
       std::string string_request;
       string_request = readFullHttpRequest(fd, loop);
       
-      ( void )     vec_config;
-      ServerConfig config; 
+      ServerConfig config = getConfigForHandler(vec_config, getPortServer(fd));
+
       std::cout << "Server port for fd=" << fd << ": " << getPortServer(fd) << std::endl;
 
       t_httpRequest request = HttpHandler::setHttpRequest(string_request);
