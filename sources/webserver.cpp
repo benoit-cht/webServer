@@ -78,6 +78,18 @@ try {
 }
 
 #if RUN_WITH_SERVER
+
+static int  getPortServer(int fd)
+{
+  struct sockaddr_in server_addr;
+  socklen_t server_addr_len = sizeof(server_addr);
+  
+  if (getsockname(fd, (struct sockaddr *)&server_addr, &server_addr_len) == -1)
+        std::cerr << "getsockname() failed: " << strerror(errno) << std::endl;
+
+  return ( ntohs(server_addr.sin_port) );
+}
+
 static void handler_conection(EventLoop &loop, std::vector<ServerConfig>& servers)
 {
   std::vector<int> activeFds = loop.getActiveFds();
@@ -85,10 +97,10 @@ static void handler_conection(EventLoop &loop, std::vector<ServerConfig>& server
   for (size_t i = 0; i < activeFds.size(); i++) 
   {
     int fd = activeFds[i];
-    if (loop.isServerFd(fd)) 
-    {
+    if (loop.isServerFd(fd)) {
       loop.acceptNewConnection(fd);
-    } 
+      std::cout << "Server port for fd=" << fd << ": " << getPortServer(fd) << std::endl;
+    }
     else 
     {
       std::string string_request;
