@@ -26,8 +26,7 @@
 #include <log/colorLog.hpp>
 #include <request/struct.hpp>
 #include <config/LocationConfig.hpp>
-
-class ServerConfig;
+#include <config/ServerConfig.hpp>
 
 class HttpHandler {
 
@@ -37,9 +36,9 @@ class HttpHandler {
     static t_httpResponse        HandlerErrorHttp(int status);
 
   private :
-    static t_httpResponse        handler_methode_get(t_httpRequest& request);
+    static t_httpResponse        handler_methode_get(t_httpRequest& request, const ServerConfig& config);
     static t_httpResponse        handler_methode_post(t_httpRequest request);
-    static t_httpResponse        handler_methode_delete(t_httpRequest& request);
+    static t_httpResponse        handler_methode_delete(t_httpRequest& request, const ServerConfig& config);
 
   private:
     static bool                  descending_deriv(std::vector<t_token>& lexer);
