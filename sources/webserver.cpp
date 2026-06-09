@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserver.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/08 16:40:02 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/09 11:39:20 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,8 +94,8 @@ static ServerConfig  getConfigForHandler(const std::vector<ServerConfig>& vec_co
 static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& vec_config)
 {
   std::vector<int> activeFds = loop.getActiveFds();
-  
-  for (size_t i = 0; i < activeFds.size(); i++) 
+
+  for (size_t i = 0; i < activeFds.size(); i++)
   {
     int fd = activeFds[i];
     if (loop.isServerFd(fd)) {
@@ -250,72 +250,58 @@ static void print_http_response(const t_httpResponse& response) {
 }
 
 /* ========================================================================== */
-/*                                                                            */
+/*                   -- fonc for read full request --                         */
 /* ========================================================================== */
+
+// Helper pour extraire le Content-Length proprement
+static size_t extractContentLength(const std::string& request) {
+    size_t pos = request.find("Content-Length: ");
+    if (pos != std::string::npos) {
+        size_t start = pos + 16; // "Content-Length: " fait 16 caractères
+        size_t end = request.find("\r\n", start);
+        if (end != std::string::npos) {
+            return static_cast<size_t>(std::atoi(request.substr(start, end - start).c_str()));
+        }
+    }
+    return 0;
+}
 
 std::string readFullHttpRequest(int fd, EventLoop& loop) {
     std::string request;
-    char buffer[4096];
-    ssize_t bytes_read;
-    bool headers_ended = false;
+    char buffer[BUFFER_SIZE]; // Utilisation de la macro définie dans webserver.hpp
+    size_t header_end_pos = std::string::npos;
     size_t content_length = 0;
-    size_t body_bytes_read = 0;
 
     while (true) {
-        // Lire un morceau de données
-        bytes_read = loop.readFromClient(fd, buffer, sizeof(buffer));
+        ssize_t bytes_read = loop.readFromClient(fd, buffer, sizeof(buffer));
+
         if (bytes_read <= 0) {
-            if (bytes_read == 0) {
-                // Client a fermé la connexion
+            if (bytes_read == 0)
                 std::cout << COLOR_RED << "Client disconnected (fd=" << fd << ")" << COLOR_RESET << std::endl;
-            } else {
-                // Erreur de lecture
+            else
                 std::cerr << "Error reading from client (fd=" << fd << ")" << std::endl;
-            }
-            return ""; // Retourner une chaîne vide en cas d'erreur
+            return ""; // Abandonne la requête en cas d'erreur
         }
 
-        // Ajouter les données lues à la requête
         request.append(buffer, bytes_read);
 
-        // Si on n'a pas encore trouvé la fin des headers
-        if (!headers_ended) {
-            // Chercher \r\n\r\n (fin des headers)
-            size_t header_end_pos = request.find("\r\n\r\n");
+        // Cherche la fin des headers seulement si on ne l'a pas encore trouvée
+        if (header_end_pos == std::string::npos) {
+            header_end_pos = request.find("\r\n\r\n");
+
             if (header_end_pos != std::string::npos) {
-                headers_ended = true;
-                // Extraire Content-Length
-                size_t content_length_pos = request.find("Content-Length: ");
-                if (content_length_pos != std::string::npos) {
-                    size_t start = content_length_pos + 16; // "Content-Length: " = 16 chars
-                    size_t end = request.find("\r\n", start);
-                    if (end != std::string::npos) {
-                        std::string length_str = request.substr(start, end - start);
-                        content_length = atoi(length_str.c_str());
-                    }
-                }
-                // Si pas de Content-Length, on suppose que c'est une requête sans body (ex: GET)
-                else {
-                    content_length = 0;
-                }
+                content_length = extractContentLength(request);
             }
         }
 
-        // Si les headers sont terminés et qu'on a un Content-Length
-        if (headers_ended) {
-            // Calculer la taille du body déjà reçu
-            size_t header_end_pos = request.find("\r\n\r\n");
-            if (header_end_pos != std::string::npos) {
-                body_bytes_read = request.size() - (header_end_pos + 4); // +4 pour \r\n\r\n
-            }
-
-            // Si on a reçu tout le body, on arrête
+        // Si on a les headers, on vérifie si on a reçu tout le body
+        if (header_end_pos != std::string::npos) {
+            size_t body_bytes_read = request.size() - (header_end_pos + 4);
             if (body_bytes_read >= content_length) {
-                break;
+                break; // Requête entièrement reçue !
             }
         }
     }
-
     return request;
 }
 #endif
