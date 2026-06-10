@@ -1,4 +1,3 @@
-//#include "../../include/cgi/CgiHandler.hpp"
 #include <request/HttpHandler.hpp>
 #include <webserver.hpp>
 #include <unistd.h>
@@ -82,10 +81,69 @@ std::string HttpHandler::getCgiInterpreter(const std::string& path) {
     return "";
 }
 
+std::vector<char*> HttpHandler::stringsToCharPtrs(const std::vector<std::string>& strings) {
+    std::vector<char*> ptrs;
+    for (size_t i = 0; i < strings.size(); ++i) {
+        ptrs.push_back(const_cast<char*>(strings[i].c_str()));
+    }
+    ptrs.push_back(NULL);
+    return ptrs;
+}
+
+void HttpHandler::handleCgiChild(const std::string& path, const t_httpRequest& request, int pipe_in[2], int pipe_out[2]) {
+    // Setup pipes for the child process
+    close(pipe_in[1]); // Ferme l'extrémité d'écriture du parent
+    close(pipe_out[0]); // Ferme l'extrémité de lecture du parent
+    dup2(pipe_in[0], STDIN_FILENO);   // Le CGI lit depuis STDIN (lié à pipe_in[0])
+    dup2(pipe_out[1], STDOUT_FILENO); // Le CGI écrit dans STDOUT (lié à pipe_out[1])
+    close(pipe_in[0]);
+    close(pipe_out[1]);
+
+    // Parse the path and query string
+    std::string actual_path = path;
+    std::string query_string = "";
+    size_t question_mark_pos = path.find('?');
+
+    if(question_mark_pos != std::string::npos){
+        actual_path = path.substr(0, question_mark_pos);
+        query_string = path.substr(question_mark_pos + 1);
+    }
+
+    std::string full_path = "./sources/www" + actual_path;
+    // Isolate the directory and filename
+    size_t  last_slash = full_path.find_last_of('/');
+    std::string dir_path = (last_slash != std::string::npos) ? full_path.substr(0, last_slash) : "";
+    std::string filename = (last_slash != std::string::npos) ? full_path.substr(last_slash + 1) : full_path;
+    // Build Environment
+    std::vector<std::string> env_strings = buildCgiEnv(request, full_path, query_string);
+    std::vector<char*> envp = stringsToCharPtrs(env_strings);
+    // Change directory context
+    if (!dir_path.empty()) {
+        chdir(dir_path.c_str());
+    }
+    // Build Execution Args
+    std::string interpreter = getCgiInterpreter(full_path);
+    std::string relative_execution_path = "./" + filename;
+    std::vector<std::string> arg_strings;
+    if (!interpreter.empty()) {
+        arg_strings.push_back(interpreter);
+    }
+    arg_strings.push_back(relative_execution_path);
+    std::vector<char*> args = stringsToCharPtrs(arg_strings);
+
+    // Execute
+    if (!arg_strings.empty()) {
+        execve(arg_strings[0].c_str(), &args[0], &envp[0]);
+    }
+    // If execve fails, exit safely
+    exit(1);
+}
+
+
 t_httpResponse HttpHandler::executeCgi(const std::string& path, const t_httpRequest& request) {
     t_httpResponse response;
-    int pipe_in[2];  // Parent écrit dans pipe_in[1], enfant lit depuis pipe_in[0]
-    int pipe_out[2]; // Parent lit depuis pipe_out[0], enfant écrit dans pipe_out[1]
+    int pipe_in[2];
+    int pipe_out[2];
 
     if (pipe(pipe_in) == -1 || pipe(pipe_out) == -1) {
         response.status = 500;
@@ -103,65 +161,12 @@ t_httpResponse HttpHandler::executeCgi(const std::string& path, const t_httpRequ
     }
 
     if (pid == 0) {
-        // --- ENFANT (CGI) ---
-        close(pipe_in[1]); // Ferme l'extrémité d'écriture du parent
-        close(pipe_out[0]); // Ferme l'extrémité de lecture du parent
-
-        dup2(pipe_in[0], STDIN_FILENO);   // Le CGI lit depuis STDIN (lié à pipe_in[0])
-        dup2(pipe_out[1], STDOUT_FILENO); // Le CGI écrit dans STDOUT (lié à pipe_out[1])
-
+        // --- CHILD PROCESS ---
+        handleCgiChild(path, request, pipe_in, pipe_out);
+    } else {
+        // --- PARENT PROCESS ---
         close(pipe_in[0]);
         close(pipe_out[1]);
-
-        std::string actual_path = path;
-        std::string query_string = "";
-        size_t question_mark_pos = path.find('?');
-
-        if(question_mark_pos != std::string::npos){
-            actual_path = path.substr(0, question_mark_pos);
-            query_string = path.substr(question_mark_pos + 1);
-        }
-
-        std::string full_path = "./sources/www" + actual_path;
-        // Isolate the directory and the filename using string manipulation
-        size_t  last_slash = full_path.find_last_of('/');
-        std::string dir_path = (last_slash != std::string::npos) ? full_path.substr(0, last_slash) : "";
-        std::string filename = (last_slash != std::string::npos) ? full_path.substr(last_slash + 1) : full_path;
-        // Build env using the full path before moving context
-        std::vector<std::string> env_strings = buildCgiEnv(request, full_path, query_string);
-        // Move process context into the target directory
-        if (!dir_path.empty()) {
-            chdir(dir_path.c_str());
-        }
-        std::vector<char*> envp;
-        for (size_t i = 0; i < env_strings.size(); ++i) {
-            envp.push_back(const_cast<char*>(env_strings[i].c_str()));
-        }
-        envp.push_back(NULL); // Null-terminate the array
-
-        std::string interpreter = getCgiInterpreter(full_path);
-        std::string relative_execution_path = "./" + filename;
-
-        std::vector<std::string> arg_strings;
-        if (!interpreter.empty()) {
-            arg_strings.push_back(interpreter);
-        }
-        arg_strings.push_back(relative_execution_path);
-
-        std::vector<char*> args;
-        for (size_t i = 0; i < arg_strings.size(); ++i) {
-            args.push_back(const_cast<char*>(arg_strings[i].c_str()));
-        }
-        args.push_back(NULL); // Null-terminate the array
-
-        if (!arg_strings.empty()) {
-            execve(arg_strings[0].c_str(), &args[0], &envp[0]);
-        }
-        exit(1);
-    } else {
-        // --- PARENT (Webserv) ---
-        close(pipe_in[0]); // Ferme l'extrémité de lecture de l'enfant
-        close(pipe_out[1]); // Ferme l'extrémité d'écriture de l'enfant
 
         // Make pipes non-blocking
         fcntl(pipe_in[1], F_SETFL, O_NONBLOCK);
@@ -172,10 +177,8 @@ t_httpResponse HttpHandler::executeCgi(const std::string& path, const t_httpRequ
         response.cgi_read_fd = pipe_out[0];
         response.cgi_write_fd = pipe_in[1];
         response.cgi_pid = pid;
-
-        // Write the body later in the EventLoop
-        response.body = request.body;
-
-        return response;
+        response.body = request.body; // To be written to the CGI later
     }
+
+    return response;
 }

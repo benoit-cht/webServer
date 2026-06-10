@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpHandler.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 11:31:58 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/08 16:15:56 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/10 19:46:23 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,11 +55,13 @@ class HttpHandler {
     static t_httpResponse executeCgi(const std::string& path, const t_httpRequest& request);
     static std::vector<std::string> buildCgiEnv(const t_httpRequest& request, const std::string& script_path, const std::string& query_string);
     static std::string getCgiInterpreter(const std::string& path);
+    static std::vector<char*> stringsToCharPtrs(const std::vector<std::string>& strings);
+    static void handleCgiChild(const std::string& path, const t_httpRequest& request, int pipe_in[2], int pipe_out[2]);
 
 
 };
 
-#if FRONT_V2 
+#if FRONT_V2
   #define ROOT "tech-stack/www/"
 #else
   #define ROOT "sources/www/"
