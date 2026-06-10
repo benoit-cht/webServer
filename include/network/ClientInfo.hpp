@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ClientInfo.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:30:01 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/25 06:40:59 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/10 13:52:05 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ class ClientInfo {
   public:
     ClientInfo(int fd, const std::string& ip, int port);
     virtual ~ClientInfo(void);
-  
+
   public:
     int                 getFileDescriptor(void) const;
     int                 getPortNumber(void) const;
