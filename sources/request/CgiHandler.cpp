@@ -14,10 +14,36 @@ std::vector<std::string> HttpHandler::buildCgiEnv(const t_httpRequest& request, 
     env.push_back("SERVER_PROTOCOL=" + request.version);
     env.push_back("PATH_INFO=" + script_path);
     env.push_back("SCRIPT_FILENAME=" + script_path);
+    env.push_back("SCRIPT_NAME=" + script_path);
     env.push_back("REDIRECT_STATUS=200");
     env.push_back("GATEWAY_INTERFACE=CGI/1.1");
     env.push_back("SERVER_SOFTWARE=Webserv/1.0");
     env.push_back("QUERY_STRING=" + query_string); // Add QUERY_STRING for GET request
+
+    // Extract SERVER_NAME and SERVER_PORT from the 'Host' header !!! Need to be change !!!
+    std::string server_name = "127.0.0.1";
+    std::string server_port = "80";
+
+    // Look for 'Host' in parsed headers
+    std::map<std::string, std::string>::const_iterator host_it = request.headers.find("Host");
+    if (host_it == request.headers.end()) {
+        host_it = request.headers.find("host");
+    }
+    if (host_it != request.headers.end()) {
+        std::string host_val = host_it->second;
+        size_t  colon_pos = host_val.find(':');
+        if (colon_pos != std::string::npos) {
+            server_name = host_val.substr(0, colon_pos);
+            server_port = host_val.substr(colon_pos + 1);
+        } else {
+            server_name = host_val;
+        }
+    }
+
+    env.push_back("SERVER_NAME=" + server_name);
+    env.push_back("SERVER_PORT=" + server_port);
+
+    env.push_back("REMOTE_ADDR=127.0.0.1");
 
     if (request.method == "POST") {
         std::stringstream ss;
@@ -107,44 +133,37 @@ t_httpResponse HttpHandler::executeCgi(const std::string& path, const t_httpRequ
         if (!dir_path.empty()) {
             chdir(dir_path.c_str());
         }
-
-        // Alloue envp
-        char **envp = new char*[env_strings.size() + 1];
+        std::vector<char*> envp;
         for (size_t i = 0; i < env_strings.size(); ++i) {
-            envp[i] = new char[env_strings[i].size() + 1];
-            std::strcpy(envp[i], env_strings[i].c_str());
+            envp.push_back(const_cast<char*>(env_strings[i].c_str()));
         }
-        envp[env_strings.size()] = NULL;
+        envp.push_back(NULL); // Null-terminate the array
 
         std::string interpreter = getCgiInterpreter(full_path);
         std::string relative_execution_path = "./" + filename;
-        char *script_path = strdup(full_path.c_str());
-        char *interp_path = interpreter.empty() ? NULL : strdup(interpreter.c_str());
 
-        char *args[3];
-        if (interp_path){
-            args[0] = interp_path;
-            args[1] = script_path;
-            args[2] = NULL;
-        }else{
-            args[0] = script_path;
-            args[1] = NULL;
-            args[2] = NULL;
+        std::vector<std::string> arg_strings;
+        if (!interpreter.empty()) {
+            arg_strings.push_back(interpreter);
         }
+        arg_strings.push_back(relative_execution_path);
 
-        execve(args[0], args, envp);
+        std::vector<char*> args;
+        for (size_t i = 0; i < arg_strings.size(); ++i) {
+            args.push_back(const_cast<char*>(arg_strings[i].c_str()));
+        }
+        args.push_back(NULL); // Null-terminate the array
 
-        for (size_t i = 0; i < env_strings.size(); ++i) delete[] envp[i];
-        delete[] envp;
-        free(script_path);
-        if (interp_path) free(interp_path);
+        if (!arg_strings.empty()) {
+            execve(arg_strings[0].c_str(), &args[0], &envp[0]);
+        }
         exit(1);
     } else {
         // --- PARENT (Webserv) ---
         close(pipe_in[0]); // Ferme l'extrémité de lecture de l'enfant
         close(pipe_out[1]); // Ferme l'extrémité d'écriture de l'enfant
 
-        // Male pipes non-blocking
+        // Make pipes non-blocking
         fcntl(pipe_in[1], F_SETFL, O_NONBLOCK);
         fcntl(pipe_out[0], F_SETFL, O_NONBLOCK);
 
@@ -160,4 +179,3 @@ t_httpResponse HttpHandler::executeCgi(const std::string& path, const t_httpRequ
         return response;
     }
 }
-
