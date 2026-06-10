@@ -6,7 +6,7 @@
 #    By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/20 09:10:14 by bchallat          #+#    #+#              #
-#    Updated: 2026/06/04 18:41:44 by tjacquel         ###   ########.fr        #
+#    Updated: 2026/06/10 19:40:15 by tjacquel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,11 +24,11 @@ UNAME := $(shell uname)
 ifeq ($(UNAME), Darwin)
 	ECHO_FLAG	=	echo
 	CC				= clang++
-	FLAG			= -g3 -Wall -Wextra -Werror -std=c++98 
+	FLAG			= -g3 -Wall -Wextra -Werror -std=c++98
 else
 	ECHO_FLAG	= echo -e
 	CC				= c++
-	FLAG			= -Wall -Wextra -Werror -std=c++98
+	FLAG			= -Wall -Wextra -Werror -std=c++98 -g -pedantic
 endif
 
 CCFLAG	= $(CC) $(FLAG) -I./include -MMD -MP

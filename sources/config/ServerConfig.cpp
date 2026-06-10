@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 19:42:36 by lcluzan           #+#    #+#             */
-/*   Updated: 2026/06/08 14:41:19 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/10 19:41:46 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,9 +175,9 @@ void	ServerConfig::cmbsDirCheckAndLoad(const std::vector<std::string>& curr_dir)
 		throw std::logic_error(thw.str());
 	}
 
-	std::string	arg = curr_dir.at(1);
-	char		last_char = arg.at(arg.length() - 1);
-	long long	multiplier = 1;
+	std::string		arg = curr_dir.at(1);
+	char			last_char = arg.at(arg.length() - 1);
+	unsigned long	multiplier = 1;
 
 	// kilobit
 	if (last_char == 'k' || last_char == 'K') {
@@ -195,8 +195,8 @@ void	ServerConfig::cmbsDirCheckAndLoad(const std::vector<std::string>& curr_dir)
 		arg = arg.substr(0, arg.length() - 1);
 	}
 
-	int			base_value = ft_stoi(arg)	;
-	long long	final_value = static_cast<long long>(base_value) * multiplier;
+	int				base_value = ft_stoi(arg)	;
+	unsigned long	final_value = static_cast<unsigned long>(base_value) * multiplier;
 
 	if (final_value > CLIENT_MAX_BODY_SIZE_LIMIT) {
 		thw << "Config file error: client_max_body_size exceeds or is equal to 2GB maximum limit";
