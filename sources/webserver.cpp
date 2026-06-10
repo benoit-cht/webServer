@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/10 10:28:57 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/10 14:55:48 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,7 @@ static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& 
       std::cout << "Server port for fd=" << fd << ": " << getPortServer(fd) << std::endl;
 
       t_httpRequest request = HttpHandler::setHttpRequest(string_request);
+      print_http_request(request);
       t_httpResponse response = HttpHandler::setHttpResponse(request, config);
 
       std::string raw_response = response.toString();
@@ -121,7 +122,6 @@ static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& 
         loop.removeClient(fd);
       }
 
-      print_http_request(request);
       print_http_response(response);
 
     }

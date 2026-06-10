@@ -6,7 +6,7 @@
 /*   By: ton_utilisateur_42 <ton_email@student.42.  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/01 12:20:23 by ton_utilisate     #+#    #+#             */
-/*   Updated: 2026/06/10 14:35:51 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/10 14:56:50 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,7 @@ t_httpResponse HttpHandler::serveStaticFile(const std::string& path)
     response.headers["Content-Type"] = getMimeType(path);
     response.body = content;
     
+    std::cout << COLOR_MAGENTA << "\n   ~~~~~~ METHODE END  ~~~~~~" << COLOR_RESET << std::endl;
     return (response);
 }
 
@@ -252,7 +253,6 @@ static std::string  post_name_file( t_post_methode parsing)
 
 static void cleanMultipartBody(t_post_methode* postData) {
     
-    std::cout << COLOR_CYAN << postData->body << COLOR_RESET << std::endl;
     // Vérifier si le boundary est présent
     if (postData->boundary.empty()) {
         // Si ce n'est pas une requête multipart, le body est déjà propre
@@ -303,7 +303,6 @@ static void cleanMultipartBody(t_post_methode* postData) {
 
     // Mettre à jour le body avec le contenu nettoyé
     postData->body = fileContent;
-    std::cout << COLOR_CYAN << "->>" + fileContent << COLOR_RESET << std::endl;
 }
 
 /* ========================================================================== */
