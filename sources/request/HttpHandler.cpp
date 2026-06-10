@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/10 12:36:31 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/10 12:39:41 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,9 +147,9 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request, const Se
   std::map<std::string, LocationConfig>	location;
   
   location = config.getLocationConfig();
-  if (request.body.empty || location.empty()) {
+  if (request.body.empty() || location.empty()) {
 
-    respnse.status = 404;
+    response.status = 404;
 
   } else if (request.path.find("/upload") == 0) {
 
@@ -174,7 +174,6 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request, const Se
     std::cout << COLOR_YELLOW << "Warnig : Faile Created file " << location["/"].getRoot() + request.path + parsing.nameFile << COLOR_RESET << std::endl;
 
   }
-
   return (HandlerErrorHttp(500));
 }
 
