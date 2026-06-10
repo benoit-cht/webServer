@@ -6,7 +6,7 @@
 /*   By: ton_utilisateur_42 <ton_email@student.42.  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/01 12:20:23 by ton_utilisate     #+#    #+#             */
-/*   Updated: 2026/06/10 12:50:32 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/10 14:35:51 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,41 +156,99 @@ bool HttpHandler::isStaticFile(const std::string& path)
 /*                          -- tools of POST METHODE  --                      */
 /* ========================================================================== */
 
-/*
+
 static std::string  post_length_body(t_httpRequest request)
 {
   std::string length;
 
+  if (!request.headers["Content-Length"].empty()) {
+
+    length = request.headers["Content-Length"];
+  
+  } else {
+
+    std::cerr << COLOR_YELLOW << "[Warning] : don't find length of body" << COLOR_RESET << std::endl;
+  }
+
   return ( length );
 }
-*/
 
-/*
+
 static std::string  post_boundary(t_httpRequest request)
 {
+  size_t      pos_boundary = 0;
   std::string boundary;
+
+  pos_boundary = request.headers["Content-Type"].find("boundary=");
+  if (pos_boundary != std::string::npos) {
+    
+    boundary = request.headers["Content-Type"].substr(pos_boundary + 9);
+  } else {
+
+    std::cerr << COLOR_YELLOW << "[Warning] : don't find a boundary in headers" << COLOR_RESET <<std::endl; 
+  }
 
   return ( boundary );
 }
-*/
 
-/*
-static std::string  post_name_file(t_httpRequest request, t_post_methode parsing)
-{
-  std::string   name;
-  
-  return ( name );
-}
-  */
-
-/*
 static std::map<std::string, std::string> post_hastable_header(t_httpRequest request)
 {
   std::map<std::string, std::string>  headers;
 
+  for (size_t start = 0, ope_pos = 0, key_pos = 0, end = 0; start + end < request.body.size(); start = end + 1) {
+
+    if ((key_pos = request.body.find("Content-", start)) == std::string::npos)
+        return (headers);
+
+    if (( ope_pos = request.body.find(":", key_pos)) == std::string::npos)
+        return (headers);
+
+    if (( end = request.body.find("\n", key_pos)) == std::string::npos)
+        return (headers);
+
+    std::string key = request.body.substr(key_pos, ope_pos - key_pos);
+    std::string value = request.body.substr(ope_pos, end - ope_pos);
+    if (key.empty() || value.empty())
+      return(headers);
+
+    headers[key] = value;
+    //headers.insert(std::pair<std::string, std::string>(key, value));
+    std::cout << COLOR_MAGENTA << key << headers[key] << COLOR_RESET << std::endl;
+    
+  }
+
   return ( headers );
 }
-*/
+
+static std::string  post_name_file( t_post_methode parsing)
+{
+  std::string   name;
+  
+  std::string str = parsing.headers["Content-Disposition"];
+  size_t filename_pos = str.find("filename=\"");
+  if (filename_pos != std::string::npos) 
+  {
+
+    size_t start_quote = filename_pos + 10; // 9 = longueur de "filename=\""
+    size_t end_quote = str.find("\"", start_quote);
+    if (end_quote != std::string::npos) 
+    {
+            name = str.substr(start_quote, end_quote - start_quote);
+            std::cout << COLOR_MAGENTA << "Nom du fichier : " << name << COLOR_RESET << std::endl;
+    } 
+    else 
+    {    
+      std::cerr << COLOR_YELLOW << "[Warning] : don't find a closing quote in name file " << COLOR_RESET <<std::endl; 
+    }
+  
+  } 
+  else {  
+      std::cerr << "Erreur : 'filename=\"' non trouvé dans Content-Type." << std::endl;
+  }
+  return ( name );
+}
+
+
 
 static void cleanMultipartBody(t_post_methode* postData) {
     
@@ -248,75 +306,24 @@ static void cleanMultipartBody(t_post_methode* postData) {
     std::cout << COLOR_CYAN << "->>" + fileContent << COLOR_RESET << std::endl;
 }
 
+/* ========================================================================== */
+
 t_post_methode HttpHandler::post_parse_header_request(t_httpRequest request)
 {
-  size_t          pos_boundary = 0;
   t_post_methode  parsing;
   
-  // find alength of body 
-  if (!request.headers["Content-Length"].empty()) {
+  if ((parsing.bodyLength = post_length_body(request)).empty() )
+    return ( parsing );
+ 
+  if ((parsing.boundary = post_boundary(request)).empty() )
+    return ( parsing );
 
-    parsing.bodyLength = request.headers["Content-Length"];
-    std::cout << COLOR_MAGENTA << "bodyLength : " << parsing.bodyLength  << COLOR_RESET << std::endl; 
-  }
+  if ((parsing.headers = post_hastable_header(request)).empty())
+    return( parsing );
 
-  //find a boundary wtchi headers Content-Type 
-  pos_boundary = request.headers["Content-Type"].find("boundary=");
-  if (pos_boundary != 0) {
-    
-    parsing.boundary = request.headers["Content-Type"].substr(pos_boundary + 9);
-    std::cout << COLOR_MAGENTA << "boundary : " << parsing.boundary << COLOR_RESET <<std::endl; 
-  }
+  if ((parsing.nameFile = post_name_file( parsing)).empty())
+    return ( parsing );
 
-  // create a map of hedaer 
-  for (size_t start = 0, end = 0; start + end < request.body.size(); start += end) {
-
-    size_t  key_pos = request.body.find("Content-", start);
-    size_t  ope_pos = request.body.find(":", key_pos);
-    end = request.body.find("\n", key_pos);
-
-    std::string key = request.body.substr(key_pos, ope_pos - key_pos);
-    std::string value = request.body.substr(ope_pos, end - ope_pos);
-
-    parsing.headers[key] = value;
-    std::cout << COLOR_MAGENTA << key << parsing.headers[key] << COLOR_RESET << std::endl;
-    
-  }
-    // a name file 
-    std::string str = parsing.headers["Content-Disposition"];
-    size_t filename_pos = str.find("filename=\"");
-    if (filename_pos != std::string::npos) {
-
-        size_t start_quote = filename_pos + 10; // 9 = longueur de "filename=\""
-        size_t end_quote = str.find("\"", start_quote);
-
-        if (end_quote != std::string::npos) {
-
-            parsing.nameFile = str.substr(start_quote, end_quote - start_quote);
-            std::cout << COLOR_MAGENTA << "Nom du fichier : " << parsing.nameFile << parsing.nameFile.length() << COLOR_RESET << std::endl;
-
-        } else {
-          
-          std::cerr << "Erreur : Guillemet fermant manquant." << std::endl;
-        }
-    } else {
-        
-      std::cerr << "Erreur : 'filename=\"' non trouvé dans Content-Type." << std::endl;
-    }
-
- /*
-  // clear body 
-  parsing.body = request.body;
-  parsing.body.erase(parsing.body.find(parsing.boundary), parsing.boundary.length());
-  parsing.body.erase(parsing.body.find(parsing.boundary), parsing.boundary.length());
-  for (std::map<std::string, std::string>::iterator it = parsing.headers.begin(); it != parsing.headers.end(); ++it) {
-
-    parsing.body.erase(parsing.body.find(it->first), it->first.length());
-    parsing.body.erase(parsing.body.find(it->second), it->second.length());
-
-  }
-  */
-    std::cout << COLOR_CYAN << request.body << COLOR_RESET << std::endl;
   parsing.body = request.body;
   cleanMultipartBody(&parsing);
   return (parsing);

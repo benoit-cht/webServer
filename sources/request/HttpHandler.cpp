@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/10 12:39:41 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/10 14:32:30 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,14 +151,16 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request, const Se
 
     response.status = 404;
 
-  } else if (request.path.find("/upload") == 0) {
+  } else if (request.path.find("/upload/") != std::string::npos) {
 
-    link = location["/"].getRoot() + request.path + parsing.nameFile;
     parsing = HttpHandler::post_parse_header_request(request);
+    link = location["/"].getRoot() + request.path + parsing.nameFile;
 
     std::ofstream fichier(link.c_str());
+      std::cout << "----------------" + link << std::endl;
     if (fichier.is_open())
     {
+      std::cout << "----------------" + request.path << request.path.find("/upload/") <<std::endl;
       fichier << parsing.body;
       fichier.close();
       /*    TO DO  -- delete the gestion of responst struct */ 
@@ -168,13 +170,17 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request, const Se
       std::cout << COLOR_GREEN << "Success : Created file " << location["/"].getRoot() + request.path + parsing.nameFile << COLOR_RESET << std::endl;
       return (response);
     }
+    else 
+      response.status = 404;
   
   } else {
-
+    
+    response.status = 404;
     std::cout << COLOR_YELLOW << "Warnig : Faile Created file " << location["/"].getRoot() + request.path + parsing.nameFile << COLOR_RESET << std::endl;
 
   }
-  return (HandlerErrorHttp(500));
+    response.status = 500;
+  return (HandlerErrorHttp(response.status));
 }
 
 /* ========================================================================== */
