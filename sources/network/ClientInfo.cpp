@@ -6,15 +6,14 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/23 14:33:18 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/09 18:56:00 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/06/10 13:52:20 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/network/ClientInfo.hpp"
 
 ClientInfo::ClientInfo(int fd, const std::string& ip, int port)
-    : _fileDescriptor(fd), _portNumber(port), _adressIp(ip) ,
-    request_buffer(""), response_buffer(""), is_ready_to_send(false) {}
+    : _fileDescriptor(fd), _portNumber(port), _adressIp(ip) {}
 
 ClientInfo::~ClientInfo(void) {}
 
