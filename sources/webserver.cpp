@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/09 11:39:20 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/06/10 10:28:57 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -197,15 +197,6 @@ static void print_http_request(const t_httpRequest& request) {
             std::cout << it->first << ": " << COLOR_GREEN << it->second << COLOR_RESET << std::endl;
         }
     }
-#if DEBUG_FLAG
-    // Affichage du body (si présent)
-    std::cout << COLOR_CYAN << "\n--- Body ---" << COLOR_RESET << std::endl;
-    if (request.body.empty()) {
-        std::cout << COLOR_RED << "No body." << COLOR_RESET << std::endl;
-    } else {
-        std::cout << COLOR_BLUE << request.body << COLOR_RESET << std::endl;
-    }
-#endif 
     std::cout << COLOR_CYAN << "===================\n" << COLOR_RESET << std::endl;
 }
 
@@ -233,19 +224,6 @@ static void print_http_response(const t_httpResponse& response) {
             std::cout << it->first << ": " << COLOR_GREEN << it->second << COLOR_RESET << std::endl;
         }
     }
-#if DEBUG_FLAG
-    // Affichage du body (si présent)
-    std::cout << COLOR_CYAN << "\n--- Body ---" << COLOR_RESET << std::endl;
-    if (response.body.empty()) {
-        std::cout << COLOR_RED << "No body." << COLOR_RESET << std::endl;
-    } else {
-        std::cout << COLOR_BLUE << response.body << COLOR_RESET << std::endl;
-    }
-    // Affichage de la réponse complète (optionnel)
-    /*std::cout << COLOR_CYAN << "\n--- Full Response ---" << COLOR_RESET << std::endl;
-    std::cout << COLOR_MAGENTA << response.toString() << COLOR_RESET << std::endl;*/
-
-#endif 
     std::cout << COLOR_CYAN << "====================\n" << COLOR_RESET << std::endl;
 }
 
