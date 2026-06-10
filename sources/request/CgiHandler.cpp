@@ -97,12 +97,16 @@ t_httpResponse HttpHandler::executeCgi(const std::string& path, const t_httpRequ
         }
 
         std::string full_path = "./sources/www" + actual_path;
-        // Run in the correct directory
-        std::string dir_path = full_path.substr(0, full_path.find_last_of('/'));
+        // Isolate the directory and the filename using string manipulation
+        size_t  last_slash = full_path.find_last_of('/');
+        std::string dir_path = (last_slash != std::string::npos) ? full_path.substr(0, last_slash) : "";
+        std::string filename = (last_slash != std::string::npos) ? full_path.substr(last_slash + 1) : full_path;
+        // Build env using the full path before moving context
+        std::vector<std::string> env_strings = buildCgiEnv(request, full_path, query_string);
+        // Move process context into the target directory
         if (!dir_path.empty()) {
             chdir(dir_path.c_str());
         }
-        std::vector<std::string> env_strings = buildCgiEnv(request, full_path, query_string);
 
         // Alloue envp
         char **envp = new char*[env_strings.size() + 1];
@@ -113,6 +117,7 @@ t_httpResponse HttpHandler::executeCgi(const std::string& path, const t_httpRequ
         envp[env_strings.size()] = NULL;
 
         std::string interpreter = getCgiInterpreter(full_path);
+        std::string relative_execution_path = "./" + filename;
         char *script_path = strdup(full_path.c_str());
         char *interp_path = interpreter.empty() ? NULL : strdup(interpreter.c_str());
 
