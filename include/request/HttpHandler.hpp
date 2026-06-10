@@ -13,10 +13,9 @@
 # ifndef HANDLERHTTP_HPP
 # define HANDLERHTTP_HPP
 
-#define FRONT_V2 0
-
 #include <iostream>
 #include <algorithm>
+# include <fstream>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -37,7 +36,7 @@ class HttpHandler {
 
   private :
     static t_httpResponse        handler_methode_get(t_httpRequest& request, const ServerConfig& config);
-    static t_httpResponse        handler_methode_post(t_httpRequest request);
+    static t_httpResponse        handler_methode_post(t_httpRequest request, const ServerConfig& config);
     static t_httpResponse        handler_methode_delete(t_httpRequest& request, const ServerConfig& config);
 
   private:
@@ -60,12 +59,6 @@ class HttpHandler {
 
 
 };
-
-#if FRONT_V2
-  #define ROOT "tech-stack/www/"
-#else
-  #define ROOT "sources/www/"
-#endif
 
 # endif // !HTTPHANDLER_HPP
 
