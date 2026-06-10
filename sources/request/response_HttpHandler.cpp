@@ -6,7 +6,7 @@
 /*   By: ton_utilisateur_42 <ton_email@student.42.  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/01 12:20:23 by ton_utilisate     #+#    #+#             */
-/*   Updated: 2026/06/10 11:41:33 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/10 12:50:32 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,9 +156,41 @@ bool HttpHandler::isStaticFile(const std::string& path)
 /*                          -- tools of POST METHODE  --                      */
 /* ========================================================================== */
 
-/* ========================================================================== */
-/*                     -- Clean Multipart Body Function --                   */
-/* ========================================================================== */
+/*
+static std::string  post_length_body(t_httpRequest request)
+{
+  std::string length;
+
+  return ( length );
+}
+*/
+
+/*
+static std::string  post_boundary(t_httpRequest request)
+{
+  std::string boundary;
+
+  return ( boundary );
+}
+*/
+
+/*
+static std::string  post_name_file(t_httpRequest request, t_post_methode parsing)
+{
+  std::string   name;
+  
+  return ( name );
+}
+  */
+
+/*
+static std::map<std::string, std::string> post_hastable_header(t_httpRequest request)
+{
+  std::map<std::string, std::string>  headers;
+
+  return ( headers );
+}
+*/
 
 static void cleanMultipartBody(t_post_methode* postData) {
     
