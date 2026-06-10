@@ -141,7 +141,7 @@ t_httpResponse HttpHandler::executeCgi(const std::string& path, const t_httpRequ
 
         // Male pipes non-blocking
         fcntl(pipe_in[1], F_SETFL, O_NONBLOCK);
-        fcntl(pipe_in[0], F_SETFL, O_NONBLOCK);
+        fcntl(pipe_out[0], F_SETFL, O_NONBLOCK);
 
         response.status = 0; // Pending CGI
         response.is_cgi = true;
