@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/10 11:02:16 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/10 11:08:24 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
   }
   else if (request.method == "POST")
   {
-    return (HttpHandler::handler_methode_post(request));
+    return (HttpHandler::handler_methode_post(request, config));
   }
   else if (request.method == "DELETE")
   {
@@ -139,13 +139,13 @@ t_httpResponse HttpHandler::handler_methode_get(t_httpRequest& request, const Se
 
 /* ========================================================================== */
 
-# include <fstream>
-t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request)
+t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request, const ServerConfig& config)
 {
   std::string                         body;
   t_httpResponse                      response;
   t_post_methode                      parsing;
   std::map<std::string, std::string>  headers;
+  std::map<std::string, LocationConfig>	location = config.getLocationConfig();
 
 
   std::cout << COLOR_YELLOW << "Warnig : a methode post not implement " << COLOR_RESET << std::endl;
@@ -153,7 +153,7 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request)
 
   if (request.path.find("/upload") == 0)
   {
-    std::string link = ROOT + request.path + parsing.nameFile;
+    std::string link = location["/"].getRoot() + request.path + parsing.nameFile;
     std::ofstream fichier(link.c_str());
     
 
@@ -166,11 +166,11 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request)
       response.status = 201;
       response.headers["Content-Type"] = request.headers["Content-Type"];
       
-      std::cout << COLOR_GREEN << "Success : Created file " << ROOT + request.path + parsing.nameFile << COLOR_RESET << std::endl;
+      std::cout << COLOR_GREEN << "Success : Created file " << location["/"].getRoot() + request.path + parsing.nameFile << COLOR_RESET << std::endl;
       return (response);
     }
   }
-  std::cout << COLOR_YELLOW << "Warnig : Faile Created file " << ROOT + request.path + "exple.txt" << COLOR_RESET << std::endl;
+  std::cout << COLOR_YELLOW << "Warnig : Faile Created file " << location["/"].getRoot() + request.path + "exple.txt" << COLOR_RESET << std::endl;
   return (HandlerErrorHttp(500));
 
 }
