@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/08 17:08:22 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/10 10:09:57 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
   std::map<std::string, std::string>    headers;
   std::map<std::string, LocationConfig>	location = config.getLocationConfig();
 
-	//if (request.method != "GET" && request.method != "POST" && request.method != "DELETE")
 	if (!location["/"].checkMethod(request.method))
 	{
     return (HandlerErrorHttp(400));
