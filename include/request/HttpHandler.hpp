@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 11:31:58 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/08 16:15:56 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/10 11:03:07 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 
 #include <iostream>
 #include <algorithm>
+# include <fstream>
 #include <sstream>
 #include <stdexcept>
 #include <string>

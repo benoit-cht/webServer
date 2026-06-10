@@ -6,11 +6,15 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/10 10:09:57 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/10 11:02:16 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <request/HttpHandler.hpp>
+
+/* ========================================================================== */
+/*                          -- PARSING REQUESTE --                            */
+/* ========================================================================== */
 
 t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request)
 {
@@ -32,6 +36,9 @@ t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request)
 }
 
 /* ========================================================================== */
+/*                          -- SET RESPONSSE --                               */
+/* ========================================================================== */
+
 
 t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerConfig& config)
 {
@@ -67,6 +74,9 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
 }
 
 /* ========================================================================== */
+/*                          -- HEADLER RESPONSSE --                           */
+/* ========================================================================== */
+
 
 t_httpResponse HttpHandler::HandlerErrorHttp(int status)
 {
@@ -113,8 +123,9 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status)
 t_httpResponse HttpHandler::handler_methode_get(t_httpRequest& request, const ServerConfig& config)
 {
   std::map<std::string, LocationConfig>	location = config.getLocationConfig();
+  std::cout << COLOR_MAGENTA << location["/"].getRoot() + location["/"].getIndex() << COLOR_RESET << std::endl;
 
-  if (request.path == "/")
+  if (request.path == "/" && location["/"].getAutoindex())
   {
     return HttpHandler::serveStaticFile(location["/"].getRoot() + location["/"].getIndex());
   }
