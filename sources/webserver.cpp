@@ -108,8 +108,6 @@ static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& 
       
       ServerConfig config = getConfigForHandler(vec_config, getPortServer(fd));
 
-      std::cout << "Server port for fd=" << fd << ": " << getPortServer(fd) << std::endl;
-
       t_httpRequest request = HttpHandler::setHttpRequest(string_request);
       print_http_request(request);
       t_httpResponse response = HttpHandler::setHttpResponse(request, config);
