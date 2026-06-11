@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/10 15:01:50 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/11 16:41:51 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,11 +115,11 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status)
 
   return (t_httpResponse(status, headers, body));
 }
-
+ 
 /* ========================================================================== */
 /*                          -- HTTP METHODE --                                */
 /* ========================================================================== */
-
+/*
 t_httpResponse HttpHandler::handler_methode_get(t_httpRequest& request, const ServerConfig& config)
 {
   std::map<std::string, LocationConfig>	location = config.getLocationConfig();
@@ -137,9 +137,9 @@ t_httpResponse HttpHandler::handler_methode_get(t_httpRequest& request, const Se
   else
     return (HandlerErrorHttp(404));
 }
-
+*/
 /* ========================================================================== */
-
+/*
 t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request, const ServerConfig& config)
 {
   std::string                           link;
@@ -163,7 +163,6 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request, const Se
     {
       fichier << parsing.body;
       fichier.close();
-      /*    TO DO  -- delete the gestion of responst struct */ 
       response.status = 201;
       response.headers = parsing.headers;
       
@@ -185,9 +184,9 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request, const Se
   std::cout << COLOR_MAGENTA << "\n   ~~~~~~ METHODE END  ~~~~~~" << COLOR_RESET << std::endl;
   return (HandlerErrorHttp(response.status));
 }
-
+*/
 /* ========================================================================== */
-
+/*
 t_httpResponse HttpHandler::handler_methode_delete(t_httpRequest& request, const ServerConfig& config)
 {
   int     status = 500;
@@ -205,9 +204,8 @@ t_httpResponse HttpHandler::handler_methode_delete(t_httpRequest& request, const
   std::cout << COLOR_MAGENTA << "\n   ~~~~~~  METHODE END  ~~~~~~" << COLOR_RESET << std::endl;
   return (HandlerErrorHttp(status));
 }
-
+*/
 /* ************************************************************************** */
 /*                                                                            */
 /* ************************************************************************** */
-
 
