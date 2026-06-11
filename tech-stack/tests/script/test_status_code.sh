@@ -6,7 +6,7 @@
 #    By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/06/11 14:34:50 by bchallat          #+#    #+#              #
-#    Updated: 2026/06/11 16:17:45 by bchallat         ###   ########.fr        #
+#    Updated: 2026/06/11 17:51:15 by bchallat         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -67,6 +67,16 @@ STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://$HOST:$PORT/index.html)
 check_status "200" "$STATUS" "GET "
 echo ""
 
+# Test 403 Forbidden (Accès refusé sans en-tête)
+echo -e ${YELLOW}"TEST 403 Forbidden: http://$HOST:8081"${DEF}
+STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://$HOST:8081/)
+check_status "403" "$STATUS" "GET /protected"
+
+# Test 301 Moved Permanently
+echo -e ${YELLOW}"TEST 301 Redirect: http://$HOST:$PORT/old-url"${DEF}
+STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-redirs 0 http://$HOST:$PORT/old-url)
+check_status "301" "$STATUS" "GET /old-url"
+
 echo -e ${YELLOW}"TEST 201 Created: POST http://$HOST:$PORT/create"${DEF}
 STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST -d '{"key":"value"}' http://$HOST:$PORT/create)
 check_status "201" "$STATUS" "POST /create"
@@ -102,8 +112,8 @@ STATUS=$(curl -s -o /dev/null -w "%{http_code}" "http://$HOST:$PORT/?badparam")
 check_status "400" "$STATUS" "GET /?badparam"
 
 # Test 403 Forbidden (Accès refusé sans en-tête)
-echo -e ${YELLOW}"TEST 403 Forbidden: http://$HOST:$PORT/protected"${DEF}
-STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://$HOST:$PORT/protected)
+echo -e ${YELLOW}"TEST 403 Forbidden: http://$HOST:8081"${DEF}
+STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://$HOST:8081/)
 check_status "403" "$STATUS" "GET /protected"
 
 # Test 200 OK avec en-tête personnalisé
