@@ -6,11 +6,12 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/11 16:41:51 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/12 10:23:51 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <request/HttpHandler.hpp>
+#include <request/macroHtml.hpp>
 
 /* ========================================================================== */
 /*                          -- PARSING REQUESTE --                            */
@@ -48,7 +49,7 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
 
 	if (!location["/"].checkMethod(request.method))
 	{
-    return (HandlerErrorHttp(400));
+    return (HandlerErrorHttp(405));
   }
   else if (request.path.find("/cgi-bin/") == 0 || request.path.find(".php") != std::string::npos || request.path.find(".py") != std::string::npos)
   {
@@ -68,7 +69,7 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
   }
   else
   {
-    return (HandlerErrorHttp(404));
+    return (HandlerErrorHttp(400));
   }
 	return ( response );
 }
@@ -99,7 +100,7 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status)
     return (HttpHandler::serveStaticFile("sources/www/404.html"));
 
   else if (status == 405)
-    body ="<html><body>405 Method Not Allowed</body></html>";
+    body = def_405;
   
   else if (status == 500)
     body ="<html><body>500 Internal Server Error</body></html>";
