@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/23 13:33:39 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/10 20:33:51 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/12 17:02:59 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,8 +139,10 @@ ssize_t SocketHandler::readFromSocket(int fd, char* buffer, size_t size)
 {
     ssize_t bytes_read = read(fd, buffer, size);
 
-    if (bytes_read == -1)
-        throw std::runtime_error("read() " + std::string(strerror(errno)));
+    if (bytes_read == -1) {
+        // throw std::runtime_error("read() " + std::string(strerror(errno)));
+		std::cerr << COLOR_YELLOW << "Warning: read() failed on fd " << fd << COLOR_RESET << std::endl;
+	}
 
     return bytes_read;
 }
@@ -149,8 +151,10 @@ ssize_t SocketHandler::writeToSocket(int fd, const char* buffer, size_t size)
 {
     ssize_t bytes_written = write(fd, buffer, size);
 
-    if (bytes_written == -1)
-        throw std::runtime_error("write() " + std::string(strerror(errno)));
+    if (bytes_written == -1) {
+        // throw std::runtime_error("write() " + std::string(strerror(errno)));
+		std::cerr << COLOR_YELLOW << "Warning: write() failed on fd " << fd << COLOR_RESET << std::endl;
+	}
 
     return bytes_written;
 }

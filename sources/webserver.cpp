@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/12 14:05:44 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/12 17:04:16 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,10 +125,10 @@ static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& 
           // (You will need to implement this logic in your EventLoop)
 	  } */
 
-      std::string raw_response = response.toString();
-      loop.sendResponse(fd, raw_response);
+      std::string	raw_response = response.toString();
+      ssize_t		bytes_sent = loop.sendResponse(fd, raw_response);
 
-      if (response.status == 400)
+      if (bytes_sent == - 1 || response.status == 400)
       {
         loop.removeClient(fd);
       }
