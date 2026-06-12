@@ -51,3 +51,6 @@ wiki/.obsidian/app.json
 wiki/.obsidian/core-plugins.json
 wiki/.obsidian/workspace.json
 
+# Large files #
+###############
+sources/www/large_file.bin
