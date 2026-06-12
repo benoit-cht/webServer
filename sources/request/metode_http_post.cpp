@@ -25,7 +25,6 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request, const Se
   std::map<std::string, LocationConfig>	location;
   
   location = config.getLocationConfig();
-  std::cout << COLOR_MAGENTA << "   ~~~~~~ METHODE POST ~~~~~~\n" << COLOR_RESET << std::endl;
 
   if (request.body.empty() || location["/"].getRoot().empty()) {
 
@@ -57,10 +56,13 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request, const Se
       fichier.close();
       /*    TO DO  -- delete the gestion of responst struct */ 
       response.status = 201;
-      response.headers = parsing.headers;
+      response.headers["Date"] = HttpHandler::getCurrentHttpDate();
+      response.headers["Connection"] = "close";
+      //response.headers["Content-Type"] = "text/html";
+
+      //response.headers = parsing.headers;
       
       std::cout << COLOR_GREEN << "Success : Created file " << location["/"].getRoot() + request.path + parsing.nameFile << COLOR_RESET << std::endl;
-      std::cout << COLOR_MAGENTA << "\n   ~~~~~~ METHODE END  ~~~~~~" << COLOR_RESET << std::endl;
       return (response);
     }
     else 
@@ -73,7 +75,6 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request, const Se
 
   }
 
-  std::cout << COLOR_MAGENTA << "\n   ~~~~~~ METHODE END  ~~~~~~" << COLOR_RESET << std::endl;
   return (HandlerErrorHttp(response.status, config));
 }
 

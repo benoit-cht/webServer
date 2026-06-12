@@ -93,7 +93,6 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status, const ServerConfig& con
   
   std::string open = location["/"].getRoot() + "/" + page[status];
   std::ifstream file(open.c_str(), std::ios::binary);
-  std::cout << "------------->" + open  << std::endl;
   std::ostringstream oss;
 
   if (file.is_open() && !page[status].empty())
@@ -102,13 +101,10 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status, const ServerConfig& con
     buffer << file.rdbuf();
     body = buffer.str();
 
-    std::cout << "-------------> is open "   << std::endl;
-
   }
 
   else if (status == 301)
   {
-    std::cout << "------------->" << std::endl;
     body = def_301; 
   }
   else if (status == 302)

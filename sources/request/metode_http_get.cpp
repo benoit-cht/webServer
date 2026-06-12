@@ -21,7 +21,7 @@ t_httpResponse HttpHandler::handler_methode_get(t_httpRequest& request, const Se
   std::map<std::string, LocationConfig>	location = config.getLocationConfig();
   //std::cout << COLOR_MAGENTA << location["/"].getRoot() + location["/"].getIndex() << COLOR_RESET << std::endl;
 
-  if (request.path == "/" && location["/"].getAutoindex() )
+  if (request.path == "/"  )
   {
     return HttpHandler::serveStaticFile(location["/"].getRoot() + location["/"].getIndex(), config);
   }

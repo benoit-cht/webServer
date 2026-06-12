@@ -21,8 +21,7 @@ t_httpResponse HttpHandler::handler_methode_delete(t_httpRequest& request, const
   int     status = 500;
   std::map<std::string, LocationConfig>	location = config.getLocationConfig();
 
-  std::cout << COLOR_MAGENTA << "   ~~~~~~ METHODE DELETE ~~~~~~\n" << COLOR_RESET << std::endl;
-   struct stat buffer;
+  struct stat buffer;
   if (stat((location["/"].getRoot() + request.path).c_str(), &buffer) != 0) {
         status = 404;
         std::cout << COLOR_RED << "Erreur : Le fichier '" << location["/"].getRoot() + request.path << "' n'existe pas." << COLOR_RESET << std::endl;
@@ -41,7 +40,6 @@ t_httpResponse HttpHandler::handler_methode_delete(t_httpRequest& request, const
         std::cout << COLOR_RED << "Erreur : Le fichier '" << location["/"].getRoot() + request.path << "' n'existe pas." << COLOR_RESET << std::endl;
   }
  
-  std::cout << COLOR_MAGENTA << "\n   ~~~~~~  METHODE END  ~~~~~~" << COLOR_RESET << std::endl;
   return (HandlerErrorHttp(status, config));
 }
 

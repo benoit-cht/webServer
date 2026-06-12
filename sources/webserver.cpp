@@ -121,7 +121,8 @@ static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& 
       std::string raw_response = response.toString();
       loop.sendResponse(fd, raw_response);
 
-      if (response.status == 400 || response.status == 405)
+      if (response.status == 201 || response.status == 400 || response.status == 405)
+      if (response.headers["Connection"] == "close")
       {
         loop.removeClient(fd);
       }
