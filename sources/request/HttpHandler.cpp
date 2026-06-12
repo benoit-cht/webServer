@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/12 10:23:51 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/12 11:02:31 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,14 +90,23 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status)
   
   std::ostringstream oss;
 
-  if (status == 400)
-    body ="<html><body>400 Bad Request</body></html>";
+  if (status == 301)
+    body = def_301; 
+
+  else if (status == 302)
+    body = def_302; 
+
+  else if (status == 304)
+    body = def_304; 
+
+  else if (status == 400)
+    body = def_400; 
 
   else if (status == 403)
-    body ="<html><body>403 Forbidden</body></html>";
+    body = def_403; 
     
   else if (status == 404)
-    return (HttpHandler::serveStaticFile("sources/www/404.html"));
+    body = def_404; 
 
   else if (status == 405)
     body = def_405;

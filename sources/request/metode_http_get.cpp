@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/11 16:27:56 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/11 17:48:54 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/12 10:47:55 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,10 @@ t_httpResponse HttpHandler::handler_methode_get(t_httpRequest& request, const Se
     if (!location["/"].getAutoindex())
       return (HandlerErrorHttp(403));
     return HttpHandler::serveStaticFile(location["/"].getRoot() + location["/"].getIndex());
+  }
+  else if (!HttpHandler::isStaticFile(location["/"].getRoot() + request.path))
+  {
+    return (HandlerErrorHttp(404));
   }
   else if (HttpHandler::isStaticFile(location["/"].getRoot() + request.path))
   {
