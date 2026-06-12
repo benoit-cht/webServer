@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/11 16:32:30 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/12 13:59:43 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/12 15:12:22 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request, const Se
   }
 
   std::cout << COLOR_MAGENTA << "\n   ~~~~~~ METHODE END  ~~~~~~" << COLOR_RESET << std::endl;
-  return (HandlerErrorHttp(response.status));
+  return (HandlerErrorHttp(response.status, config));
 }
 
 /* ========================================================================== */

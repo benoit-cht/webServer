@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/11 16:27:56 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/12 13:40:48 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/12 15:42:31 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,22 +21,20 @@ t_httpResponse HttpHandler::handler_methode_get(t_httpRequest& request, const Se
   std::map<std::string, LocationConfig>	location = config.getLocationConfig();
   //std::cout << COLOR_MAGENTA << location["/"].getRoot() + location["/"].getIndex() << COLOR_RESET << std::endl;
 
-  if (request.path == "/" )
+  if (request.path == "/" && location["/"].getAutoindex() )
   {
-    if (!location["/"].getAutoindex())
-      return (HandlerErrorHttp(403));
-    return HttpHandler::serveStaticFile(location["/"].getRoot() + location["/"].getIndex());
+    return HttpHandler::serveStaticFile(location["/"].getRoot() + location["/"].getIndex(), config);
   }
   else if (!HttpHandler::isStaticFile(location["/"].getRoot() + request.path))
   {
-    return (HandlerErrorHttp(301));
+    return (HandlerErrorHttp(404, config));
   }
   else if (HttpHandler::isStaticFile(location["/"].getRoot() + request.path))
   {
-    return (HttpHandler::serveStaticFile(location["/"].getRoot() + request.path));
+    return (HttpHandler::serveStaticFile(location["/"].getRoot() + request.path, config));
   }
   else{
-    return (HandlerErrorHttp(404));
+    return (HandlerErrorHttp(404, config));
   }
 }
 
@@ -58,18 +56,18 @@ std::string getMimeType(const std::string& path)
     return ("text/plain");
 }
 
-t_httpResponse HttpHandler::serveStaticFile(const std::string& path) 
+t_httpResponse HttpHandler::serveStaticFile(const std::string& path, const ServerConfig& config) 
 {
     if (!isSafePath(path))
     {
-      return (HandlerErrorHttp(403));
+      return (HandlerErrorHttp(403, config));
     }
     
     std::ifstream file(path.c_str(), std::ios::binary);
     if (!file.is_open())
     {
       std::cout << COLOR_MAGENTA << path << ":" << COLOR_RESET << std::endl;
-      return (HandlerErrorHttp(404));
+      return (HandlerErrorHttp(404, config));
     }
 
     std::stringstream buffer;

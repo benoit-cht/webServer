@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/12 12:21:35 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/12 15:39:00 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,10 +46,10 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
 	t_httpResponse                        response;
   std::map<std::string, std::string>    headers;
   std::map<std::string, LocationConfig>	location = config.getLocationConfig();
-
+  
 	if (!location["/"].checkMethod(request.method))
 	{
-    return (HandlerErrorHttp(405));
+    return (HandlerErrorHttp(405, config));
   }
   else if (request.path.find("/cgi-bin/") == 0 || request.path.find(".php") != std::string::npos || request.path.find(".py") != std::string::npos)
   {
@@ -69,7 +69,7 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
   }
   else
   {
-    return (HandlerErrorHttp(400));
+    return (HandlerErrorHttp(400, config));
   }
 	return ( response );
 }
@@ -79,21 +79,38 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
 /* ========================================================================== */
 
 
-t_httpResponse HttpHandler::HandlerErrorHttp(int status)
+t_httpResponse HttpHandler::HandlerErrorHttp(int status, const ServerConfig& config)
 {
 	t_httpResponse                      response;
   std::map<std::string, std::string>  headers;
   std::string body;
+  std::map<std::string, LocationConfig>	location = config.getLocationConfig();
+  std::map<int, std::string> page = location["/"].getErrorPage();
 
   headers["Date"] = getCurrentHttpDate();
   headers["Connection"] = "close";
   headers["Content-Type"] = "text/html";
   
+  std::string open = location["/"].getRoot() + "/" + page[status];
+  std::ifstream file(open.c_str(), std::ios::binary);
+  std::cout << "------------->" + open  << std::endl;
   std::ostringstream oss;
 
-  if (status == 301)
-    body = def_301; 
+  if (file.is_open() && !page[status].empty())
+  {
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    body = buffer.str();
 
+    std::cout << "-------------> is open "   << std::endl;
+
+  }
+
+  else if (status == 301)
+  {
+    std::cout << "------------->" << std::endl;
+    body = def_301; 
+  }
   else if (status == 302)
     body = def_302; 
 

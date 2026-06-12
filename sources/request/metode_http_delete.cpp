@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/11 16:34:45 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/12 13:59:22 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/12 15:11:07 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ t_httpResponse HttpHandler::handler_methode_delete(t_httpRequest& request, const
   }
  
   std::cout << COLOR_MAGENTA << "\n   ~~~~~~  METHODE END  ~~~~~~" << COLOR_RESET << std::endl;
-  return (HandlerErrorHttp(status));
+  return (HandlerErrorHttp(status, config));
 }
 
 /* ************************************************************************** */
