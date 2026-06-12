@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/01 12:20:23 by ton_utilisa       #+#    #+#             */
-/*   Updated: 2026/06/11 14:11:15 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/11 18:11:09 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,8 @@ std::string getMimeType(const std::string& path)
 
 t_httpResponse HttpHandler::serveStaticFile(const std::string& path)
 {
+
+	std::cout << COLOR_MAGENTA << "serveStaticFile()path=" << path << COLOR_RESET << std::endl;
     if (!isSafePath(path))
     {
       return (HandlerErrorHttp(403));

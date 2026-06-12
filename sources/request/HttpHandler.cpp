@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpHandler.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/10 15:01:50 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/11 18:14:05 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request)
   {
     std::cout << COLOR_YELLOW << "Warging : bad request " << COLOR_RESET << std::endl;
   }
-  
+
   return ( request );
 }
 
@@ -83,10 +83,10 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status)
 	t_httpResponse                      response;
   std::map<std::string, std::string>  headers;
   std::string body;
-  
+
   headers["Connection"] = "close";
   headers["Content-Type"] = "text/html";
-  
+
   std::ostringstream oss;
 
   if (status == 400)
@@ -94,16 +94,16 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status)
 
   else if (status == 403)
     body ="<html><body>403 Forbidden</body></html>";
-    
+
   else if (status == 404)
     return (HttpHandler::serveStaticFile("sources/www/404.html"));
 
   else if (status == 405)
     body ="<html><body>405 Method Not Allowed</body></html>";
-  
+
   else if (status == 500)
     body ="<html><body>500 Internal Server Error</body></html>";
-  
+
   else if (status == 501)
     body ="<html><body>501 Not Implemented</body></html>";
 
@@ -124,7 +124,7 @@ t_httpResponse HttpHandler::handler_methode_get(t_httpRequest& request, const Se
 {
   std::map<std::string, LocationConfig>	location = config.getLocationConfig();
       std::cout << COLOR_MAGENTA << "   ~~~~~~ METHODE GET  ~~~~~~\n" << COLOR_RESET << std::endl;
-  std::cout << COLOR_MAGENTA << location["/"].getRoot() + location["/"].getIndex() << COLOR_RESET << std::endl;
+  std::cout << COLOR_BLUE << location["/"].getRoot() + location["/"].getIndex() << COLOR_RESET << std::endl;
 
   if (request.path == "/" && location["/"].getAutoindex())
   {
@@ -146,7 +146,7 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request, const Se
   t_post_methode                        parsing;
   t_httpResponse                        response;
   std::map<std::string, LocationConfig>	location;
-  
+
   location = config.getLocationConfig();
   std::cout << COLOR_MAGENTA << "   ~~~~~~ METHODE POST ~~~~~~\n" << COLOR_RESET << std::endl;
   if (request.body.empty() || location.empty()) {
@@ -163,19 +163,19 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request, const Se
     {
       fichier << parsing.body;
       fichier.close();
-      /*    TO DO  -- delete the gestion of responst struct */ 
+      /*    TO DO  -- delete the gestion of responst struct */
       response.status = 201;
       response.headers = parsing.headers;
-      
+
       std::cout << COLOR_GREEN << "Success : Created file " << location["/"].getRoot() + request.path + parsing.nameFile << COLOR_RESET << std::endl;
       std::cout << COLOR_MAGENTA << "\n   ~~~~~~ METHODE END  ~~~~~~" << COLOR_RESET << std::endl;
       return (response);
     }
-    else 
+    else
       response.status = 404;
-  
+
   } else {
-    
+
     response.status = 404;
     std::cout << COLOR_YELLOW << "Warnig : Faile Created file " << location["/"].getRoot() + request.path + parsing.nameFile << COLOR_RESET << std::endl;
 
@@ -197,9 +197,9 @@ t_httpResponse HttpHandler::handler_methode_delete(t_httpRequest& request, const
   if(remove((location["/"].getRoot() + request.path).c_str()) == 0) {
     status = 204;
     std::cout << COLOR_GREEN << "Success: " << location["/"].getRoot() + request.path <<" is delete !" << COLOR_RESET << std::endl;
-  
+
   }else {
-    status = 404 ; 
+    status = 404 ;
     std::cout << COLOR_RED << "Le fichier n'a pas été supprimer a cause qu'il n'existe pas, un droit d'accès refusé,..." << COLOR_RESET << std::endl;
   }
   std::cout << COLOR_MAGENTA << "\n   ~~~~~~  METHODE END  ~~~~~~" << COLOR_RESET << std::endl;
