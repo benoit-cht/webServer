@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/11 16:32:30 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/12 12:28:28 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/12 13:59:43 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,13 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request, const Se
   
   location = config.getLocationConfig();
   std::cout << COLOR_MAGENTA << "   ~~~~~~ METHODE POST ~~~~~~\n" << COLOR_RESET << std::endl;
-  if (request.body.empty() || location.empty()) {
+
+  if (request.body.empty() || location["/"].getRoot().empty()) {
 
     response.status = 404;
+  }else if (access((location["/"].getRoot() + request.path).c_str(), W_OK) != 0) {
+        response.status = 403;
+    std::cout << COLOR_RED << "errordroit d'accès refusé,..." << COLOR_RESET << std::endl;
 
   } else if (request.path.find("/upload/") != std::string::npos) {
 
@@ -60,11 +64,11 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request, const Se
       return (response);
     }
     else 
-      response.status = 404;
+      response.status = 403;
   
   } else {
     
-    response.status = 404;
+    response.status = 409;
     std::cout << COLOR_YELLOW << "Warnig : Faile Created file " << location["/"].getRoot() + request.path + parsing.nameFile << COLOR_RESET << std::endl;
 
   }

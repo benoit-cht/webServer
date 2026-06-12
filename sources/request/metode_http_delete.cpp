@@ -6,18 +6,11 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/11 16:34:45 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/11 19:02:58 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/12 13:59:22 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <request/HttpHandler.hpp>
-#include <sys/stat.h> // Pour stat()
-#include <unistd.h> // Pour access()
-#include <cerrno>   // Pour errno
-
-
-
-
 
 /* ========================================================================== */
 /*                          -- HTTP METHODE --                                */

@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/11 16:27:56 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/12 10:47:55 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/12 13:40:48 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,18 +29,15 @@ t_httpResponse HttpHandler::handler_methode_get(t_httpRequest& request, const Se
   }
   else if (!HttpHandler::isStaticFile(location["/"].getRoot() + request.path))
   {
-    return (HandlerErrorHttp(404));
+    return (HandlerErrorHttp(301));
   }
   else if (HttpHandler::isStaticFile(location["/"].getRoot() + request.path))
   {
     return (HttpHandler::serveStaticFile(location["/"].getRoot() + request.path));
   }
-  else if (request.path.find("/") != std::string::npos)
-  {
-    return (HandlerErrorHttp(301));
-  }
-  else
+  else{
     return (HandlerErrorHttp(404));
+  }
 }
 
 /* ========================================================================== */

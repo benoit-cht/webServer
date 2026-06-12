@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 11:31:58 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/12 11:16:28 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/12 13:59:11 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,9 @@
 #include <ctime>
 #include <iomanip>
 #include <sstream>
+#include <sys/stat.h> // Pour stat()
+#include <unistd.h> // Pour access()
+#include <cerrno>   // Pour errno
 
 #include <log/colorLog.hpp>
 #include <request/struct.hpp>
