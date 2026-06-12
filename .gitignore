@@ -40,8 +40,8 @@ Thumbs.db
 
 # file .exe #
 #############
-t_unit
 webserv
+sources/www/upload/forriben-delete.txt
 
 # obs #
 ############
