@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/23 13:33:39 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/12 17:02:59 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/12 17:23:09 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,7 +139,7 @@ ssize_t SocketHandler::readFromSocket(int fd, char* buffer, size_t size)
 {
     ssize_t bytes_read = read(fd, buffer, size);
 
-    if (bytes_read == -1) {
+    if (bytes_read == -1) { // if we fail reading in client fd we close client port
         // throw std::runtime_error("read() " + std::string(strerror(errno)));
 		std::cerr << COLOR_YELLOW << "Warning: read() failed on fd " << fd << COLOR_RESET << std::endl;
 	}
@@ -151,7 +151,7 @@ ssize_t SocketHandler::writeToSocket(int fd, const char* buffer, size_t size)
 {
     ssize_t bytes_written = write(fd, buffer, size);
 
-    if (bytes_written == -1) {
+    if (bytes_written == -1) { // if we fail writting in client fd we close client port
         // throw std::runtime_error("write() " + std::string(strerror(errno)));
 		std::cerr << COLOR_YELLOW << "Warning: write() failed on fd " << fd << COLOR_RESET << std::endl;
 	}
