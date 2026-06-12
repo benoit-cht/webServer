@@ -87,6 +87,11 @@ STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE http://$HOST:$PORT/upl
 check_status "204" "$STATUS" "DELETE "
 echo ""
 
+echo -e ${YELLOW}"TEST code 403 NO CONTENT: http://$HOST:$PORT/upload/forriben-delete.txt"${DEF}
+STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE http://$HOST:$PORT/upload/forriben-delete.txt)
+check_status "403" "$STATUS" "DELETE "
+echo ""
+
 # ══════════════════════════════════════════════════════════════════════ #
 #                                                                        #
 # ══════════════════════════════════════════════════════════════════════ #
