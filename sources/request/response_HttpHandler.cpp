@@ -6,7 +6,7 @@
 /*   By: ton_utilisateur_42 <ton_email@student.42.  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/01 12:20:23 by ton_utilisate     #+#    #+#             */
-/*   Updated: 2026/06/11 16:47:40 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/12 11:21:53 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,20 @@ std::string t_httpResponse::toString() const {
     // return response;
 	return ss.str();
 }
+/* ========================================================================== */
+/*                            -- CURR HTTP DATE --                            */
+/* ========================================================================== */
+
+std::string HttpHandler::getCurrentHttpDate() 
+{
+     std::time_t now = std::time(NULL);
+    std::tm *gmTime = std::gmtime(&now);
+
+    char buffer[100]; // Buffer pour stocker la date formatée
+    strftime(buffer, sizeof(buffer), "%a, %d %b %Y %H:%M:%S GMT", gmTime);
+    return std::string(buffer);
+}
+
 
 /* ========================================================================== */
 /*                 -- SERV STATIC FILE IMPLEMENT FONCTION  --                 */

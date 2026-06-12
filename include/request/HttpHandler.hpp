@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 11:31:58 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/10 19:46:23 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/06/12 11:16:28 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,16 @@
 
 #include <iostream>
 #include <algorithm>
-# include <fstream>
+#include <fstream>
 #include <sstream>
 #include <stdexcept>
 #include <string>
 #include <map>
 #include <vector>
+
+#include <ctime>
+#include <iomanip>
+#include <sstream>
 
 #include <log/colorLog.hpp>
 #include <request/struct.hpp>
@@ -48,6 +52,7 @@ class HttpHandler {
     static bool                  isStaticFile(const std::string& path);
     static std::string           readFile(const std::string& path);
     static t_httpResponse        serveStaticFile(const std::string& path);
+    static std::string           getCurrentHttpDate() ;
     static t_post_methode        post_parse_header_request(t_httpRequest request);
 
   private:
