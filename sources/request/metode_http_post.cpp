@@ -6,7 +6,7 @@
 /*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/11 16:32:30 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/11 16:45:02 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/12 12:28:28 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request, const ServerConfig& config)
 {
   std::string                           link;
+  std::string                           body;
   t_post_methode                        parsing;
   t_httpResponse                        response;
   std::map<std::string, LocationConfig>	location;
@@ -32,12 +33,23 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request, const Se
   } else if (request.path.find("/upload/") != std::string::npos) {
 
     parsing = HttpHandler::post_parse_header_request(request);
-    link = location["/"].getRoot() + request.path + parsing.nameFile;
+    if (parsing.body.empty())  {
+      
+      body = request.body;
+      link = location["/"].getRoot() + request.path;
+    
+    } else  {
+    
+      body = parsing.body;
+      link = location["/"].getRoot() + request.path + parsing.nameFile;
+
+    }
+
 
     std::ofstream fichier(link.c_str());
     if (parsing.body.empty() || fichier.is_open())
     {
-      fichier << parsing.body;
+      fichier << body;
       fichier.close();
       /*    TO DO  -- delete the gestion of responst struct */ 
       response.status = 201;
@@ -56,7 +68,6 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request, const Se
     std::cout << COLOR_YELLOW << "Warnig : Faile Created file " << location["/"].getRoot() + request.path + parsing.nameFile << COLOR_RESET << std::endl;
 
   }
-    response.status = 500;
 
   std::cout << COLOR_MAGENTA << "\n   ~~~~~~ METHODE END  ~~~~~~" << COLOR_RESET << std::endl;
   return (HandlerErrorHttp(response.status));

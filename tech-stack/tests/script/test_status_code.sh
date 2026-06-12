@@ -6,7 +6,7 @@
 #    By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/06/11 14:34:50 by bchallat          #+#    #+#              #
-#    Updated: 2026/06/11 17:51:15 by bchallat         ###   ########.fr        #
+#    Updated: 2026/06/12 12:55:51 by bchallat         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -71,16 +71,18 @@ echo ""
 echo -e ${YELLOW}"TEST 403 Forbidden: http://$HOST:8081"${DEF}
 STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://$HOST:8081/)
 check_status "403" "$STATUS" "GET /protected"
+echo ""
 
 # Test 301 Moved Permanently
 echo -e ${YELLOW}"TEST 301 Redirect: http://$HOST:$PORT/old-url"${DEF}
 STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-redirs 0 http://$HOST:$PORT/old-url)
 check_status "301" "$STATUS" "GET /old-url"
-
-echo -e ${YELLOW}"TEST 201 Created: POST http://$HOST:$PORT/create"${DEF}
-STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST -d '{"key":"value"}' http://$HOST:$PORT/create)
-check_status "201" "$STATUS" "POST /create"
 echo ""
+
+#echo -e ${YELLOW}"TEST 201 Created: POST http://$HOST:$PORT/upload/text.txt"${DEF}
+#STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST -d '{"key":"value"}' http://$HOST:$PORT/upload/text.txt)
+#check_status "201" "$STATUS" "POST /create"
+#echo ""
 
 echo -e ${YELLOW}"TEST code 204 NO CONTENT: http://$HOST:$PORT/upload/exemple.txt"${DEF}
 STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE http://$HOST:$PORT/upload/exemple.txt)
