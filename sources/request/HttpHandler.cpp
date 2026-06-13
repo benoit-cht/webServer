@@ -45,7 +45,7 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
 {
 	t_httpResponse                        response;
   std::map<std::string, std::string>    headers;
-  std::map<std::string, LocationConfig>	location = config.getLocationConfig();
+  std::map<std::string, LocationConfig> location = config.getLocationConfig();
   
 	if (!location["/"].checkMethod(request.method))
 	{
@@ -83,10 +83,12 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status, t_httpRequest request, 
 {
 	t_httpResponse                      response;
   std::map<std::string, std::string>  headers;
-  std::string body;
+  std::string                         body;
+  
   std::map<std::string, LocationConfig>	location = config.getLocationConfig();
-  std::map<int, std::string> page = location["/"].getErrorPage();
-
+  std::map<int, std::string>            page = location["/"].getErrorPage();
+  //std::set<std::string>                 allow = location["/"].getMethods();
+    
   headers["Date"] = getCurrentHttpDate();
   headers["Connection"] = "close";
   headers["Content-Type"] = "text/html";
@@ -103,15 +105,15 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status, t_httpRequest request, 
 
   }
   else if (status == 301) { 
-    headers["Location"] = request.headers["Host"] ;
+    headers["Location"] = "http://" + request.headers["Host"] ;
     body = def_301; 
   }
   else if (status == 302) {
-    headers["Location"] = request.headers["Host"] ;
+    headers["Location"] = "http://" + request.headers["Host"] ;
     body = def_302; 
   }
   else if (status == 304) {
-    headers["Location"] = request.headers["Host"] ;
+    headers["Location"] = "http://" + request.headers["Host"] ;
     body = def_304; 
   }
   else if (status == 400)
@@ -123,9 +125,15 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status, t_httpRequest request, 
   else if (status == 404)
     body = def_404; 
 
-  else if (status == 405)
+  else if (status == 405) {
     body = def_405;
-  
+    if ( location["/"].checkMethod("GET"))
+      headers["Allow"] = "GET" ;
+    if ( location["/"].checkMethod("POST"))
+      headers["Allow"] += " POST" ;
+    if ( location["/"].checkMethod("POST"))
+      headers["Allow"] += " DELETE" ;
+  }
   else if (status == 500)
     body ="<html><body>500 Internal Server Error</body></html>";
   
