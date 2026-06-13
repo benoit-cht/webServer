@@ -27,7 +27,7 @@ t_httpResponse HttpHandler::handler_methode_get(t_httpRequest& request, const Se
   }
   else if (!HttpHandler::isStaticFile(location["/"].getRoot() + request.path))
   {
-    return (HandlerErrorHttp(404, request, config));
+    return (HandlerErrorHttp(301, request, config));
   }
   else if (HttpHandler::isStaticFile(location["/"].getRoot() + request.path))
   {
@@ -62,7 +62,11 @@ t_httpResponse HttpHandler::serveStaticFile(const std::string& path, t_httpReque
     {
       return (HandlerErrorHttp(403, request, config));
     }
-    
+    std::cout << "--" + path << std::endl;
+    if (request.path.find("/") == std::string::npos)
+    {
+      return (HandlerErrorHttp(301, request, config));
+    }
     std::ifstream file(path.c_str(), std::ios::binary);
     if (!file.is_open())
     {
@@ -77,6 +81,8 @@ t_httpResponse HttpHandler::serveStaticFile(const std::string& path, t_httpReque
     t_httpResponse response;
     response.status = 200;
     response.headers["Content-Type"] = getMimeType(path);
+    response.headers["Connection"] = "close";
+    response.headers["Date"] = getCurrentHttpDate();
     response.body = content;
     
     return (response);

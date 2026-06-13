@@ -102,18 +102,18 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status, t_httpRequest request, 
     body = buffer.str();
 
   }
-
-  else if (status == 301)
-  {
-    headers["Location"] = request.headers["Location"] ;
+  else if (status == 301) { 
+    headers["Location"] = request.headers["Host"] ;
     body = def_301; 
   }
-  else if (status == 302)
+  else if (status == 302) {
+    headers["Location"] = request.headers["Host"] ;
     body = def_302; 
-
-  else if (status == 304)
+  }
+  else if (status == 304) {
+    headers["Location"] = request.headers["Host"] ;
     body = def_304; 
-
+  }
   else if (status == 400)
     body = def_400; 
 
