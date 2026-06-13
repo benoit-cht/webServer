@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/12 17:04:16 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/12 17:26:59 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ int main (int av, char *ag[])
 #if RUN_WITH_SERVER
 		std::signal(SIGINT, signal_handler);// Enregistrer le gestionnaire de signal
 		std::signal(SIGQUIT, SIG_IGN);
+		std::signal(SIGPIPE, SIG_IGN); // a determiner si on conserve ou non
 #endif
 
 try {

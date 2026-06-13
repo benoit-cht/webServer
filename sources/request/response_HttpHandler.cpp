@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/01 12:20:23 by ton_utilisa       #+#    #+#             */
-/*   Updated: 2026/06/11 18:11:09 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/13 16:07:47 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,7 @@ t_httpResponse HttpHandler::serveStaticFile(const std::string& path)
     response.status = 200;
     response.headers["Content-Type"] = getMimeType(path);
     response.body = content;
+	response.headers["Connection"] = "keep-alive";
 
     std::cout << COLOR_MAGENTA << "\n   ~~~~~~ METHODE END  ~~~~~~" << COLOR_RESET << std::endl;
     return (response);
