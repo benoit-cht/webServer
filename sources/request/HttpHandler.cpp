@@ -49,7 +49,7 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
   
 	if (!location["/"].checkMethod(request.method))
 	{
-    return (HandlerErrorHttp(405, config));
+    return (HandlerErrorHttp(405, request, config));
   }
   else if (request.path.find("/cgi-bin/") == 0 || request.path.find(".php") != std::string::npos || request.path.find(".py") != std::string::npos)
   {
@@ -69,7 +69,7 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
   }
   else
   {
-    return (HandlerErrorHttp(400, config));
+    return (HandlerErrorHttp(400, request, config));
   }
 	return ( response );
 }
@@ -79,7 +79,7 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
 /* ========================================================================== */
 
 
-t_httpResponse HttpHandler::HandlerErrorHttp(int status, const ServerConfig& config)
+t_httpResponse HttpHandler::HandlerErrorHttp(int status, t_httpRequest request, const ServerConfig& config)
 {
 	t_httpResponse                      response;
   std::map<std::string, std::string>  headers;
@@ -105,6 +105,7 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status, const ServerConfig& con
 
   else if (status == 301)
   {
+    headers["Location"] = request.headers["Location"] ;
     body = def_301; 
   }
   else if (status == 302)

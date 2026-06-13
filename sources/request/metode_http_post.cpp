@@ -75,7 +75,7 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request, const Se
 
   }
 
-  return (HandlerErrorHttp(response.status, config));
+  return (HandlerErrorHttp(response.status, request, config));
 }
 
 /* ========================================================================== */

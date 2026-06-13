@@ -40,7 +40,7 @@ t_httpResponse HttpHandler::handler_methode_delete(t_httpRequest& request, const
         std::cout << COLOR_RED << "Erreur : Le fichier '" << location["/"].getRoot() + request.path << "' n'existe pas." << COLOR_RESET << std::endl;
   }
  
-  return (HandlerErrorHttp(status, config));
+  return (HandlerErrorHttp(status, request, config));
 }
 
 /* ************************************************************************** */
