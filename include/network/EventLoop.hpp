@@ -32,7 +32,7 @@ class EventLoop {
     void              setupServerSockets();
     void              cleanup();
     void              removeClient(int fd);
-    ssize_t           sendResponse(int fd, const std::string& response);
+    void              sendResponse(int fd, const std::string& response);
 
   public:
     int               waitForActivity();

@@ -243,6 +243,7 @@ static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& 
                 std::string full_request = loop.getFullRequest(fd);
                 ServerConfig config = getConfigForHandler(vec_config, getPortServer(fd));
                 t_httpRequest request = HttpHandler::setHttpRequest(full_request);
+                print_http_request(request);
                 t_httpResponse response = HttpHandler::setHttpResponse(request, config);
                 loop.queueResponse(fd, response.toString());
             }
