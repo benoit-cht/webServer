@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:29:31 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/12 17:04:43 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/15 19:50:25 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,16 +48,20 @@ class EventLoop {
     std::vector<int>  _server_fds;
     std::vector<int>  _ports;
     std::vector<struct pollfd> _poll_fds;
-  
+
 /* ************************************************************************** */
   public:
     size_t getPollFdsSize() const;
     const struct pollfd& getPollFd(size_t index) const;
     void queueResponse(int fd, const std::string& response);
-    void handlePendingWrites(int fd); 
+    void handlePendingWrites(int fd);
+	void markClientForDisconnect(int fd);
+
   private:
     std::map<int, std::string> _pendingResponses;  // Buffer des réponses
-  
+	std::map<int, bool>	_disconnectAfterWrite;
+
+
 /* ************************************************************************** */
   private:
     // ...
