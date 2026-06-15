@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpHandler.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/12 15:39:00 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/16 00:14:46 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
   }
   else if (request.path.find("/cgi-bin/") == 0 || request.path.find(".php") != std::string::npos || request.path.find(".py") != std::string::npos)
   {
-    return HttpHandler::executeCgi(request.path, request);
+    return HttpHandler::executeCgi(request.path, request, config);
   }
   else if (request.method == "GET")
   {
