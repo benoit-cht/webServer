@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/12 12:48:56 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/15 23:43:04 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -259,6 +259,102 @@ static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& 
     }
 }
 
+std::string readAvailableData(int fd, EventLoop& loop) {
+    std::string request;
+    char buffer[BUFFER_SIZE];
+    ssize_t bytes_read = loop.readFromClient(fd, buffer, sizeof(buffer));
+
+    std::cout <<  buffer << "size:" << bytes_read << "|"<< (int)buffer[0] << COLOR_RESET << std::endl;
+    
+    if (bytes_read > 0) {
+        request.append(buffer, bytes_read);
+    } else if (bytes_read == 0) {
+        std::cout << COLOR_RED << "Client disconnected (fd=" << fd << ")" << COLOR_RESET << std::endl;
+    } else if (bytes_read == -1) {
+        if (errno != EAGAIN && errno != EWOULDBLOCK && errno != EINTR) {
+            std::cerr << "Error reading from client (fd=" << fd << "): " << strerror(errno) << std::endl;
+        }
+        // Sinon, c'est une erreur temporaire (EAGAIN/EWOULDBLOCK/EINTR) : on ignore
+    }
+    return request;
+}
+
+static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& vec_config) {
+    std::vector<int> activeFds = loop.getActiveFds();
+
+    for (size_t i = 0; i < activeFds.size(); i++) {
+        int fd = activeFds[i];
+        
+        // Find the poll index to check the revents
+        size_t pollIndex = 0;
+        for (; pollIndex < loop.getPollFdsSize(); pollIndex++) {
+            if (loop.getPollFd(pollIndex).fd == fd) break;
+        }
+        short revents = loop.getPollFd(pollIndex).revents;
+
+        // --- ERROR HANDLING ---
+        if (revents & (POLLERR | POLLHUP)) {
+            // Note: If this is a CGI pipe that hung up, you might need a loop.removeCgiFd(fd) here later
+            loop.removeClient(fd);
+            continue;
+        }
+        // --- 1. NEW CLIENT CONNECTING ---
+        if (loop.isServerFd(fd) && (revents & POLLIN)) {
+            loop.acceptNewConnection(fd);
+            continue;
+        }
+        // --- 2. CGI SCRIPT PRINTING OUTPUT (NEW) ---
+        // If the FD is a CGI pipe, read the output and do NOT treat it like a client socket.
+        if (loop.isCgiReadFd(fd) && (revents & POLLIN)) {
+            loop.handleCgiRead(fd);
+            continue;
+        }
+        // --- 3. EXISTING CLIENT SENDING REQUEST ---
+        if (revents & POLLIN) {
+            std::string data = readAvailableData(fd, loop);
+            
+            if (data.empty()) {
+                loop.removeClient(fd);
+                continue;
+            }
+            loop.appendToClientBuffer(fd, data);
+            if (loop.isRequestComplete(fd)) {
+                std::string full_request = loop.getFullRequest(fd);
+                ServerConfig config = getConfigForHandler(vec_config, getPortServer(fd));
+                t_httpRequest request = HttpHandler::setHttpRequest(full_request);
+                print_http_request(request);
+                
+                // This will trigger fork() and execve() if the request is for a CGI
+                t_httpResponse response = HttpHandler::setHttpResponse(request, config);
+                print_http_response(response);
+
+                // --- 4. ASYNC CGI HANDLING (NEW) ---
+                if (response.is_cgi) {
+                    // If it's a POST request, send the body to the script via the write pipe
+                    if (request.method == "POST" && !request.body.empty()) {
+                        write(response.cgi_write_fd, request.body.c_str(), request.body.size());
+                    }
+                    // We must close the write pipe here so the script receives EOF 
+                    // and knows we are done sending data.
+                    close(response.cgi_write_fd); 
+
+                    // Register the read pipe so `poll()` watches it on the next loop iteration.
+                    // DO NOT call queueResponse() yet!
+                    loop.registerCgi(fd, response.cgi_read_fd, response.cgi_pid);
+                } 
+                else {
+                    // Not a CGI request. Standard static file or error page. Send immediately.
+                    loop.queueResponse(fd, response.toString());
+                }
+            }
+        }
+        // --- 5. SENDING PENDING RESPONSES ---
+        if (revents & POLLOUT) {
+            loop.handlePendingWrites(fd);
+        }
+    }
+}
+
 static void inf_loop(std::vector<int> ports, const std::vector<ServerConfig>& vec_config)
 {
   int       ret = -1;
@@ -414,4 +510,3 @@ std::string readFullHttpRequest(int fd, EventLoop& loop) {
     return request;
 }
 #endif
-

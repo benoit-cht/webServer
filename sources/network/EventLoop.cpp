@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   EventLoop.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:01:32 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/12 17:05:02 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/15 23:23:50 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -291,4 +291,71 @@ std::string EventLoop::getFullRequest(int fd) {
     _clientContentLength.erase(fd);
     _clientHeadersEnded.erase(fd);
     return request;
+}
+
+// 1. Register the pipe so poll() starts watching it for POLLIN
+void EventLoop::registerCgi(int client_fd, int cgi_read_fd, pid_t cgi_pid) {
+    struct pollfd pfd;
+    pfd.fd = cgi_read_fd;
+    pfd.events = POLLIN; // Wait for the CGI script to write something
+    pfd.revents = 0;
+    _poll_fds.push_back(pfd);
+
+    CgiState state;
+    state.client_fd = client_fd;
+    state.cgi_pid = cgi_pid;
+    state.output_buffer = "";
+    
+    _cgi_read_fds[cgi_read_fd] = state;
+}
+
+// 2. Check if a triggered FD is a CGI pipe
+bool EventLoop::isCgiReadFd(int fd) {
+    return _cgi_read_fds.find(fd) != _cgi_read_fds.end();
+}
+
+// 3. Read the output and finish the response when the script ends
+void EventLoop::handleCgiRead(int cgi_read_fd) {
+    char buffer[4096];
+    ssize_t bytes = read(cgi_read_fd, buffer, sizeof(buffer) - 1);
+
+    if (bytes > 0) {
+        // The script printed something! Save it in the buffer.
+        buffer[bytes] = '\0';
+        _cgi_read_fds[cgi_read_fd].output_buffer.append(buffer, bytes);
+    } 
+    else if (bytes == 0) {
+        // EOF: The CGI script has finished executing and closed its stdout!
+        CgiState state = _cgi_read_fds[cgi_read_fd];
+
+        // 1. Kill the zombie process!
+        int wstatus;
+        waitpid(state.cgi_pid, &wstatus, 0); 
+
+        // 2. Format the final HTTP Response
+        std::stringstream ss;
+        ss << "HTTP/1.1 200 OK\r\n";
+        ss << "Content-Length: " << state.output_buffer.size() << "\r\n";
+        ss << "\r\n"; // End of headers
+        ss << state.output_buffer; // Append the CGI output
+
+        // 3. Queue the full string for the client to download
+        queueResponse(state.client_fd, ss.str());
+
+        // 4. Cleanup the pipe and remove from poll
+        close(cgi_read_fd);
+        _cgi_read_fds.erase(cgi_read_fd);
+
+        for (size_t i = 0; i < _poll_fds.size(); i++) {
+            if (_poll_fds[i].fd == cgi_read_fd) {
+                _poll_fds.erase(_poll_fds.begin() + i);
+                break;
+            }
+        }
+    } else {
+        // Error reading from pipe. Cleanup and send 500 error.
+        close(cgi_read_fd);
+        queueResponse(_cgi_read_fds[cgi_read_fd].client_fd, "HTTP/1.1 500 Internal Server Error\r\n\r\n");
+        _cgi_read_fds.erase(cgi_read_fd);
+    }
 }
