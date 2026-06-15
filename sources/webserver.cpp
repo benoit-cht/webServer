@@ -25,8 +25,9 @@
 volatile sig_atomic_t g_should_exit = 0;
 
 static void           signal_handler(int signal);
-static void           print_http_request(const t_httpRequest& request);
-static void           print_http_response(const t_httpResponse& response);
+
+void           print_http_request(const t_httpRequest& request); 
+void           print_http_response(const t_httpResponse& response); 
 std::string           readFullHttpRequest(int fd, EventLoop& loop) ;
 static void           inf_loop(std::vector<int> ports, const std::vector<ServerConfig>& config);
 static int            getPortServer(int fd);
@@ -34,6 +35,7 @@ static void           initVerctorOfPort(std::vector<int>& ports, const std::vect
 static ServerConfig  getConfigForHandler(const std::vector<ServerConfig>& vec_config, int port);
 
 #endif
+void testPatch(std::vector<int> ports, const std::vector<ServerConfig>& vec_config);
 /* ========================================================================== */
 /*                           -- main focntion --                              */
 /* ========================================================================== */
@@ -55,11 +57,11 @@ int main (int av, char *ag[])
 try {
 	std::vector<ServerConfig>	virtual_servers;
 	confParsingHandler(ag[1], virtual_servers);
-
 #if RUN_WITH_SERVER
 	std::vector<int> ports;
 	initVerctorOfPort(ports, virtual_servers);
 	inf_loop(ports, virtual_servers);
+  //testPatch(ports, virtual_servers);
 #endif
 
     } catch (const std::exception& e) {
@@ -76,6 +78,22 @@ try {
 /* ========================================================================== */
 #if RUN_WITH_SERVER
 
+/*
+
+┌──────────────── Server::run() ────────────────┐
+│                                               │
+│   while (_running) {                          │
+│     poll(_pollFds, _nfds, TIMEOUT_MS)         │
+│                                               │
+│     for each fd with event:                   │
+│       if fd == listenFd  → acceptClient()     │
+│       if POLLIN          → handleRead(fd)     │
+│       if POLLOUT         → handleWrite(fd)    │
+│       if POLLERR/POLLHUP → removeClient(fd)   │
+│   }                                           │
+└───────────────────────────────────────────────┘
+
+*/
 
 static ServerConfig  getConfigForHandler(const std::vector<ServerConfig>& vec_config, int port)
 {
@@ -93,34 +111,47 @@ static ServerConfig  getConfigForHandler(const std::vector<ServerConfig>& vec_co
   return ( config );
 }
 
-static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& vec_config)
+/*static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& vec_config)
 {
   std::vector<int> activeFds = loop.getActiveFds();
 
   for (size_t i = 0; i < activeFds.size(); i++)
   {
     int fd = activeFds[i];
-    if (loop.isServerFd(fd)) {
+    
+      std::cout << "event =" << loop.getPollEvent(i) << std::endl; 
+      if ( loop.getPollEvent(i) == POLLIN )  { std::cout << "BEFOR POLLIN" << std::endl; }         //→ handleRead(fd)     
+      if ( loop.getPollEvent(i)== POLLOUT ) { std::cout << "BEFOR POLLOUT" << std::endl; }        //→ handleWrite(fd)    
+      if ( loop.getPollEvent(i)== POLLERR)  { std::cout << "BEFOR POLLERR" << std::endl; }       //→ removeClient(fd)
+
+    if (loop.isServerFd(fd)) 
+    {
 
       loop.acceptNewConnection(fd);
-    } else {
+    } 
+    else 
+    {
 
-      std::string string_request;
-      string_request = readFullHttpRequest(fd, loop);
+      //std::string string_request;
+      //string_request = readFullHttpRequest(fd, loop);
      
       if (string_request.empty())
-     {
+      {
         loop.removeClient(fd);
         continue ;
-     }
+      }
+      std::cout << "event =" << loop.getPollEvent(i) << std::endl; 
+      if ( loop.getPollEvent(i) == POLLIN )  { std::cout << "BEFOR POLLIN" << std::endl; }         //→ handleRead(fd)     
+      if ( loop.getPollEvent(i)== POLLOUT ) { std::cout << "BEFOR POLLOUT" << std::endl; }        //→ handleWrite(fd)    
+      if ( loop.getPollEvent(i)== POLLERR)  { std::cout << "BEFOR POLLERR" << std::endl; }       //→ removeClient(fd)
 
       ServerConfig config = getConfigForHandler(vec_config, getPortServer(fd));
 
       t_httpRequest request = HttpHandler::setHttpRequest(string_request);
-      print_http_request(request);
+      //print_http_request(request);
       t_httpResponse response = HttpHandler::setHttpResponse(request, config);
 
-/* 	  if (response.is_cgi) {
+ 	  if (response.is_cgi) {
           // --- ASYNC CGI HANDLING ---
           // 1. Do NOT call sendResponse yet.
           // 2. Register response.cgi_read_fd and response.cgi_write_fd into your EventLoop.
@@ -128,18 +159,99 @@ static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& 
 
           loop.addCgiFds(response.cgi_read_fd, response.cgi_write_fd, fd);
           // (You will need to implement this logic in your EventLoop)
-	  } */
+	  } 
 
       if (response.status == 201 || response.status == 400 || response.status == 405)
         if (response.headers["Connection"] == "close")
+      std::string raw_response = response.toString();
+      //loop.sendResponse(fd, raw_response);
+
+      if (response.headers["Connection"] == "close")
       {
         loop.removeClient(fd);
       }
 
-      print_http_response(response);
+      //print_http_response(response);
+      
+      if ( loop.getPollEvent(i) == POLLIN )  { //→ handleRead(fd)
 
+        std::cout << "POLLIN" << std::endl; 
+      
+      }              
+      else if ( loop.getPollEvent(i)== POLLOUT )  { //→ handleWrite(fd)
+
+        std::cout << "POLLOUT" << std::endl; 
+
+      }            
+      else if ( loop.getPollEvent(i)== POLLERR)  { //→ removeClient(fd)
+
+        std::cout << "POLLERR" << std::endl; 
+      }       
+      
     }
   }
+}*/
+
+std::string readAvailableData(int fd, EventLoop& loop) {
+    std::string request;
+    char buffer[BUFFER_SIZE];
+    ssize_t bytes_read = loop.readFromClient(fd, buffer, sizeof(buffer));
+
+    if (bytes_read > 0) {
+        request.append(buffer, bytes_read);
+    } else if (bytes_read == 0) {
+        std::cout << COLOR_RED << "Client disconnected (fd=" << fd << ")" << COLOR_RESET << std::endl;
+    } else if (bytes_read == -1) {
+        if (errno != EAGAIN && errno != EWOULDBLOCK && errno != EINTR) {
+            std::cerr << "Error reading from client (fd=" << fd << "): " << strerror(errno) << std::endl;
+        }
+        // Sinon, c'est une erreur temporaire (EAGAIN/EWOULDBLOCK/EINTR) : on ignore
+    }
+    return request;
+}
+
+static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& vec_config) {
+    std::vector<int> activeFds = loop.getActiveFds();
+
+    for (size_t i = 0; i < activeFds.size(); i++) {
+        int fd = activeFds[i];
+        size_t pollIndex = 0;
+        for (; pollIndex < loop.getPollFdsSize(); pollIndex++) {
+            if (loop.getPollFd(pollIndex).fd == fd) break;
+        }
+        short revents = loop.getPollFd(pollIndex).revents;
+
+        if (revents & (POLLERR | POLLHUP)) {
+            loop.removeClient(fd);
+            continue;
+        }
+
+        if (loop.isServerFd(fd) && (revents & POLLIN)) {
+            loop.acceptNewConnection(fd);
+            continue;
+        }
+
+        if (revents & POLLIN) {
+            std::string data = readAvailableData(fd, loop);
+            if (data.empty()) {
+                loop.removeClient(fd);
+                continue;
+            }
+            loop.appendToClientBuffer(fd, data);
+
+            if (loop.isRequestComplete(fd)) {
+                std::string full_request = loop.getFullRequest(fd);
+                ServerConfig config = getConfigForHandler(vec_config, getPortServer(fd));
+                t_httpRequest request = HttpHandler::setHttpRequest(full_request);
+                t_httpResponse response = HttpHandler::setHttpResponse(request, config);
+                loop.queueResponse(fd, response.toString());
+            }
+        }
+
+        if (revents & POLLOUT) {
+            loop.handlePendingWrites(fd);
+        }
+    }
 }
 
 static void inf_loop(std::vector<int> ports, const std::vector<ServerConfig>& vec_config)
@@ -194,7 +306,7 @@ static int  getPortServer(int fd)
 /*                 -- print fonction for request/response --                  */
 /* ========================================================================== */
 
-static void print_http_request(const t_httpRequest& request) {
+void print_http_request(const t_httpRequest& request) {
     // Affichage de la méthode, du chemin et de la version
     std::cout << COLOR_CYAN << "\n=== HTTP Request ===" << COLOR_RESET << std::endl;
     std::cout << "Method: " << COLOR_YELLOW << request.method << COLOR_RESET << std::endl;
@@ -214,7 +326,7 @@ static void print_http_request(const t_httpRequest& request) {
     std::cout << COLOR_CYAN << "===================\n" << COLOR_RESET << std::endl;
 }
 
-static void print_http_response(const t_httpResponse& response) {
+void print_http_response(const t_httpResponse& response) {
     // Affichage du statut
     std::cout << COLOR_CYAN << "\n=== HTTP Response ===" << COLOR_RESET << std::endl;
     std::cout << "Status: " << COLOR_YELLOW << response.status << COLOR_RESET;

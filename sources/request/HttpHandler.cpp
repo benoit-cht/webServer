@@ -45,11 +45,11 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
 {
 	t_httpResponse                        response;
   std::map<std::string, std::string>    headers;
-  std::map<std::string, LocationConfig>	location = config.getLocationConfig();
+  std::map<std::string, LocationConfig> location = config.getLocationConfig();
   
 	if (!location["/"].checkMethod(request.method))
 	{
-    return (HandlerErrorHttp(405, config));
+    return (HandlerErrorHttp(405, request, config));
   }
   else if (request.path.find("/cgi-bin/") == 0 || request.path.find(".php") != std::string::npos || request.path.find(".py") != std::string::npos)
   {
@@ -69,7 +69,7 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
   }
   else
   {
-    return (HandlerErrorHttp(400, config));
+    return (HandlerErrorHttp(400, request, config));
   }
 	return ( response );
 }
@@ -79,14 +79,16 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
 /* ========================================================================== */
 
 
-t_httpResponse HttpHandler::HandlerErrorHttp(int status, const ServerConfig& config)
+t_httpResponse HttpHandler::HandlerErrorHttp(int status, t_httpRequest request, const ServerConfig& config)
 {
 	t_httpResponse                      response;
   std::map<std::string, std::string>  headers;
-  std::string body;
+  std::string                         body;
+  
   std::map<std::string, LocationConfig>	location = config.getLocationConfig();
-  std::map<int, std::string> page = location["/"].getErrorPage();
-
+  std::map<int, std::string>            page = location["/"].getErrorPage();
+  //std::set<std::string>                 allow = location["/"].getMethods();
+    
   headers["Date"] = getCurrentHttpDate();
   headers["Connection"] = "close";
   headers["Content-Type"] = "text/html";
@@ -102,17 +104,18 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status, const ServerConfig& con
     body = buffer.str();
 
   }
-
-  else if (status == 301)
-  {
+  else if (status == 301) { 
+    headers["Location"] = "http://" + request.headers["Host"] ;
     body = def_301; 
   }
-  else if (status == 302)
+  else if (status == 302) {
+    headers["Location"] = "http://" + request.headers["Host"] ;
     body = def_302; 
-
-  else if (status == 304)
+  }
+  else if (status == 304) {
+    headers["Location"] = "http://" + request.headers["Host"] ;
     body = def_304; 
-
+  }
   else if (status == 400)
     body = def_400; 
 
@@ -122,9 +125,15 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status, const ServerConfig& con
   else if (status == 404)
     body = def_404; 
 
-  else if (status == 405)
+  else if (status == 405) {
     body = def_405;
-  
+    if ( location["/"].checkMethod("GET"))
+      headers["Allow"] = "GET" ;
+    if ( location["/"].checkMethod("POST"))
+      headers["Allow"] += " POST" ;
+    if ( location["/"].checkMethod("POST"))
+      headers["Allow"] += " DELETE" ;
+  }
   else if (status == 500)
     body ="<html><body>500 Internal Server Error</body></html>";
 
