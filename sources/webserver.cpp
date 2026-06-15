@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   webserver.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
 /*   Updated: 2026/06/12 12:48:56 by bchallat         ###   ########.fr       */
@@ -25,8 +25,8 @@
 volatile sig_atomic_t g_should_exit = 0;
 
 static void           signal_handler(int signal);
-static void           print_http_request(const t_httpRequest& request); 
-static void           print_http_response(const t_httpResponse& response); 
+static void           print_http_request(const t_httpRequest& request);
+static void           print_http_response(const t_httpResponse& response);
 std::string           readFullHttpRequest(int fd, EventLoop& loop) ;
 static void           inf_loop(std::vector<int> ports, const std::vector<ServerConfig>& config);
 static int            getPortServer(int fd);
@@ -38,7 +38,7 @@ static ServerConfig  getConfigForHandler(const std::vector<ServerConfig>& vec_co
 /*                           -- main focntion --                              */
 /* ========================================================================== */
 
-int main (int av, char *ag[]) 
+int main (int av, char *ag[])
 {
 	if (av != 2) {
 
@@ -48,6 +48,8 @@ int main (int av, char *ag[])
 
 #if RUN_WITH_SERVER
 		std::signal(SIGINT, signal_handler);// Enregistrer le gestionnaire de signal
+		std::signal(SIGQUIT, SIG_IGN);
+		std::signal(SIGPIPE, SIG_IGN); // a determiner si on conserve ou non
 #endif
 
 try {
@@ -80,7 +82,7 @@ static ServerConfig  getConfigForHandler(const std::vector<ServerConfig>& vec_co
   ServerConfig  config;
 
   for (std::vector<ServerConfig>::const_iterator it = vec_config.begin(); it != vec_config.end(); it++) {
-    
+
     if (it->getPort() == port) {
 
       config = *it;
@@ -118,11 +120,18 @@ static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& 
       print_http_request(request);
       t_httpResponse response = HttpHandler::setHttpResponse(request, config);
 
-      std::string raw_response = response.toString();
-      loop.sendResponse(fd, raw_response);
+/* 	  if (response.is_cgi) {
+          // --- ASYNC CGI HANDLING ---
+          // 1. Do NOT call sendResponse yet.
+          // 2. Register response.cgi_read_fd and response.cgi_write_fd into your EventLoop.
+          // 3. Keep a mapping in your server that ties these CGI FDs back to the client fd.
+
+          loop.addCgiFds(response.cgi_read_fd, response.cgi_write_fd, fd);
+          // (You will need to implement this logic in your EventLoop)
+	  } */
 
       if (response.status == 201 || response.status == 400 || response.status == 405)
-      if (response.headers["Connection"] == "close")
+        if (response.headers["Connection"] == "close")
       {
         loop.removeClient(fd);
       }
@@ -174,7 +183,7 @@ static int  getPortServer(int fd)
 {
   struct sockaddr_in server_addr;
   socklen_t server_addr_len = sizeof(server_addr);
-  
+
   if (getsockname(fd, (struct sockaddr *)&server_addr, &server_addr_len) == -1)
         std::cerr << COLOR_RED << "getsockname() failed: " << strerror(errno) << COLOR_RESET << std::endl;
 

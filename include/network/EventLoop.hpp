@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   EventLoop.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:29:31 by bchallat          #+#    #+#             */
-/*   Updated: 2026/03/31 11:53:51 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/12 17:04:43 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #define EVENT_LOOP_HPP
 
 #include <iostream>
-#include <cstring> 
+#include <cstring>
 #include <vector>
 #include <poll.h>
 
@@ -32,7 +32,7 @@ class EventLoop {
     void              setupServerSockets();
     void              cleanup();
     void              removeClient(int fd);
-    void              sendResponse(int fd, const std::string& response);
+    ssize_t           sendResponse(int fd, const std::string& response);
 
   public:
     int               waitForActivity();
@@ -45,7 +45,7 @@ class EventLoop {
     SocketHandler     _socket_handler;
     ClientManager     _client_manager;
     std::vector<int>  _server_fds;
-    std::vector<int>  _ports; 
+    std::vector<int>  _ports;
     std::vector<struct pollfd> _poll_fds;
 
 };
