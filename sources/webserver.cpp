@@ -249,8 +249,6 @@ static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& 
                 t_httpResponse response = HttpHandler::setHttpResponse(request, config);
                 print_http_response(response);
                 loop.queueResponse(fd, response.toString());
-                if (response.headers["Connection"] == "close")
-                  loop.removeClient(fd);
 
             }
         }

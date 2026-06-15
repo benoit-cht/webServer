@@ -27,7 +27,7 @@ void EventLoop::setupServerSockets()
   {
     struct pollfd pfd;
     pfd.fd = _server_fds[index];
-    pfd.events = POLLIN | POLLOUT;
+    pfd.events = POLLIN | POLLOUT | POLLERR | POLLHUP;
     _poll_fds.push_back(pfd);
     index++;
   }
@@ -94,7 +94,7 @@ ClientInfo* EventLoop::acceptNewConnection(int server_fd)
 
     struct pollfd client_pollfd;
     client_pollfd.fd = client_fd;
-    client_pollfd.events = POLLIN | POLLOUT;
+    client_pollfd.events = POLLIN | POLLOUT | POLLERR | POLLHUP;
     _poll_fds.push_back(client_pollfd);
 
     std::cout << COLOR_CYAN << "(Log Client) : new connection accepted (fd=" << client_fd
