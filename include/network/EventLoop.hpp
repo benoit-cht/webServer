@@ -14,7 +14,7 @@
 #define EVENT_LOOP_HPP
 
 #include <iostream>
-#include <cstring> 
+#include <cstring>
 #include <vector>
 #include <poll.h>
 #include <sys/wait.h>
@@ -43,6 +43,7 @@ class EventLoop {
     ssize_t           readFromClient(int fd, char* buffer, size_t size);
     ClientInfo*       acceptNewConnection(int server_fd);
     std::vector<int>  getActiveFds() const;
+    short             getPollEvent(int i) const;
 
   public:
     void registerCgi(int client_fd, int cgi_read_fd, pid_t cgi_pid);
@@ -53,7 +54,7 @@ class EventLoop {
     SocketHandler     _socket_handler;
     ClientManager     _client_manager;
     std::vector<int>  _server_fds;
-    std::vector<int>  _ports; 
+    std::vector<int>  _ports;
     std::vector<struct pollfd> _poll_fds;
 
     private:

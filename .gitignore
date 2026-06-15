@@ -51,3 +51,6 @@ tech-stack/wiki/obs_webServ/.obsidian/app.json
 tech-stack/wiki/obs_webServ/.obsidian/core-plugins.json
 tech-stack/wiki/obs_webServ/.obsidian/workspace.json
 
+# Large files #
+###############
+sources/www/large_file.bin

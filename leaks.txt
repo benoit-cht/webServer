@@ -1,0 +1,77 @@
+[1;32mSuccess : open socket to a port: 8080[0m
+[1;32mSuccess : open socket to a port: 9292[0m
+[1;32mSuccess : open socket to a port: 8081[0m
+[1;32mSuccess : new connetion accept to 127.0.0.1:56992[0m
+[1;36m(Log Server) : add new client: fd=6, IP=127.0.0.1, Port=56992[0m
+[1;36m(Log Client) : new connection accepted (fd=6, IP=127.0.0.1, Port client=56992)[0m
+[1;34mDonnées reçues de 127.0.0.1:56992 (464 octets)[0m
+Server port for fd=6: 8080
+[1;32mSuccess : request is valid [0m
+[1;36m
+=== HTTP Request ===[0m
+Method: [1;33mGET[0m
+Path: [1;33m/cgi-bin/form_processor.php[0m
+Version: [1;33mHTTP/1.1[0m
+[1;36m
+--- Headers ---[0m
+Accept: [1;32mtext/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8[0m
+Accept-Encoding: [1;32mgzip, deflate, br, zstd[0m
+Accept-Language: [1;32men-US,en;q=0.9[0m
+Connection: [1;32mkeep-alive[0m
+Host: [1;32mlocalhost:8080[0m
+Priority: [1;32mu=0, i[0m
+Sec-Fetch-Dest: [1;32mdocument[0m
+Sec-Fetch-Mode: [1;32mnavigate[0m
+Sec-Fetch-Site: [1;32mnone[0m
+Sec-Fetch-User: [1;32m?1[0m
+Upgrade-Insecure-Requests: [1;32m1[0m
+User-Agent: [1;32mMozilla/5.0 (X11; Linux x86_64; rv:151.0) Gecko/20100101 Firefox/151.0[0m
+[1;36m===================
+[0m
+[1;36m
+=== HTTP Response ===[0m
+Status: [1;33m0[0m (Unknown Status)[0m
+[1;36m
+--- Headers ---[0m
+Content-Type: [1;32mtext/html[0m
+[1;36m====================
+[0m
+[1;34mDonnées reçues de 127.0.0.1:56992 (464 octets)[0m
+Server port for fd=6: 8080
+[1;32mSuccess : request is valid [0m
+[1;36m
+=== HTTP Request ===[0m
+Method: [1;33mGET[0m
+Path: [1;33m/cgi-bin/form_processor.php[0m
+Version: [1;33mHTTP/1.1[0m
+[1;36m
+--- Headers ---[0m
+Accept: [1;32mtext/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8[0m
+Accept-Encoding: [1;32mgzip, deflate, br, zstd[0m
+Accept-Language: [1;32men-US,en;q=0.9[0m
+Connection: [1;32mkeep-alive[0m
+Host: [1;32mlocalhost:8080[0m
+Priority: [1;32mu=0, i[0m
+Sec-Fetch-Dest: [1;32mdocument[0m
+Sec-Fetch-Mode: [1;32mnavigate[0m
+Sec-Fetch-Site: [1;32mnone[0m
+Sec-Fetch-User: [1;32m?1[0m
+Upgrade-Insecure-Requests: [1;32m1[0m
+User-Agent: [1;32mMozilla/5.0 (X11; Linux x86_64; rv:151.0) Gecko/20100101 Firefox/151.0[0m
+[1;36m===================
+[0m
+[1;36m
+=== HTTP Response ===[0m
+Status: [1;33m0[0m (Unknown Status)[0m
+[1;36m
+--- Headers ---[0m
+Content-Type: [1;32mtext/html[0m
+[1;36m====================
+[0m
+[1;33m 
+Warning : Reçu SIGINT (Ctrl+C), arrêt du serveur... [0m
+[1;36m(Log Server) : close client fd=6[0m
+[1;36m(Log Server) : delete client: fd=6[0m
+[1;32mSuccess : close socket 3[0m
+[1;32mSuccess : close socket 4[0m
+[1;32mSuccess : close socket 5[0m

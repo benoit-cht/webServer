@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   webserver.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
 /*   Updated: 2026/06/15 23:43:04 by lcluzan          ###   ########.fr       */
@@ -111,7 +111,7 @@ static ServerConfig  getConfigForHandler(const std::vector<ServerConfig>& vec_co
   return ( config );
 }
 
-static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& vec_config)
+/*static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& vec_config)
 {
   std::vector<int> activeFds = loop.getActiveFds();
 
@@ -190,6 +190,73 @@ static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& 
       
     }
   }
+}*/
+
+std::string readAvailableData(int fd, EventLoop& loop) {
+    std::string request;
+    char buffer[BUFFER_SIZE];
+    ssize_t bytes_read = loop.readFromClient(fd, buffer, sizeof(buffer));
+
+    std::cout <<  buffer << "size:" << bytes_read << "|"<< (int)buffer[0] << COLOR_RESET << std::endl;
+    
+    if (bytes_read > 0) {
+        request.append(buffer, bytes_read);
+    } else if (bytes_read == 0) {
+        std::cout << COLOR_RED << "Client disconnected (fd=" << fd << ")" << COLOR_RESET << std::endl;
+    } else if (bytes_read == -1) {
+        if (errno != EAGAIN && errno != EWOULDBLOCK && errno != EINTR) {
+            std::cerr << "Error reading from client (fd=" << fd << "): " << strerror(errno) << std::endl;
+        }
+        // Sinon, c'est une erreur temporaire (EAGAIN/EWOULDBLOCK/EINTR) : on ignore
+    }
+    return request;
+}
+
+static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& vec_config) {
+    std::vector<int> activeFds = loop.getActiveFds();
+
+    for (size_t i = 0; i < activeFds.size(); i++) {
+        int fd = activeFds[i];
+        size_t pollIndex = 0;
+        for (; pollIndex < loop.getPollFdsSize(); pollIndex++) {
+            if (loop.getPollFd(pollIndex).fd == fd) break;
+        }
+        short revents = loop.getPollFd(pollIndex).revents;
+
+        if (revents & (POLLERR | POLLHUP)) {
+            loop.removeClient(fd);
+            continue;
+        }
+
+        if (loop.isServerFd(fd) && (revents & POLLIN)) {
+            loop.acceptNewConnection(fd);
+            continue;
+        }
+
+        if (revents & POLLIN) {
+            std::string data = readAvailableData(fd, loop);
+            if (data.empty()) {
+                loop.removeClient(fd);
+                continue;
+            }
+            loop.appendToClientBuffer(fd, data);
+
+            if (loop.isRequestComplete(fd)) {
+                std::string full_request = loop.getFullRequest(fd);
+                ServerConfig config = getConfigForHandler(vec_config, getPortServer(fd));
+                t_httpRequest request = HttpHandler::setHttpRequest(full_request);
+                print_http_request(request);
+                t_httpResponse response = HttpHandler::setHttpResponse(request, config);
+                print_http_response(response);
+                loop.queueResponse(fd, response.toString());
+
+            }
+        }
+
+        if (revents & POLLOUT) {
+            loop.handlePendingWrites(fd);
+        }
+    }
 }
 
 std::string readAvailableData(int fd, EventLoop& loop) {
