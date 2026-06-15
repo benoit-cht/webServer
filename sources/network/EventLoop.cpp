@@ -27,19 +27,20 @@ void EventLoop::setupServerSockets()
   {
     struct pollfd pfd;
     pfd.fd = _server_fds[index];
-    pfd.events = POLLIN;
+    pfd.events = POLLIN | POLLOUT;
     _poll_fds.push_back(pfd);
     index++;
   }
 }
 
 /* ************************************************************************** */
-
+/*
 int EventLoop::waitForActivity() 
 {
   return (poll(&_poll_fds[0], _poll_fds.size(), -1));
 }
-
+*/
+/*
 std::vector<int> EventLoop::getActiveFds() const 
 {
   size_t            index = 0;
@@ -47,7 +48,7 @@ std::vector<int> EventLoop::getActiveFds() const
   
   while( index < _poll_fds.size()) 
   {
-    if (_poll_fds[index].revents & POLLIN) 
+    if (_poll_fds[index].revents & (POLLIN | POLLOUT | POLLERR | POLLHUP)) 
     {
       active.push_back(_poll_fds[index].fd);
     }
@@ -56,7 +57,7 @@ std::vector<int> EventLoop::getActiveFds() const
   
   return ( active );
 }
-
+*/
 bool EventLoop::isServerFd(int fd) const 
 {
   for (size_t index = 0; index < _server_fds.size(); index++) 
@@ -68,6 +69,12 @@ bool EventLoop::isServerFd(int fd) const
   }
 
   return( false );
+}
+
+short EventLoop::getPollEvent(int i) const {
+
+  return ( _poll_fds[i].revents );
+
 }
 
 /* ************************************************************************** */
@@ -87,7 +94,7 @@ ClientInfo* EventLoop::acceptNewConnection(int server_fd)
 
     struct pollfd client_pollfd;
     client_pollfd.fd = client_fd;
-    client_pollfd.events = POLLIN;
+    client_pollfd.events = POLLIN | POLLOUT;
     _poll_fds.push_back(client_pollfd);
 
     std::cout << COLOR_CYAN << "(Log Client) : new connection accepted (fd=" << client_fd
@@ -111,7 +118,6 @@ ssize_t EventLoop::readFromClient(int fd, char* buffer, size_t size)
 
   memset(buffer, 0, size);
   bytes_read = _socket_handler.readFromSocket(fd, buffer, size - 1);
-  
   if (bytes_read > 0) 
   {
     std::cout << COLOR_BLUE << "Données reçues de " << client->getAdressIp() << ":" 
@@ -122,12 +128,12 @@ ssize_t EventLoop::readFromClient(int fd, char* buffer, size_t size)
 }
 
 /* ************************************************************************** */
-
+/*
 void EventLoop::sendResponse(int fd, const std::string& response)
 {
   _socket_handler.writeToSocket(fd, response.c_str(), response.size());
 }
-
+*/
 void EventLoop::removeClient(int fd) 
 {
   _client_manager.removeClient(fd);
@@ -153,4 +159,75 @@ void EventLoop::cleanup()
     _socket_handler.closeSocket(_server_fds[i]);
   }
   
+}
+
+
+/* ************************************************************************** */
+/* ************************************************************************** */
+/* ************************************************************************** */
+
+size_t EventLoop::getPollFdsSize() const {
+    return _poll_fds.size();
+}
+
+const struct pollfd& EventLoop::getPollFd(size_t index) const {
+    return _poll_fds[index];
+}
+
+// Garde cette version (celle qui utilise _pendingResponses)
+void EventLoop::sendResponse(int fd, const std::string& response) {
+    queueResponse(fd, response);
+}
+
+void EventLoop::queueResponse(int fd, const std::string& response) {
+    _pendingResponses[fd] = response;
+    // Active POLLOUT pour ce fd
+    for (size_t i = 0; i < _poll_fds.size(); i++) {
+        if (_poll_fds[i].fd == fd) {
+            _poll_fds[i].events |= POLLOUT;
+            break;
+        }
+    }
+}
+
+void EventLoop::handlePendingWrites(int fd) {
+    std::map<int, std::string>::iterator it = _pendingResponses.find(fd);
+    if (it == _pendingResponses.end()) {
+        return;
+    }
+
+    ssize_t sent = _socket_handler.writeToSocket(fd, it->second.c_str(), it->second.size());
+    if (sent > 0) {
+        it->second.erase(0, sent);
+        if (it->second.empty()) {
+            _pendingResponses.erase(it);
+            // Désactive POLLOUT
+            for (size_t i = 0; i < _poll_fds.size(); i++) {
+                if (_poll_fds[i].fd == fd) {
+                    _poll_fds[i].events &= ~POLLOUT;
+                    break;
+                }
+            }
+        }
+    } else {
+        // Erreur : fermer le client
+        removeClient(fd);
+    }
+}
+
+std::vector<int> EventLoop::getActiveFds() const {
+    std::vector<int> active;
+    for (size_t i = 0; i < _poll_fds.size(); i++) {
+        if (_poll_fds[i].revents & (POLLIN | POLLOUT | POLLERR | POLLHUP)) {
+            active.push_back(_poll_fds[i].fd);
+        }
+    }
+    return active;
+}
+
+int EventLoop::waitForActivity() {
+    for (size_t i = 0; i < _poll_fds.size(); i++) {
+        _poll_fds[i].revents = 0;  // Réinitialise revents
+    }
+    return poll(&_poll_fds[0], _poll_fds.size(), -1);
 }
