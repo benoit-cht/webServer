@@ -6,7 +6,7 @@
 #    By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/20 09:10:14 by bchallat          #+#    #+#              #
-#    Updated: 2026/06/10 19:40:15 by tjacquel         ###   ########.fr        #
+#    Updated: 2026/06/11 16:48:17 by bchallat         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -47,9 +47,9 @@ NAME = webserv
 SRC = webserver.cpp ${SRC_CONFIG} ${SRC_NETWORCK} ${SRC_REQUEST} ${SRC_CGI}
 
 SRC_CONFIG		=	config/ServerConfig.cpp \
-					config/ConfigParsing.cpp \
-					config/ConfigParsingUtils.cpp \
-					config/LocationConfig.cpp \
+								config/ConfigParsing.cpp \
+								config/ConfigParsingUtils.cpp \
+								config/LocationConfig.cpp \
 
 
 SRC_NETWORCK	=	network/SocketHandler.cpp\
@@ -61,6 +61,9 @@ SRC_REQUEST		=	request/HttpHandler.cpp \
 								request/parsing_HttpHandler.cpp \
 								request/response_HttpHandler.cpp \
 								request/CgiHandler.cpp \
+								request/metode_http_get.cpp \
+								request/metode_http_post.cpp \
+								request/metode_http_delete.cpp \
 
 SRCS = ${addprefix ${SRCDIR}/, ${SRC}}
 OBJS = ${addprefix ${OBJDIR}/, $(SRC:.cpp=.o)}
@@ -92,33 +95,6 @@ ${OBJDIR}:
 #                                                               #
 #===============================================================#
 
-TEST_NAME = t_unit
-
-TEST_DIR = stack/tests
-
-TEST_SRCS = $(wildcard $(TEST_DIR)/unit_test/*.cpp)
-TEST_OBJS = $(patsubst $(TEST_DIR)/unit_test/%.cpp, $(OBJDIR)/%.o, $(TEST_SRCS))
-
-#=======================================================================#
-#                                                                       #
-#=======================================================================#
-
-
-unit_test: $(TEST_NAME)
-
-$(TEST_NAME): $(TEST_OBJS) $(OBJS)
-	@${ECHO_FLAG} "\n$(GREEN)[OK]       	🧪 $(YELLOW)CREATED   EXE$(BLUE) -- $(RED)${TEST_NAME} --\n $(RESET)"
-	@$(CCFLAG) $(filter-out $(OBJDIR)/webserver.o, $(OBJS)) $(TEST_OBJS) -o $(TEST_NAME)
-
-$(OBJDIR)/%.o: $(TEST_DIR)/unit_test/%.cpp | $(OBJDIR)
-	@${ECHO_FLAG} "$(GREEN)[OK]       	🛠️ $(YELLOW)Compiling ... $(BLUE)$<$(RESET)"
-	@$(CCFLAG) -Iinclude -I$(TEST_DIR)/include -c $< -o $@
-
-
-#===============================================================#
-#                                                               #
-#===============================================================#
-
 clean:
 	@${ECHO_FLAG} "$(RED)[DELETE]	🧹$(BLUE) Delete file obj $(RESET)\n"
 	@$(RMF) $(OBJDIR) $(OBJS)
@@ -129,8 +105,5 @@ fclean:
 
 re: fclean all
 
-up: all unit_test
-
-.PHONY: all clean fclean re up unit_test
-
+.PHONY: all clean fclean re 
 

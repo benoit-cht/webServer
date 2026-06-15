@@ -76,12 +76,26 @@ std::string t_httpResponse::toString() const {
     // return response;
 	return ss.str();
 }
+/* ========================================================================== */
+/*                            -- CURR HTTP DATE --                            */
+/* ========================================================================== */
+
+std::string HttpHandler::getCurrentHttpDate() 
+{
+     std::time_t now = std::time(NULL);
+    std::tm *gmTime = std::gmtime(&now);
+
+    char buffer[100]; // Buffer pour stocker la date formatée
+    strftime(buffer, sizeof(buffer), "%a, %d %b %Y %H:%M:%S GMT", gmTime);
+    return std::string(buffer);
+}
+
 
 /* ========================================================================== */
 /*                 -- SERV STATIC FILE IMPLEMENT FONCTION  --                 */
 /* ========================================================================== */
-
-bool isSafePath(const std::string& path)
+/*
+bool isSafePath(const std::string& path) 
 {
   return (path.find("../") == std::string::npos); // Empêche les chemins relatifs (comme "../")
 }
@@ -124,12 +138,12 @@ t_httpResponse HttpHandler::serveStaticFile(const std::string& path)
     std::cout << COLOR_MAGENTA << "\n   ~~~~~~ METHODE END  ~~~~~~" << COLOR_RESET << std::endl;
     return (response);
 }
-
+*/
 /* ========================================================================== */
 /*                              -- TOOLS --                                   */
 /* ========================================================================== */
-
-std::string HttpHandler::readFile(const std::string& filepath)
+/*
+std::string HttpHandler::readFile(const std::string& filepath) 
 {
     std::ifstream       file(filepath.c_str());
     std::ostringstream  ss;
@@ -142,9 +156,9 @@ std::string HttpHandler::readFile(const std::string& filepath)
 
     return (ss.str());
 }
-
+*/
 /* ========================================================================== */
-
+/*
 bool HttpHandler::isStaticFile(const std::string& path)
 {
     if (path.find("/static/") == 0 ||
@@ -155,11 +169,11 @@ bool HttpHandler::isStaticFile(const std::string& path)
     }
     return false;
 }
-
+*/
 /* ========================================================================== */
 /*                          -- tools of POST METHODE  --                      */
 /* ========================================================================== */
-
+/*
 
 static std::string  post_length_body(t_httpRequest request)
 {
@@ -307,9 +321,9 @@ static void cleanMultipartBody(t_post_methode* postData) {
     // Mettre à jour le body avec le contenu nettoyé
     postData->body = fileContent;
 }
-
+*/
 /* ========================================================================== */
-
+/*
 t_post_methode HttpHandler::post_parse_header_request(t_httpRequest request)
 {
   t_post_methode  parsing;
@@ -330,7 +344,7 @@ t_post_methode HttpHandler::post_parse_header_request(t_httpRequest request)
   cleanMultipartBody(&parsing);
   return (parsing);
 }
-
+*/
 /* ************************************************************************** */
 /*                                                                            */
 /* ************************************************************************** */
