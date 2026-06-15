@@ -231,3 +231,63 @@ int EventLoop::waitForActivity() {
     }
     return poll(&_poll_fds[0], _poll_fds.size(), -1);
 }
+
+
+
+/* ************************************************************************** */
+/* ************************************************************************** */
+/* ************************************************************************** */
+
+
+void EventLoop::appendToClientBuffer(int fd, const std::string& data) {
+    _clientBuffers[fd] += data;
+
+    // Si on n'a pas encore trouvé la fin des headers, on cherche \r\n\r\n
+    if (!_clientHeadersEnded[fd]) {
+        size_t header_end_pos = _clientBuffers[fd].find("\r\n\r\n");
+        if (header_end_pos != std::string::npos) {
+            _clientHeadersEnded[fd] = true;
+            // Extraire Content-Length
+            size_t content_length_pos = _clientBuffers[fd].find("Content-Length: ");
+            if (content_length_pos != std::string::npos) {
+                size_t start = content_length_pos + 16;
+                size_t end = _clientBuffers[fd].find("\r\n", start);
+                if (end != std::string::npos) {
+                    _clientContentLength[fd] = static_cast<size_t>(
+                        std::atoi(_clientBuffers[fd].substr(start, end - start).c_str())
+                    );
+                } else {
+                    _clientContentLength[fd] = 0; // Pas de Content-Length
+                }
+            } else {
+                _clientContentLength[fd] = 0; // Pas de Content-Length (ex: GET)
+            }
+        }
+    }
+}
+
+bool EventLoop::isRequestComplete(int fd) {
+    if (!_clientHeadersEnded[fd]) {
+        return false; // Headers pas encore terminés
+    }
+    // Si Content-Length = 0, la requête est complète (ex: GET)
+    if (_clientContentLength[fd] == 0) {
+        return true;
+    }
+    // Sinon, vérifier si on a reçu tout le body
+    size_t header_end_pos = _clientBuffers[fd].find("\r\n\r\n");
+    if (header_end_pos == std::string::npos) {
+        return false;
+    }
+    size_t body_bytes_read = _clientBuffers[fd].size() - (header_end_pos + 4);
+    return (body_bytes_read >= _clientContentLength[fd]);
+}
+
+std::string EventLoop::getFullRequest(int fd) {
+    std::string request = _clientBuffers[fd];
+    // Nettoyer les buffers pour ce client
+    _clientBuffers.erase(fd);
+    _clientContentLength.erase(fd);
+    _clientHeadersEnded.erase(fd);
+    return request;
+}

@@ -177,49 +177,62 @@ static ServerConfig  getConfigForHandler(const std::vector<ServerConfig>& vec_co
   }
 }*/
 
+std::string readAvailableData(int fd, EventLoop& loop) {
+    std::string request;
+    char buffer[BUFFER_SIZE];
+    ssize_t bytes_read = loop.readFromClient(fd, buffer, sizeof(buffer));
+
+    if (bytes_read > 0) {
+        request.append(buffer, bytes_read);
+    } else if (bytes_read == 0) {
+        std::cout << COLOR_RED << "Client disconnected (fd=" << fd << ")" << COLOR_RESET << std::endl;
+    } else if (bytes_read == -1) {
+        if (errno != EAGAIN && errno != EWOULDBLOCK && errno != EINTR) {
+            std::cerr << "Error reading from client (fd=" << fd << "): " << strerror(errno) << std::endl;
+        }
+        // Sinon, c'est une erreur temporaire (EAGAIN/EWOULDBLOCK/EINTR) : on ignore
+    }
+    return request;
+}
+
 static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& vec_config) {
     std::vector<int> activeFds = loop.getActiveFds();
 
     for (size_t i = 0; i < activeFds.size(); i++) {
         int fd = activeFds[i];
-
-        // Trouver l'index dans _poll_fds
         size_t pollIndex = 0;
         for (; pollIndex < loop.getPollFdsSize(); pollIndex++) {
-            if (loop.getPollFd(pollIndex).fd == fd) {
-                break;
-            }
+            if (loop.getPollFd(pollIndex).fd == fd) break;
         }
-
         short revents = loop.getPollFd(pollIndex).revents;
 
-        // Gérer les erreurs et fermetures en premier
         if (revents & (POLLERR | POLLHUP)) {
             loop.removeClient(fd);
             continue;
         }
 
-        // Nouvelle connexion
         if (loop.isServerFd(fd) && (revents & POLLIN)) {
             loop.acceptNewConnection(fd);
             continue;
         }
 
-        // Lecture (POLLIN)
         if (revents & POLLIN) {
-            std::string string_request = readFullHttpRequest(fd, loop);
-            if (string_request.empty()) {
+            std::string data = readAvailableData(fd, loop);
+            if (data.empty()) {
                 loop.removeClient(fd);
                 continue;
             }
+            loop.appendToClientBuffer(fd, data);
 
-            ServerConfig config = getConfigForHandler(vec_config, getPortServer(fd));
-            t_httpRequest request = HttpHandler::setHttpRequest(string_request);
-            t_httpResponse response = HttpHandler::setHttpResponse(request, config);
-            loop.queueResponse(fd, response.toString());
+            if (loop.isRequestComplete(fd)) {
+                std::string full_request = loop.getFullRequest(fd);
+                ServerConfig config = getConfigForHandler(vec_config, getPortServer(fd));
+                t_httpRequest request = HttpHandler::setHttpRequest(full_request);
+                t_httpResponse response = HttpHandler::setHttpResponse(request, config);
+                loop.queueResponse(fd, response.toString());
+            }
         }
 
-        // Écriture (POLLOUT)
         if (revents & POLLOUT) {
             loop.handlePendingWrites(fd);
         }

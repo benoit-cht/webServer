@@ -49,6 +49,7 @@ class EventLoop {
     std::vector<int>  _ports; 
     std::vector<struct pollfd> _poll_fds;
   
+/* ************************************************************************** */
   public:
     size_t getPollFdsSize() const;
     const struct pollfd& getPollFd(size_t index) const;
@@ -56,7 +57,18 @@ class EventLoop {
     void handlePendingWrites(int fd); 
   private:
     std::map<int, std::string> _pendingResponses;  // Buffer des réponses
-                                                   //
+  
+/* ************************************************************************** */
+  private:
+    // ...
+    std::map<int, std::string> _clientBuffers;  // fd → données accumulées
+    std::map<int, size_t> _clientContentLength; // fd → Content-Length attendu
+    std::map<int, bool> _clientHeadersEnded;    // fd → headers terminés ?
+public:
+    // ...
+    void appendToClientBuffer(int fd, const std::string& data);
+    bool isRequestComplete(int fd);
+    std::string getFullRequest(int fd);                                     //
 };
 
 #endif // !EVENT_LOOP_HPP
