@@ -1,5 +1,3 @@
-# Architecture POO pour le Traitement des Requêtes HTTP (C++98)
-
 > Projet 42 — Webserv | Standard C++98 | Non-blocking I/O | `poll()` unique
 
 ---
