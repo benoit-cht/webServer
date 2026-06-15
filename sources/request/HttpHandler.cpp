@@ -47,6 +47,10 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
   std::map<std::string, std::string>    headers;
   std::map<std::string, LocationConfig> location = config.getLocationConfig();
   
+  if (request.headers.empty())
+  {
+    return (HandlerErrorHttp(400, request, config));
+  }
 	if (!location["/"].checkMethod(request.method))
 	{
     return (HandlerErrorHttp(405, request, config));
@@ -69,7 +73,7 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
   }
   else
   {
-    return (HandlerErrorHttp(400, request, config));
+    return (HandlerErrorHttp(500, request, config));
   }
 	return ( response );
 }
