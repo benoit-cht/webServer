@@ -197,6 +197,8 @@ static ServerConfig  getConfigForHandler(const std::vector<ServerConfig>& vec_co
     char buffer[BUFFER_SIZE];
     ssize_t bytes_read = loop.readFromClient(fd, buffer, sizeof(buffer));
 
+    std::cout <<  buffer << "size:" << bytes_read << "|"<< (int)buffer[0] << COLOR_RESET << std::endl;
+    
     if (bytes_read > 0) {
         request.append(buffer, bytes_read);
     } else if (bytes_read == 0) {
@@ -271,6 +273,7 @@ static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& 
                 t_httpRequest request = HttpHandler::setHttpRequest(full_request);
                 print_http_request(request);
                 t_httpResponse response = HttpHandler::setHttpResponse(request, config);
+                print_http_response(response);
                 loop.queueResponse(fd, response.toString());
 
 				if (response.headers["Connection"] == "close") {
