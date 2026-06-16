@@ -20,6 +20,8 @@ t_httpResponse HttpHandler::handler_methode_get(t_httpRequest& request, const Se
 {
   std::map<std::string, LocationConfig>	location = config.getLocationConfig();
   //std::cout << COLOR_MAGENTA << location["/"].getRoot() + location["/"].getIndex() << COLOR_RESET << std::endl;
+  std::string prefix = find_location(location, request.path);
+  std::cout << COLOR_MAGENTA << prefix << COLOR_RESET << std::endl;
 
   if (request.path == "/"  )
   {

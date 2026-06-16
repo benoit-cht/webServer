@@ -90,7 +90,23 @@ std::string HttpHandler::getCurrentHttpDate()
     return std::string(buffer);
 }
 
+std::string HttpHandler::find_location(std::map<std::string, LocationConfig>	location, std::string path)
+{
+  std::string bestMatch = "/";
+  size_t bestMatchLength = 0;
 
+  for (std::map<std::string, LocationConfig>::iterator itr = location.begin(); itr != location.end(); itr++)  {
+        const std::string& loc = itr->first;
+        if (path.find(loc) == 0) // Vérifie si la location est un préfixe du path
+        {
+            if (loc.length() > bestMatchLength) {
+                bestMatch = loc;
+                bestMatchLength = loc.length();
+            }
+        }
+    }
+    return bestMatch;
+}
 /* ========================================================================== */
 /*                 -- SERV STATIC FILE IMPLEMENT FONCTION  --                 */
 /* ========================================================================== */
