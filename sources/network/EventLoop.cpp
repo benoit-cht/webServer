@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   EventLoop.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:01:32 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/16 13:43:51 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/06/16 18:51:30 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -306,46 +306,82 @@ std::string EventLoop::getFullRequest(int fd) {
 }
 
 // 1. Register the pipe so poll() starts watching it for POLLIN
-void EventLoop::registerCgi(int client_fd, int cgi_read_fd, pid_t cgi_pid) {
-    struct pollfd pfd;
-    pfd.fd = cgi_read_fd;
-    pfd.events = POLLIN; // Wait for the CGI script to write something
-    pfd.revents = 0;
-    _poll_fds.push_back(pfd);
+void EventLoop::registerCgi(int client_fd, const t_httpResponse& response) {
 
-    CgiState state;
-    state.client_fd = client_fd;
-    state.cgi_pid = cgi_pid;
-    state.output_buffer = "";
+	CgiState	CgiContext(client_fd, response.cgi_pid, response.cgi_read_fd, response.cgi_write_fd, response.body);
+	_cgi_contexts[client_fd] = CgiContext; // Save the master state under the client_fd
 
-    _cgi_read_fds[cgi_read_fd] = state;
+	// 1. Register the READ pipe (POLLIN)
+	struct pollfd pfd_read;
+    pfd_read.fd = CgiContext.cgi_read_fd;
+    pfd_read.events = POLLIN; // Wait for the CGI script to write something
+    pfd_read.revents = 0;
+    _poll_fds.push_back(pfd_read);
+	_pipe_client_fds[CgiContext.cgi_read_fd] = client_fd; // Helper mapping
+
+	// 2. Register the WRITE pipe (POLLOUT) ONLY if there is a body to send
+	if (!CgiContext.input_buffer.empty()) {
+		struct pollfd pfd_write;
+		pfd_write.fd = CgiContext.cgi_write_fd;
+		pfd_write.events = POLLOUT;
+		pfd_write.revents = 0;
+		_poll_fds.push_back(pfd_write);
+		_pipe_client_fds[CgiContext.cgi_write_fd] = client_fd;
+	}
+	else {
+		close(CgiContext.cgi_write_fd);
+		_cgi_contexts[client_fd].cgi_write_fd = -1;
+	}
 }
 
 // 2. Check if a triggered FD is a CGI pipe
-bool EventLoop::isCgiReadFd(int fd) {
-    return _cgi_read_fds.find(fd) != _cgi_read_fds.end();
+bool EventLoop::isCgiFd(int fd) {
+    return _pipe_client_fds.find(fd) != _pipe_client_fds.end();
+}
+
+void EventLoop::handleCgiWrite(int fd, CgiState& CgiContext) {
+	ssize_t sent = write(fd, CgiContext.input_buffer.c_str(), CgiContext.input_buffer.size());
+	if (sent > 0) {
+		CgiContext.input_buffer.erase(0, sent);
+		if (CgiContext.input_buffer.empty()) {
+			// We sent the whole POST body!
+			close(fd); // Tell CGI we are done sending
+
+			// Remove the write FD from poll vector
+			for (size_t i = 0; i <_poll_fds.size(); i++) {
+				if (_poll_fds[i].fd == fd) {
+					_poll_fds.erase(_poll_fds.begin() + i);
+					break;
+				}
+			}
+			_cgi_contexts.erase(fd); // Clean up the write mapping
+			_pipe_client_fds.erase(fd);
+			CgiContext.cgi_write_fd = -1;
+		}
+	}
+
 }
 
 // 3. Read the output and finish the response when the script ends
-void EventLoop::handleCgiRead(int cgi_read_fd) {
+void EventLoop::handleCgiRead(int fd, CgiState& CgiContext) {
     char buffer[4096];
-    ssize_t bytes = read(cgi_read_fd, buffer, sizeof(buffer) - 1);
+    ssize_t bytes = read(fd, buffer, sizeof(buffer) - 1);
 
     if (bytes > 0) {
         // The script printed something! Save it in the buffer.
         buffer[bytes] = '\0';
-        _cgi_read_fds[cgi_read_fd].output_buffer.append(buffer, bytes);
+        CgiContext.output_buffer.append(buffer, bytes);
     }
     else if (bytes == 0) {
         // EOF: The CGI script has finished executing!
-        CgiState state = _cgi_read_fds[cgi_read_fd];
 
         // 1. Kill the zombie process
-        int wstatus;
-        waitpid(state.cgi_pid, &wstatus, 0);
+        // int wstatus;
+        // waitpid(CgiContext.cgi_pid, &wstatus, 0);
+		waitpid(CgiContext.cgi_pid, NULL, WNOHANG);
 
         // 2. PARSE CGI OUTPUT
-        std::string raw_output = state.output_buffer;
+        std::string raw_output = CgiContext.output_buffer;
         std::string cgi_headers = "";
         std::string cgi_body = raw_output;
 
@@ -375,17 +411,35 @@ void EventLoop::handleCgiRead(int cgi_read_fd) {
         ss << cgi_body;
 
         // 4. Queue the perfectly formatted string for the client to download
-        queueResponse(state.client_fd, ss.str());
+        queueResponse(CgiContext.client_fd, ss.str());
 
         // 5. Cleanup the pipe and remove from poll
-        close(cgi_read_fd);
-        _cgi_read_fds.erase(cgi_read_fd);
+        close(fd);
 
         for (size_t i = 0; i < _poll_fds.size(); i++) {
-            if (_poll_fds[i].fd == cgi_read_fd) {
+            if (_poll_fds[i].fd == fd) {
                 _poll_fds.erase(_poll_fds.begin() + i);
                 break;
             }
         }
+		_cgi_contexts.erase(_pipe_client_fds[fd]); // we pass the client_fd value
+		_pipe_client_fds.erase(fd);
     }
+}
+
+void	EventLoop::handleCgiEvent(int fd, short revents) {
+	// 1. Find which client this pipe belongs to
+	int	client_fd = _pipe_client_fds[fd];
+
+	// 2. Grab the ONE true state reference
+	CgiState& CgiContext = _cgi_contexts[client_fd];
+
+	if ((revents & POLLOUT) && fd == CgiContext.cgi_write_fd) {
+		handleCgiWrite(fd, CgiContext);
+	}
+
+	if ((revents & POLLIN) && fd == CgiContext.cgi_read_fd) {
+		handleCgiRead(fd, CgiContext);
+	}
+
 }

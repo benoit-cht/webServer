@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   EventLoop.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:29:31 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/16 13:07:53 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/06/16 18:37:51 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 
 #include <network/SocketHandler.hpp>
 #include <network/ClientManager.hpp>
+#include <request/struct.hpp>
 #include <log/colorLog.hpp>
 
 class EventLoop {
@@ -46,18 +47,28 @@ class EventLoop {
     short             getPollEvent(int i) const;
 
   public:
-    void registerCgi(int client_fd, int cgi_read_fd, pid_t cgi_pid);
-    bool isCgiReadFd(int fd);
-    void handleCgiRead(int cgi_read_fd);
+    void registerCgi(int client_fd, const t_httpResponse& response);
+    bool isCgiFd(int fd);
+	void handleCgiEvent(int fd, short revents);
 
   private:
     struct CgiState {
         int         client_fd;
         pid_t       cgi_pid;
+		int			cgi_read_fd;
+		int			cgi_write_fd;
+		std::string input_buffer;
         std::string output_buffer;
-    };
 
-    std::map<int, CgiState> _cgi_read_fds;
+		CgiState() : client_fd(-1), cgi_pid(-1), cgi_read_fd(-1), cgi_write_fd(-1) { }
+		CgiState(int client_fd, pid_t cgi_pid, int read_fd, int write_fd, const std::string& input_buffer)
+			: client_fd(client_fd), cgi_pid(cgi_pid), cgi_read_fd(read_fd), cgi_write_fd(write_fd), input_buffer(input_buffer), output_buffer("") { }
+    };
+    std::map<int, CgiState> _cgi_contexts;	// Key is CLIENT_FD
+	std::map<int, int>		_pipe_client_fds;	// Key is PIPE_FD, Value is CLIENT_FD
+
+    void handleCgiRead(int fd, CgiState& CgiContext);
+	void handleCgiWrite(int fd, CgiState& CgiContext);
 
   private:
     SocketHandler     _socket_handler;
