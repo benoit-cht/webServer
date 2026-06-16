@@ -6,7 +6,7 @@
 #include <cstdlib>
 #include <sstream>
 
-static std::vector<std::string> buildCgiEnv(const t_httpRequest& request, const std::string& script_path, const std::string& query_string, const ServerConfig& config) {
+std::vector<std::string> HttpHandler::buildCgiEnv(const t_httpRequest& request, const std::string& script_path, const std::string& query_string, const ServerConfig& config) {
     std::vector<std::string> env;
 
     env.push_back("REQUEST_METHOD=" + request.method);
@@ -95,8 +95,7 @@ std::vector<char*> HttpHandler::stringsToCharPtrs(const std::vector<std::string>
     return ptrs;
 }
 
-static void handleCgiChild(const std::string& path, const t_httpRequest& request, int pipe_in[2], int pipe_out[2], const ServerConfig& config) {
-    // Setup pipes for the child process
+void HttpHandler::handleCgiChild(const std::string& path, const t_httpRequest& request, int pipe_in[2], int pipe_out[2], const ServerConfig& config) {
     close(pipe_in[1]); // Ferme l'extrémité d'écriture du parent
     close(pipe_out[0]); // Ferme l'extrémité de lecture du parent
     dup2(pipe_in[0], STDIN_FILENO);   // Le CGI lit depuis STDIN (lié à pipe_in[0])
@@ -145,7 +144,7 @@ static void handleCgiChild(const std::string& path, const t_httpRequest& request
 }
 
 
-static t_httpResponse executeCgi(const std::string& path, const t_httpRequest& request, const ServerConfig& config){
+t_httpResponse HttpHandler::executeCgi(const std::string& path, const t_httpRequest& request, const ServerConfig& config){
     t_httpResponse response;
     int pipe_in[2];
     int pipe_out[2];
