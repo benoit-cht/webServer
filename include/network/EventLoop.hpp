@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   EventLoop.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:29:31 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/12 17:04:43 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/16 11:55:38 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,9 @@
 #include <cstring>
 #include <vector>
 #include <poll.h>
+#include <sys/wait.h>
+#include <map>
+#include <sstream>
 
 #include <network/SocketHandler.hpp>
 #include <network/ClientManager.hpp>
@@ -42,22 +45,36 @@ class EventLoop {
     std::vector<int>  getActiveFds() const;
     short             getPollEvent(int i) const;
 
+  public:
+    void registerCgi(int client_fd, int cgi_read_fd, pid_t cgi_pid);
+    bool isCgiReadFd(int fd);
+    void handleCgiRead(int cgi_read_fd);
+
+  private:
+    struct CgiState {
+        int         client_fd;
+        pid_t       cgi_pid;
+        std::string output_buffer;
+    };
+
+    std::map<int, CgiState> _cgi_read_fds;
+
   private:
     SocketHandler     _socket_handler;
     ClientManager     _client_manager;
     std::vector<int>  _server_fds;
     std::vector<int>  _ports;
     std::vector<struct pollfd> _poll_fds;
-  
+
 /* ************************************************************************** */
   public:
     size_t getPollFdsSize() const;
     const struct pollfd& getPollFd(size_t index) const;
     void queueResponse(int fd, const std::string& response);
-    void handlePendingWrites(int fd); 
+    void handlePendingWrites(int fd);
   private:
     std::map<int, std::string> _pendingResponses;  // Buffer des réponses
-  
+
 /* ************************************************************************** */
   private:
     // ...
