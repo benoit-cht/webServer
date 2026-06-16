@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:01:32 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/16 18:51:30 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/16 21:05:17 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -354,8 +354,7 @@ void EventLoop::handleCgiWrite(int fd, CgiState& CgiContext) {
 					break;
 				}
 			}
-			_cgi_contexts.erase(fd); // Clean up the write mapping
-			_pipe_client_fds.erase(fd);
+			_pipe_client_fds.erase(fd); // delete the routing for the write pipe
 			CgiContext.cgi_write_fd = -1;
 		}
 	}
@@ -377,8 +376,8 @@ void EventLoop::handleCgiRead(int fd, CgiState& CgiContext) {
 
         // 1. Kill the zombie process
         // int wstatus;
-        // waitpid(CgiContext.cgi_pid, &wstatus, 0);
-		waitpid(CgiContext.cgi_pid, NULL, WNOHANG);
+        // waitpid(CgiContext.cgi_pid, &wstatus, 0); // The 0 flag tells the Operating System: "If the child process hasn't fully terminated yet, block and wait until it does."
+		waitpid(CgiContext.cgi_pid, NULL, WNOHANG); // The WNOHANG flag tells the OS: "If the child is a zombie, reap it. If it is still doing some background cleanup, return immediately so my server can keep running."
 
         // 2. PARSE CGI OUTPUT
         std::string raw_output = CgiContext.output_buffer;
@@ -441,5 +440,78 @@ void	EventLoop::handleCgiEvent(int fd, short revents) {
 	if ((revents & POLLIN) && fd == CgiContext.cgi_read_fd) {
 		handleCgiRead(fd, CgiContext);
 	}
+}
 
+void	EventLoop::printCgiState() {
+	std::map<int, CgiState>::const_iterator it = _cgi_contexts.begin();
+
+	for (; it != _cgi_contexts.end(); it++) {
+		std::stringstream ss;
+		ss << "    _cgi_contexts[ " << it->first << "]";
+		std::cout << ss << ".client_fd=" << it->second.client_fd << "\n";
+		std::cout << ss << ".cgi_pid=" << it->second.cgi_pid << "\n";
+		std::cout << ss << ".cgi_read_fd=" << it->second.cgi_read_fd << "\n";
+		std::cout << ss << ".cgi_write_fd=" << it->second.cgi_write_fd << "\n";
+		std::cout << ss << ".input_buffer=" << it->second.input_buffer << "\n";
+		std::cout << ss << ".output_buffer=" << it->second.output_buffer << "\n";
+		std::cout << ss << ".start_time=" << it->second.start_time << "\n";
+	}
+}
+
+void	EventLoop::checkCgiTimeout() {
+	time_t		currentTime = std::time(NULL);
+
+	// time(&currentTime);
+
+	// EventLoop::printCgiState();
+
+	// Iterate through _cgi_contexts.
+	std::map<int, CgiState>::iterator	it = _cgi_contexts.begin();
+	while (it != _cgi_contexts.end()) {
+		if (std::difftime(currentTime, it->second.start_time) > 5.0) {
+			std::cout << "timediff=" << difftime(currentTime, it->second.start_time);
+			std::cout << COLOR_RED << "CGI Timeout: killing PID " << it->second.cgi_pid << COLOR_RESET << std::endl;
+
+			// 1. MURDER THE SCRIPT
+			kill(it->second.cgi_pid, SIGKILL); // SIGKILL==9
+			waitpid(it->second.cgi_pid, NULL, 0);
+
+			// 2. Close the pipes and remove from poll
+			if (it->second.cgi_read_fd != - 1) {
+				close(it->second.cgi_read_fd);
+				_pipe_client_fds.erase(it->second.cgi_read_fd);
+				for (size_t i = 0; i < _poll_fds.size(); i++) {
+					// std::map<int, CgiState>::iterator itFind = find(_poll_fds.begin(), _poll_fds.end(), it->second.cgi_read_fd);
+					if (_poll_fds[i].fd == it->second.cgi_read_fd) {
+						_poll_fds.erase(_poll_fds.begin() + i); // kezaoko
+						break ;
+					}
+				}
+			}
+			if (it->second.cgi_write_fd != -1) {
+				close(it->second.cgi_write_fd);
+				_pipe_client_fds.erase(it->second.cgi_write_fd);
+				for (size_t i = 0; i < _poll_fds.size(); i++) {
+					if (_poll_fds[i].fd == it->second.cgi_write_fd) {
+						_poll_fds.erase(_poll_fds.begin() + i);
+						break ;
+					}
+				}
+			}
+
+			// 3. Send a 504 Error to the client
+			std::string	error_response = "HTTP/1.1 504 Gateway Timeout\r\nConnection: close\r\nContent-Length: 22\r\n\r\n<h1>504 Timeout</h1>";
+			queueResponse(it->second.client_fd, error_response);
+			markClientForDisconnect(it->second.client_fd);
+
+			// 4. Erase the context and safely increment iterator
+			std::map<int, CgiState>::iterator it_to_erase = it;
+			it++;
+			_cgi_contexts.erase(it_to_erase);
+
+		}
+		else {
+			it++;
+		}
+	}
 }

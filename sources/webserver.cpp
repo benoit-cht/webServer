@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/16 18:12:43 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/16 21:13:28 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -224,6 +224,8 @@ ssize_t readAvailableData(int fd, EventLoop& loop, std::string& data) {
 }
 
 static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& vec_config) {
+	loop.checkCgiTimeout();
+
     std::vector<int>	activeFds = loop.getActiveFds();
 
     for (size_t i = 0; i < activeFds.size(); i++) {
@@ -234,16 +236,15 @@ static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& 
         }
         short revents = loop.getPollFd(pollIndex).revents;
 
-        if (revents & (POLLERR | POLLHUP)) {
-            loop.removeClient(fd);
-            continue;
-        }
-
 		if (loop.isCgiFd(fd)) {
 			loop.handleCgiEvent(fd, revents);
 			continue;
 		}
 
+        if (revents & (POLLERR | POLLHUP)) {
+            loop.removeClient(fd);
+            continue;
+        }
 
         if (loop.isServerFd(fd) && (revents & POLLIN)) {
             loop.acceptNewConnection(fd);
