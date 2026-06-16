@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:01:32 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/16 11:48:54 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/06/16 13:16:47 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void EventLoop::setupServerSockets()
   {
     struct pollfd pfd;
     pfd.fd = _server_fds[index];
-    pfd.events = POLLIN | POLLOUT | POLLERR | POLLHUP;
+    pfd.events = POLLIN; //| POLLOUT;
     _poll_fds.push_back(pfd);
     index++;
   }
@@ -36,11 +36,13 @@ void EventLoop::setupServerSockets()
 /* ************************************************************************** */
 /*
 int EventLoop::waitForActivity()
+int EventLoop::waitForActivity()
 {
   return (poll(&_poll_fds[0], _poll_fds.size(), -1));
 }
 */
 /*
+std::vector<int> EventLoop::getActiveFds() const
 std::vector<int> EventLoop::getActiveFds() const
 {
   size_t            index = 0;
@@ -48,6 +50,7 @@ std::vector<int> EventLoop::getActiveFds() const
 
   while( index < _poll_fds.size())
   {
+    if (_poll_fds[index].revents & (POLLIN | POLLOUT | POLLERR | POLLHUP))
     if (_poll_fds[index].revents & (POLLIN | POLLOUT | POLLERR | POLLHUP))
     {
       active.push_back(_poll_fds[index].fd);
@@ -58,6 +61,7 @@ std::vector<int> EventLoop::getActiveFds() const
   return ( active );
 }
 */
+
 bool EventLoop::isServerFd(int fd) const
 {
   for (size_t index = 0; index < _server_fds.size(); index++)
@@ -94,7 +98,7 @@ ClientInfo* EventLoop::acceptNewConnection(int server_fd)
 
     struct pollfd client_pollfd;
     client_pollfd.fd = client_fd;
-    client_pollfd.events = POLLIN | POLLOUT | POLLERR | POLLHUP;
+    client_pollfd.events = POLLIN; //| POLLOUT;
     _poll_fds.push_back(client_pollfd);
 
     std::cout << COLOR_CYAN << "(Log Client) : new connection accepted (fd=" << client_fd
@@ -209,11 +213,19 @@ void EventLoop::handlePendingWrites(int fd) {
                     break;
                 }
             }
+			if (_disconnectAfterWrite.count(fd) > 0 &&  _disconnectAfterWrite[fd]) {
+				removeClient(fd);
+				_disconnectAfterWrite.erase(fd);
+			}
         }
     } else {
         // Erreur : fermer le client
         removeClient(fd);
     }
+}
+
+void EventLoop::markClientForDisconnect(int fd) {
+	this->_disconnectAfterWrite[fd] = true;
 }
 
 std::vector<int> EventLoop::getActiveFds() const {

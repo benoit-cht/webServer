@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:29:31 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/16 11:55:38 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/06/16 13:07:53 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,8 +72,14 @@ class EventLoop {
     const struct pollfd& getPollFd(size_t index) const;
     void queueResponse(int fd, const std::string& response);
     void handlePendingWrites(int fd);
+
+	void markClientForDisconnect(int fd);
+
   private:
     std::map<int, std::string> _pendingResponses;  // Buffer des réponses
+	std::map<int, bool>	_disconnectAfterWrite;
+
+
 
 /* ************************************************************************** */
   private:
