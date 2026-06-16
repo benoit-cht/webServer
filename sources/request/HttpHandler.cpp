@@ -146,7 +146,8 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status, t_httpRequest request, 
 
   else if (status == 204)
     body ="";
-
+    else if (status == 201)
+    body ="";
   oss << body.size();
   headers["Content-Length"] = oss.str();
 
