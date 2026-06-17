@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/16 12:00:58 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/06/17 20:37:30 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
   std::map<std::string, LocationConfig> location = config.getLocationConfig();
   std::string prefix = find_location(location, request.path);
   std::string fullPath = location[prefix].getRoot() + request.path ;
+  // LocationConfig current_loc = location[prefix];
 
   if (request.headers.empty())
   {
@@ -57,10 +58,19 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
 	{
     return (HandlerErrorHttp(405, request, config));
   }
-  else if (request.path.find("/cgi-bin/") == 0 || request.path.find(".php") != std::string::npos || request.path.find(".py") != std::string::npos)
-  {
-    return HttpHandler::executeCgi(request.path, request, config);
+
+  // New dynamic CGI check
+  std::string extension = "";
+  size_t dot_pos = request.path.find_last_of(".");
+  if (dot_pos != std::string::npos) {
+    extension = request.path.substr(dot_pos);
   }
+  std::map<std::string, std::string> cgi_map = location[prefix].getCgiPass();
+  if (!extension.empty() && cgi_map.find(extension) != cgi_map.end()) {
+    std::string interpreter = cgi_map[extension]; // e.g., "/usr/bin/php-cgi"
+    return HttpHandler::executeCgi(request.path, request, config, interpreter, location[prefix]);
+  }
+
   else if (request.method == "GET")
   {
     return (HttpHandler::handler_methode_get(request, config));
