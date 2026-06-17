@@ -33,11 +33,13 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request, const Se
   if (request.body.empty() || location[prefix].getRoot().empty()) {
 
     response.status = 404;
-  }else if (access((fullPath).c_str(), W_OK) != 0) {
-        response.status = 403;
-    std::cout << COLOR_RED << "errordroit d'accès refusé,..." << COLOR_RESET << std::endl;
 
-  } else if (request.path.find("/upload/") != std::string::npos) {
+  }else if (access((location[prefix].getRoot()).c_str(), W_OK) != 0) {
+
+        response.status = 403;
+        std::cout << COLOR_RED << "error droit d'accès refusé,..." << COLOR_RESET << std::endl;
+
+  } else if (request.path.find(prefix) != std::string::npos) {
 
     parsing = HttpHandler::post_parse_header_request(request);
     if (parsing.body.empty())  {
