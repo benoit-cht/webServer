@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/17 15:32:15 by lcluzan           #+#    #+#             */
-/*   Updated: 2026/06/17 18:28:10 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/06/17 19:47:35 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ std::string HttpHandler::getCgiInterpreter(const std::string& path) {
         std::string ext = path.substr(dot_pos);
         if (ext == ".php") return "/usr/bin/php-cgi";
         if (ext == ".py") return "/usr/bin/python3";
-        if (ext == ".pl") return "/usr/bin/perl";
+        // if (ext == ".pl") return "/usr/bin/perl";
         if (ext == ".sh") return "/bin/bash";
     }
     // Return empty string if no specific interpreter is needed (e.g. for a compiled executable)
