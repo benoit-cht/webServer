@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/17 21:38:17 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/06/17 21:42:07 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
   // std::string fullPath = location[prefix].getRoot() + request.path ;
   // LocationConfig current_loc = location[prefix];
 
+  // si ya un query ? on a quand meme besoin d'extraire le path sans le ? et ce quil y a apres
   std::string actual_path = request.path;
   size_t q_pos = actual_path.find('?');
   if (q_pos != std::string::npos) {

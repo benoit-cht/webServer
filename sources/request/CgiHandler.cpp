@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/17 15:32:15 by lcluzan           #+#    #+#             */
-/*   Updated: 2026/06/17 21:04:09 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/06/17 21:52:24 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,7 +121,13 @@ void HttpHandler::handleCgiChild(const std::string& path, const t_httpRequest& r
 
     // 1. Change directory context
     if (!dir_path.empty()) {
-        chdir(dir_path.c_str());
+        if (chdir(dir_path.c_str()) == -1) {
+            std::cout << "Status: 500 Internal Server Error\r\n\r\n";
+            std::cout << "<h1>CGI Error: chdir failed</h1>\n";
+            std::cout << "Tried to go to: " << dir_path << "<br>\n";
+            std::cout << "Error: " << strerror(errno) << "\n";
+            exit(1);
+        }
     }
 
     // 2. Build Environment using JUST the filename
@@ -139,6 +145,11 @@ void HttpHandler::handleCgiChild(const std::string& path, const t_httpRequest& r
         execve(arg_strings[0].c_str(), &args[0], &envp[0]);
     }
     // If execve fails, exit safely
+    std::cout << "Status: 500 Internal Server Error\r\n\r\n"; // print de debug a voir ce quon en fait
+    std::cout << "<h1>CGI Error: execve failed</h1>\n";
+    std::cout << "Interpreter: " << interpreter << "<br>\n";
+    std::cout << "Script: " << filename << "<br>\n";
+    std::cout << "Error code: " << strerror(errno) << "<br>\n";
     exit(1);
 }
 
