@@ -57,6 +57,9 @@ class HttpHandler {
     static t_httpResponse        serveStaticFile(const std::string& path, t_httpRequest& request, const ServerConfig& config);
     static std::string           getCurrentHttpDate() ;
     static t_post_methode        post_parse_header_request(t_httpRequest request);
+    static std::string           find_location(std::map<std::string, LocationConfig>	location, std::string path);
+    static std::string           generateAutoIndexHTML(const std::string& path);
+    static t_httpResponse        serveIndex(const std::string& path, t_httpRequest& request, const ServerConfig& config); 
 
   private:
     static t_httpResponse executeCgi(const std::string& path, const t_httpRequest& request, const ServerConfig& config);
