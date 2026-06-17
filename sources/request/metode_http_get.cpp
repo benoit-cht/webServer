@@ -24,9 +24,9 @@ t_httpResponse HttpHandler::handler_methode_get(t_httpRequest& request, const Se
   std::string fullPath = location[prefix].getRoot() + request.path ;
   std::cout << COLOR_MAGENTA << "full path ? " + fullPath << COLOR_RESET << std::endl;
 
-  if (request.path == "/"  )
+  if (!request.path.empty() && request.path[request.path.size() - 1] == '/' && location[prefix].getAutoindex())
   {
-    return HttpHandler::serveStaticFile( fullPath + location["/"].getIndex(), request, config);
+    return HttpHandler::serveStaticFile( fullPath + location[prefix].getIndex(), request, config);
   }
   else if (!HttpHandler::isStaticFile(fullPath))
   {
