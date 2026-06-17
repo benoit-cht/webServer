@@ -25,11 +25,15 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request, const Se
   std::map<std::string, LocationConfig>	location;
   
   location = config.getLocationConfig();
+  std::string prefix = find_location(location, request.path);
+  std::string fullPath = location[prefix].getRoot() + request.path ;
+  std::cout << COLOR_MAGENTA << "full path ? " + fullPath << COLOR_RESET << std::endl;
 
-  if (request.body.empty() || location["/"].getRoot().empty()) {
+
+  if (request.body.empty() || location[prefix].getRoot().empty()) {
 
     response.status = 404;
-  }else if (access((location["/"].getRoot() + request.path).c_str(), W_OK) != 0) {
+  }else if (access((fullPath).c_str(), W_OK) != 0) {
         response.status = 403;
     std::cout << COLOR_RED << "errordroit d'accès refusé,..." << COLOR_RESET << std::endl;
 
@@ -39,12 +43,12 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request, const Se
     if (parsing.body.empty())  {
       
       body = request.body;
-      link = location["/"].getRoot() + request.path;
+      link = fullPath;
     
     } else  {
     
       body = parsing.body;
-      link = location["/"].getRoot() + request.path + parsing.nameFile;
+      link = fullPath + parsing.nameFile;
 
     }
 
@@ -63,7 +67,7 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request, const Se
 
       //response.headers = parsing.headers;
       
-      std::cout << COLOR_GREEN << "Success : Created file " << location["/"].getRoot() + request.path + parsing.nameFile << COLOR_RESET << std::endl;
+      std::cout << COLOR_GREEN << "Success : Created file " << fullPath + parsing.nameFile << COLOR_RESET << std::endl;
       return (HandlerErrorHttp(response.status, request, config));
     }
     else 
