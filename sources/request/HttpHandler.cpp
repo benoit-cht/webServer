@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/17 20:37:30 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/06/17 21:38:17 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,18 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
 	t_httpResponse                        response;
   std::map<std::string, std::string>    headers;
   std::map<std::string, LocationConfig> location = config.getLocationConfig();
-  std::string prefix = find_location(location, request.path);
-  std::string fullPath = location[prefix].getRoot() + request.path ;
+  // std::string fullPath = location[prefix].getRoot() + request.path ;
   // LocationConfig current_loc = location[prefix];
+
+  std::string actual_path = request.path;
+  size_t q_pos = actual_path.find('?');
+  if (q_pos != std::string::npos) {
+    actual_path = actual_path.substr(0, q_pos);
+  }
+
+    std::string prefix = find_location(location, actual_path);
+    LocationConfig current_loc = location[prefix];
+
 
   if (request.headers.empty())
   {
@@ -59,16 +68,16 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
     return (HandlerErrorHttp(405, request, config));
   }
 
-  // New dynamic CGI check
+  // New dynamic CGI location check
   std::string extension = "";
-  size_t dot_pos = request.path.find_last_of(".");
+  size_t dot_pos = actual_path.find_last_of(".");
   if (dot_pos != std::string::npos) {
-    extension = request.path.substr(dot_pos);
+    extension = actual_path.substr(dot_pos);
   }
-  std::map<std::string, std::string> cgi_map = location[prefix].getCgiPass();
+  std::map<std::string, std::string> cgi_map = current_loc.getCgiPass();
   if (!extension.empty() && cgi_map.find(extension) != cgi_map.end()) {
     std::string interpreter = cgi_map[extension]; // e.g., "/usr/bin/php-cgi"
-    return HttpHandler::executeCgi(request.path, request, config, interpreter, location[prefix]);
+    return HttpHandler::executeCgi(request.path, request, config, interpreter, current_loc);
   }
 
   else if (request.method == "GET")
