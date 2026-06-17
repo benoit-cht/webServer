@@ -131,12 +131,9 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status, t_httpRequest request, 
 
   else if (status == 405) {
     body = def_405;
-    if ( location["/"].checkMethod("GET"))
-      headers["Allow"] = "GET" ;
-    if ( location["/"].checkMethod("POST"))
-      headers["Allow"] += " POST" ;
-    if ( location["/"].checkMethod("POST"))
-      headers["Allow"] += " DELETE" ;
+    if ( location["/"].checkMethod("GET"))  { headers["Allow"] += " GET   "; }
+    if ( location["/"].checkMethod("POST")) { headers["Allow"] += " POST  "; }
+    if ( location["/"].checkMethod("POST")) { headers["Allow"] += " DELETE"; }
   }
   else if (status == 500)
     body ="<html><body>500 Internal Server Error</body></html>";
