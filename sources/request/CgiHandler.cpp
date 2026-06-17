@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   CgiHandler.cpp                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/17 15:32:15 by lcluzan           #+#    #+#             */
+/*   Updated: 2026/06/17 18:28:10 by lcluzan          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <request/HttpHandler.hpp>
 #include <webserver.hpp>
 #include <unistd.h>
@@ -113,18 +125,27 @@ void HttpHandler::handleCgiChild(const std::string& path, const t_httpRequest& r
         query_string = path.substr(question_mark_pos + 1);
     }
 
-    std::string full_path = "./sources/www" + actual_path;
+
+    std::map<std::string, LocationConfig> location = config.getLocationConfig();
+    std::string root = location["/"].getRoot();
+    std::string full_path = root + actual_path;
+
     // Isolate the directory and filename
     size_t  last_slash = full_path.find_last_of('/');
-    std::string dir_path = (last_slash != std::string::npos) ? full_path.substr(0, last_slash) : "";
+    std::string dir_path = (last_slash != std::string::npos) ? full_path.substr(0, last_slash) : ".";
     std::string filename = (last_slash != std::string::npos) ? full_path.substr(last_slash + 1) : full_path;
-    // Build Environment
-    std::vector<std::string> env_strings = buildCgiEnv(request, full_path, query_string, config);
-    std::vector<char*> envp = stringsToCharPtrs(env_strings);
+
     // Change directory context
     if (!dir_path.empty()) {
         chdir(dir_path.c_str());
     }
+
+    // Build Environment
+    std::vector<std::string> env_strings = buildCgiEnv(request, filename, actual_path, query_string, config);
+    std::vector<char*> envp = stringsToCharPtrs(env_strings);
+
+    std::string interpreter = "";
+
     // Build Execution Args
     std::string interpreter = getCgiInterpreter(full_path);
     std::string relative_execution_path = "./" + filename;
