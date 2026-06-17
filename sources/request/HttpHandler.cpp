@@ -46,12 +46,14 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
 	t_httpResponse                        response;
   std::map<std::string, std::string>    headers;
   std::map<std::string, LocationConfig> location = config.getLocationConfig();
-  
+  std::string prefix = find_location(location, request.path);
+  std::string fullPath = location[prefix].getRoot() + request.path ;
+
   if (request.headers.empty())
   {
     return (HandlerErrorHttp(400, request, config));
   }
-	if (!location["/"].checkMethod(request.method))
+	if (!location[prefix].checkMethod(request.method))
 	{
     return (HandlerErrorHttp(405, request, config));
   }
