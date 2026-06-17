@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/01 12:20:23 by ton_utilisa       #+#    #+#             */
-/*   Updated: 2026/06/13 16:07:47 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/16 20:26:55 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,12 @@
 
 // Constructeur par défaut
 t_httpResponse::t_httpResponse()
-    : status(200), body("") {
+    : status(200), body(""), is_cgi(false) {
     headers.insert(std::make_pair("Content-Type", "text/html"));
 }
 // Constructeur paramétré
 t_httpResponse::t_httpResponse(int status, const std::map<std::string, std::string>& headers, const std::string& body)
-    : status(status), headers(headers), body(body) {}
+    : status(status), headers(headers), body(body), is_cgi(false) {}
 
 /* ========================================================================== */
 
@@ -80,7 +80,7 @@ std::string t_httpResponse::toString() const {
 /*                            -- CURR HTTP DATE --                            */
 /* ========================================================================== */
 
-std::string HttpHandler::getCurrentHttpDate() 
+std::string HttpHandler::getCurrentHttpDate()
 {
      std::time_t now = std::time(NULL);
     std::tm *gmTime = std::gmtime(&now);
@@ -90,14 +90,25 @@ std::string HttpHandler::getCurrentHttpDate()
     return std::string(buffer);
 }
 
+/* ========================================================================== */
+/*
+static void   unitt_find_location(std::string& str) {
+//    -- fonction of unitaire test find location -- //
+
+  std::cout << COLOR_MAGENTA << "result find fonction: " + str << COLOR_RESET << std::endl;
+
+}
+*/
+
 std::string HttpHandler::find_location(std::map<std::string, LocationConfig>	location, std::string path)
 {
-  std::string bestMatch = "/";
+  std::string bestMatch;
   size_t bestMatchLength = 0;
+  std::string loc;
 
   for (std::map<std::string, LocationConfig>::iterator itr = location.begin(); itr != location.end(); itr++)  {
-        const std::string& loc = itr->first;
-        if (path.find(loc) == 0) // Vérifie si la location est un préfixe du path
+        loc = itr->first;
+        if ( loc != "/" && path.find("/" + loc) == 0)// Vérifie si la location est un préfixe du path
         {
             if (loc.length() > bestMatchLength) {
                 bestMatch = loc;
@@ -105,13 +116,15 @@ std::string HttpHandler::find_location(std::map<std::string, LocationConfig>	loc
             }
         }
     }
-    return bestMatch;
+    if (bestMatch == "")
+      bestMatch = "/";
+    return ( bestMatch );
 }
 /* ========================================================================== */
 /*                 -- SERV STATIC FILE IMPLEMENT FONCTION  --                 */
 /* ========================================================================== */
 /*
-bool isSafePath(const std::string& path) 
+bool isSafePath(const std::string& path)
 {
   return (path.find("../") == std::string::npos); // Empêche les chemins relatifs (comme "../")
 }
@@ -159,7 +172,7 @@ t_httpResponse HttpHandler::serveStaticFile(const std::string& path)
 /*                              -- TOOLS --                                   */
 /* ========================================================================== */
 /*
-std::string HttpHandler::readFile(const std::string& filepath) 
+std::string HttpHandler::readFile(const std::string& filepath)
 {
     std::ifstream       file(filepath.c_str());
     std::ostringstream  ss;

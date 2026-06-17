@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:29:31 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/15 19:50:25 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/16 20:14:04 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,16 @@
 
 #include <iostream>
 #include <cstring>
+#include <ctime>
 #include <vector>
 #include <poll.h>
+#include <sys/wait.h>
+#include <map>
+#include <sstream>
 
 #include <network/SocketHandler.hpp>
 #include <network/ClientManager.hpp>
+#include <request/struct.hpp>
 #include <log/colorLog.hpp>
 
 class EventLoop {
@@ -42,6 +47,34 @@ class EventLoop {
     std::vector<int>  getActiveFds() const;
     short             getPollEvent(int i) const;
 
+  public:
+    void registerCgi(int client_fd, const t_httpResponse& response);
+    bool isCgiFd(int fd);
+	void handleCgiEvent(int fd, short revents);
+	void checkCgiTimeout();
+	void printCgiState();
+
+  private:
+    struct CgiState {
+        int         client_fd;
+        pid_t       cgi_pid;
+		int			cgi_read_fd;
+		int			cgi_write_fd;
+		std::string input_buffer;
+        std::string output_buffer;
+		time_t		start_time;
+
+
+		CgiState() : client_fd(-1), cgi_pid(-1), cgi_read_fd(-1), cgi_write_fd(-1), start_time(0) { }
+		CgiState(int client_fd, pid_t cgi_pid, int read_fd, int write_fd, const std::string& input_buffer)
+			: client_fd(client_fd), cgi_pid(cgi_pid), cgi_read_fd(read_fd), cgi_write_fd(write_fd), input_buffer(input_buffer), output_buffer(""), start_time(std::time(NULL)) { }
+    };
+    std::map<int, CgiState> _cgi_contexts;	// Key is CLIENT_FD
+	std::map<int, int>		_pipe_client_fds;	// Key is PIPE_FD, Value is CLIENT_FD
+
+    void handleCgiRead(int fd, CgiState& CgiContext);
+	void handleCgiWrite(int fd, CgiState& CgiContext);
+
   private:
     SocketHandler     _socket_handler;
     ClientManager     _client_manager;
@@ -55,11 +88,13 @@ class EventLoop {
     const struct pollfd& getPollFd(size_t index) const;
     void queueResponse(int fd, const std::string& response);
     void handlePendingWrites(int fd);
+
 	void markClientForDisconnect(int fd);
 
   private:
     std::map<int, std::string> _pendingResponses;  // Buffer des réponses
 	std::map<int, bool>	_disconnectAfterWrite;
+
 
 
 /* ************************************************************************** */

@@ -53,4 +53,4 @@ tech-stack/wiki/obs_webServ/.obsidian/workspace.json
 
 # Large files #
 ###############
-sources/www/large_file.bin
+*large_file*

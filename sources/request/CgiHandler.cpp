@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   CgiHandler.cpp                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/17 15:32:15 by lcluzan           #+#    #+#             */
+/*   Updated: 2026/06/17 21:52:24 by lcluzan          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <request/HttpHandler.hpp>
 #include <webserver.hpp>
 #include <unistd.h>
@@ -6,43 +18,49 @@
 #include <cstdlib>
 #include <sstream>
 
-std::vector<std::string> HttpHandler::buildCgiEnv(const t_httpRequest& request, const std::string& script_path, const std::string& query_string) {
+std::vector<std::string> HttpHandler::buildCgiEnv(const t_httpRequest& request, const std::string& filename, const std::string& script_name, const std::string& query_string, const ServerConfig& config) {
     std::vector<std::string> env;
 
     env.push_back("REQUEST_METHOD=" + request.method);
     env.push_back("SERVER_PROTOCOL=" + request.version);
-    env.push_back("PATH_INFO=" + script_path);
-    env.push_back("SCRIPT_FILENAME=" + script_path);
-    env.push_back("SCRIPT_NAME=" + script_path);
+    env.push_back("PATH_INFO=" + script_name);
+    env.push_back("SCRIPT_NAME=" + script_name);
+    env.push_back("SCRIPT_FILENAME=" + filename);
     env.push_back("REDIRECT_STATUS=200");
     env.push_back("GATEWAY_INTERFACE=CGI/1.1");
     env.push_back("SERVER_SOFTWARE=Webserv/1.0");
     env.push_back("QUERY_STRING=" + query_string); // Add QUERY_STRING for GET request
 
-    // Extract SERVER_NAME and SERVER_PORT from the 'Host' header !!! Need to be change !!!
+   // 1. Set safe defaults based on the Server configuration
     std::string server_name = "127.0.0.1";
-    std::string server_port = "80";
 
-    // Look for 'Host' in parsed headers
+   std::stringstream ss_port;
+    ss_port << config.getPort(); // Convert the config port (int) to string
+    std::string server_port = ss_port.str();
+
+    // 2. Try to extract the exact requested host/port from the HTTP Headers
     std::map<std::string, std::string>::const_iterator host_it = request.headers.find("Host");
     if (host_it == request.headers.end()) {
-        host_it = request.headers.find("host");
+        host_it = request.headers.find("host"); // Fallback for lowercase
     }
+
     if (host_it != request.headers.end()) {
         std::string host_val = host_it->second;
-        size_t  colon_pos = host_val.find(':');
+        size_t colon_pos = host_val.find(':');
+
         if (colon_pos != std::string::npos) {
+            // Found a port in the Host header (e.g., "localhost:8080")
             server_name = host_val.substr(0, colon_pos);
             server_port = host_val.substr(colon_pos + 1);
         } else {
+            // No port in Host header (e.g., "localhost"), keep the config port
             server_name = host_val;
         }
     }
-
     env.push_back("SERVER_NAME=" + server_name);
     env.push_back("SERVER_PORT=" + server_port);
 
-    env.push_back("REMOTE_ADDR=127.0.0.1");
+    env.push_back("REMOTE_ADDR=127.0.0.1"); // Ideally, get this from ClientInfo later!
 
     if (request.method == "POST") {
         std::stringstream ss;
@@ -57,7 +75,6 @@ std::vector<std::string> HttpHandler::buildCgiEnv(const t_httpRequest& request, 
     //Give all the headers to Cgi
     for (std::map<std::string, std::string>::const_iterator it = request.headers.begin(); it !=request.headers.end(); ++it) {
         std::string header_name = "HTTP_" + it->first;
-        //
         for (size_t i = 0; i < header_name.length(); ++i) {
             if (header_name[i] == '-') header_name[i] = '_';
             header_name[i] = std::toupper(header_name[i]);
@@ -65,20 +82,6 @@ std::vector<std::string> HttpHandler::buildCgiEnv(const t_httpRequest& request, 
         env.push_back(header_name + "=" + it->second);
     }
     return env;
-}
-
-std::string HttpHandler::getCgiInterpreter(const std::string& path) {
-    size_t dot_pos = path.find_last_of(".");
-
-    if (dot_pos != std::string::npos) {
-        std::string ext = path.substr(dot_pos);
-        if (ext == ".php") return "/usr/bin/php-cgi";
-        if (ext == ".py") return "/usr/bin/python3";
-        if (ext == ".pl") return "/usr/bin/perl";
-        if (ext == ".sh") return "/bin/bash";
-    }
-    // Return empty string if no specific interpreter is needed (e.g. for a compiled executable)
-    return "";
 }
 
 std::vector<char*> HttpHandler::stringsToCharPtrs(const std::vector<std::string>& strings) {
@@ -90,8 +93,7 @@ std::vector<char*> HttpHandler::stringsToCharPtrs(const std::vector<std::string>
     return ptrs;
 }
 
-void HttpHandler::handleCgiChild(const std::string& path, const t_httpRequest& request, int pipe_in[2], int pipe_out[2]) {
-    // Setup pipes for the child process
+void HttpHandler::handleCgiChild(const std::string& path, const t_httpRequest& request, int pipe_in[2], int pipe_out[2], const ServerConfig& config, const std::string& interpreter, const LocationConfig& location) {
     close(pipe_in[1]); // Ferme l'extrémité d'écriture du parent
     close(pipe_out[0]); // Ferme l'extrémité de lecture du parent
     dup2(pipe_in[0], STDIN_FILENO);   // Le CGI lit depuis STDIN (lié à pipe_in[0])
@@ -109,26 +111,33 @@ void HttpHandler::handleCgiChild(const std::string& path, const t_httpRequest& r
         query_string = path.substr(question_mark_pos + 1);
     }
 
-    std::string full_path = "./sources/www" + actual_path;
+    std::string root = location.getRoot();
+    std::string full_path = root + actual_path;
+
     // Isolate the directory and filename
     size_t  last_slash = full_path.find_last_of('/');
-    std::string dir_path = (last_slash != std::string::npos) ? full_path.substr(0, last_slash) : "";
+    std::string dir_path = (last_slash != std::string::npos) ? full_path.substr(0, last_slash) : ".";
     std::string filename = (last_slash != std::string::npos) ? full_path.substr(last_slash + 1) : full_path;
-    // Build Environment
-    std::vector<std::string> env_strings = buildCgiEnv(request, full_path, query_string);
-    std::vector<char*> envp = stringsToCharPtrs(env_strings);
-    // Change directory context
+
+    // 1. Change directory context
     if (!dir_path.empty()) {
-        chdir(dir_path.c_str());
+        if (chdir(dir_path.c_str()) == -1) {
+            std::cout << "Status: 500 Internal Server Error\r\n\r\n";
+            std::cout << "<h1>CGI Error: chdir failed</h1>\n";
+            std::cout << "Tried to go to: " << dir_path << "<br>\n";
+            std::cout << "Error: " << strerror(errno) << "\n";
+            exit(1);
+        }
     }
-    // Build Execution Args
-    std::string interpreter = getCgiInterpreter(full_path);
-    std::string relative_execution_path = "./" + filename;
+
+    // 2. Build Environment using JUST the filename
+    std::vector<std::string> env_strings = buildCgiEnv(request, filename, actual_path, query_string, config);
+    std::vector<char*> envp = stringsToCharPtrs(env_strings);
+
+    // 3. Build Execution Args using the config interpreter and just the filename
     std::vector<std::string> arg_strings;
-    if (!interpreter.empty()) {
-        arg_strings.push_back(interpreter);
-    }
-    arg_strings.push_back(relative_execution_path);
+    arg_strings.push_back(interpreter);
+    arg_strings.push_back(filename);
     std::vector<char*> args = stringsToCharPtrs(arg_strings);
 
     // Execute
@@ -136,11 +145,16 @@ void HttpHandler::handleCgiChild(const std::string& path, const t_httpRequest& r
         execve(arg_strings[0].c_str(), &args[0], &envp[0]);
     }
     // If execve fails, exit safely
+    std::cout << "Status: 500 Internal Server Error\r\n\r\n"; // print de debug a voir ce quon en fait
+    std::cout << "<h1>CGI Error: execve failed</h1>\n";
+    std::cout << "Interpreter: " << interpreter << "<br>\n";
+    std::cout << "Script: " << filename << "<br>\n";
+    std::cout << "Error code: " << strerror(errno) << "<br>\n";
     exit(1);
 }
 
 
-t_httpResponse HttpHandler::executeCgi(const std::string& path, const t_httpRequest& request) {
+t_httpResponse HttpHandler::executeCgi(const std::string& path, const t_httpRequest& request, const ServerConfig& config, const std::string& interpreter, const LocationConfig& location){
     t_httpResponse response;
     int pipe_in[2];
     int pipe_out[2];
@@ -162,7 +176,7 @@ t_httpResponse HttpHandler::executeCgi(const std::string& path, const t_httpRequ
 
     if (pid == 0) {
         // --- CHILD PROCESS ---
-        handleCgiChild(path, request, pipe_in, pipe_out);
+        handleCgiChild(path, request, pipe_in, pipe_out, config, interpreter, location);
     } else {
         // --- PARENT PROCESS ---
         close(pipe_in[0]);
