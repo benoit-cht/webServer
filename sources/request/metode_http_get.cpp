@@ -52,10 +52,10 @@ bool isSafePath(const std::string& path)
 
 std::string getMimeType(const std::string& path) 
 {
-    // Implémentez la logique pour déterminer le type MIME
+    // Implémentez la logique pour déterminer le type 
     if (path.find(".html") != std::string::npos) return ( "text/html" );
     if (path.find(".css") != std::string::npos) return ( "text/css" );
-    // Ajoutez d'autres types MIME selon les besoins
+    // Ajoutez d'autres types selon les besoins
     return ("text/plain");
 }
 
