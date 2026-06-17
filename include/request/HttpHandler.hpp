@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 11:31:58 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/12 15:23:11 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/16 11:58:06 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,12 +62,11 @@ class HttpHandler {
     static t_httpResponse        serveIndex(const std::string& path, t_httpRequest& request, const ServerConfig& config); 
 
   private:
-    static t_httpResponse executeCgi(const std::string& path, const t_httpRequest& request);
-    static std::vector<std::string> buildCgiEnv(const t_httpRequest& request, const std::string& script_path, const std::string& query_string);
+    static t_httpResponse executeCgi(const std::string& path, const t_httpRequest& request, const ServerConfig& config);
+    static std::vector<std::string> buildCgiEnv(const t_httpRequest& request, const std::string& script_path, const std::string& query_string, const ServerConfig& config);
     static std::string getCgiInterpreter(const std::string& path);
     static std::vector<char*> stringsToCharPtrs(const std::vector<std::string>& strings);
-    static void handleCgiChild(const std::string& path, const t_httpRequest& request, int pipe_in[2], int pipe_out[2]);
-
+    static void handleCgiChild(const std::string& path, const t_httpRequest& request, int pipe_in[2], int pipe_out[2], const ServerConfig& config);
 };
 
 # endif // !HTTPHANDLER_HPP

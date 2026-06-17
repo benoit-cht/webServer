@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/15 19:52:16 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/16 21:13:28 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -198,7 +198,7 @@ static ServerConfig  getConfigForHandler(const std::vector<ServerConfig>& vec_co
     ssize_t bytes_read = loop.readFromClient(fd, buffer, sizeof(buffer));
 
     std::cout <<  buffer << "size:" << bytes_read << "|"<< (int)buffer[0] << COLOR_RESET << std::endl;
-    
+
     if (bytes_read > 0) {
         request.append(buffer, bytes_read);
     } else if (bytes_read == 0) {
@@ -224,6 +224,8 @@ ssize_t readAvailableData(int fd, EventLoop& loop, std::string& data) {
 }
 
 static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& vec_config) {
+	loop.checkCgiTimeout();
+
     std::vector<int>	activeFds = loop.getActiveFds();
 
     for (size_t i = 0; i < activeFds.size(); i++) {
@@ -233,6 +235,11 @@ static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& 
             if (loop.getPollFd(pollIndex).fd == fd) break;
         }
         short revents = loop.getPollFd(pollIndex).revents;
+
+		if (loop.isCgiFd(fd)) {
+			loop.handleCgiEvent(fd, revents);
+			continue;
+		}
 
         if (revents & (POLLERR | POLLHUP)) {
             loop.removeClient(fd);
@@ -273,8 +280,16 @@ static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& 
                 t_httpRequest request = HttpHandler::setHttpRequest(full_request);
                 print_http_request(request);
                 t_httpResponse response = HttpHandler::setHttpResponse(request, config);
-                print_http_response(response);
-                loop.queueResponse(fd, response.toString());
+				if (response.is_cgi) { // CGI response
+					loop.registerCgi(fd, response);
+					if (response.headers["Connection"] == "close") {
+						loop.markClientForDisconnect(fd);
+					}
+				}
+				else { // Static response
+					print_http_response(response);
+					loop.queueResponse(fd, response.toString());
+				}
 
 				if (response.headers["Connection"] == "close") {
 					loop.markClientForDisconnect(fd);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpHandler.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/12 15:39:00 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/16 12:00:58 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
   }
   else if (request.path.find("/cgi-bin/") == 0 || request.path.find(".php") != std::string::npos || request.path.find(".py") != std::string::npos)
   {
-    return HttpHandler::executeCgi(request.path, request);
+    return HttpHandler::executeCgi(request.path, request, config);
   }
   else if (request.method == "GET")
   {
@@ -90,15 +90,15 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status, t_httpRequest request, 
 	t_httpResponse                      response;
   std::map<std::string, std::string>  headers;
   std::string                         body;
-  
+
   std::map<std::string, LocationConfig>	location = config.getLocationConfig();
   std::map<int, std::string>            page = location["/"].getErrorPage();
   //std::set<std::string>                 allow = location["/"].getMethods();
-    
+
   headers["Date"] = getCurrentHttpDate();
   headers["Connection"] = "close";
   headers["Content-Type"] = "text/html";
-  
+
   std::string open = location["/"].getRoot() + "/" + page[status];
   std::ifstream file(open.c_str(), std::ios::binary);
   std::ostringstream oss;
@@ -110,26 +110,26 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status, t_httpRequest request, 
     body = buffer.str();
 
   }
-  else if (status == 301) { 
+  else if (status == 301) {
     headers["Location"] = "http://" + request.headers["Host"] ;
-    body = def_301; 
+    body = def_301;
   }
   else if (status == 302) {
     headers["Location"] = "http://" + request.headers["Host"] ;
-    body = def_302; 
+    body = def_302;
   }
   else if (status == 304) {
     headers["Location"] = "http://" + request.headers["Host"] ;
-    body = def_304; 
+    body = def_304;
   }
   else if (status == 400)
-    body = def_400; 
+    body = def_400;
 
   else if (status == 403)
-    body = def_403; 
-    
+    body = def_403;
+
   else if (status == 404)
-    body = def_404; 
+    body = def_404;
 
   else if (status == 405) {
     body = def_405;
@@ -152,7 +152,7 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status, t_httpRequest request, 
 
   return (t_httpResponse(status, headers, body));
 }
- 
+
 /* ========================================================================== */
 /*                          -- HTTP METHODE --                                */
 /* ========================================================================== */
