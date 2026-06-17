@@ -21,19 +21,20 @@ t_httpResponse HttpHandler::handler_methode_get(t_httpRequest& request, const Se
   std::map<std::string, LocationConfig>	location = config.getLocationConfig();
   //std::cout << COLOR_MAGENTA << location["/"].getRoot() + location["/"].getIndex() << COLOR_RESET << std::endl;
   std::string prefix = find_location(location, request.path);
-  std::cout << COLOR_MAGENTA << prefix << COLOR_RESET << std::endl;
+  std::string fullPath = location[prefix].getRoot() + request.path ;
+  std::cout << COLOR_MAGENTA << "full path ? " + fullPath << COLOR_RESET << std::endl;
 
   if (request.path == "/"  )
   {
-    return HttpHandler::serveStaticFile(location["/"].getRoot() + location["/"].getIndex(), request, config);
+    return HttpHandler::serveStaticFile( fullPath + location["/"].getIndex(), request, config);
   }
-  else if (!HttpHandler::isStaticFile(location["/"].getRoot() + request.path))
+  else if (!HttpHandler::isStaticFile(fullPath))
   {
     return (HandlerErrorHttp(301, request, config));
   }
-  else if (HttpHandler::isStaticFile(location["/"].getRoot() + request.path))
+  else if (HttpHandler::isStaticFile(fullPath))
   {
-    return (HttpHandler::serveStaticFile(location["/"].getRoot() + request.path, request, config));
+    return (HttpHandler::serveStaticFile(fullPath, request, config));
   }
   else{
     return (HandlerErrorHttp(404, request, config));
@@ -64,7 +65,6 @@ t_httpResponse HttpHandler::serveStaticFile(const std::string& path, t_httpReque
     {
       return (HandlerErrorHttp(403, request, config));
     }
-    std::cout << "--" + path << std::endl;
     if (request.path.find("/") == std::string::npos)
     {
       return (HandlerErrorHttp(301, request, config));
