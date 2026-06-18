@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   metode_http_get.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/11 16:27:56 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/12 15:42:31 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/19 00:57:56 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ t_httpResponse HttpHandler::handler_methode_get(t_httpRequest& request, const Se
   if (!request.path.empty() && request.path[request.path.size() - 1] == '/')
   {
     if (location[prefix].getAutoindex())
-      return HttpHandler::serveIndex( fullPath + prefix, request, config);
+      return HttpHandler::serveIndex( fullPath /* + prefix */, request, config);
+	  // jai retire prefixe sinon en fait un http://localhost:8080/cgi-bin/ renvoie 500 Internal Server Error avec autoindex `off`
     else if (!location[prefix].getIndex().empty())
       return (HttpHandler::serveStaticFile(fullPath + location[prefix].getIndex(), request, config));
     else
@@ -50,21 +51,21 @@ t_httpResponse HttpHandler::handler_methode_get(t_httpRequest& request, const Se
 /*                 -- SERV STATIC FILE IMPLEMENT FONCTION  --                 */
 /* ========================================================================== */
 
-bool isSafePath(const std::string& path) 
+bool isSafePath(const std::string& path)
 {
   return (path.find("../") == std::string::npos); // Empêche les chemins relatifs (comme "../")
 }
 
-std::string getMimeType(const std::string& path) 
+std::string getMimeType(const std::string& path)
 {
-    // Implémentez la logique pour déterminer le type 
+    // Implémentez la logique pour déterminer le type
     if (path.find(".html") != std::string::npos) return ( "text/html" );
     if (path.find(".css") != std::string::npos) return ( "text/css" );
     // Ajoutez d'autres types selon les besoins
     return ("text/plain");
 }
 
-t_httpResponse HttpHandler::serveStaticFile(const std::string& path, t_httpRequest& request, const ServerConfig& config) 
+t_httpResponse HttpHandler::serveStaticFile(const std::string& path, t_httpRequest& request, const ServerConfig& config)
 {
     if (!isSafePath(path))
     {
@@ -91,7 +92,7 @@ t_httpResponse HttpHandler::serveStaticFile(const std::string& path, t_httpReque
     response.headers["Connection"] = "close";
     response.headers["Date"] = getCurrentHttpDate();
     response.body = content;
-    
+
     return (response);
 }
 
@@ -99,17 +100,17 @@ t_httpResponse HttpHandler::serveStaticFile(const std::string& path, t_httpReque
 /*                              -- TOOLS --                                   */
 /* ========================================================================== */
 
-std::string HttpHandler::readFile(const std::string& filepath) 
+std::string HttpHandler::readFile(const std::string& filepath)
 {
     std::ifstream       file(filepath.c_str());
     std::ostringstream  ss;
 
-    if (!file.is_open()) 
+    if (!file.is_open())
     {
         return "";
     }
     ss << file.rdbuf();
-    
+
     return (ss.str());
 }
 
@@ -139,7 +140,7 @@ bool HttpHandler::isStaticFile(const std::string& path)
 
 
 
-t_httpResponse HttpHandler::serveIndex(const std::string& path, t_httpRequest& request, const ServerConfig& config) 
+t_httpResponse HttpHandler::serveIndex(const std::string& path, t_httpRequest& request, const ServerConfig& config)
 {
     t_httpResponse response;
     response.status = 200;
@@ -198,12 +199,12 @@ std::string HttpHandler::generateAutoIndexHTML(const std::string& path) {
     html += "        <tr><th>Name</th><th>Size</th><th>Last Modified</th></tr>\n";
 
     // Ajouter chaque entrée
-    for (size_t i = 0; i < entries.size(); i++) 
+    for (size_t i = 0; i < entries.size(); i++)
     {
         std::string fullPath = path + "/" + entries[i];
         struct stat fileStat;
-        
-        if (stat(fullPath.c_str(), &fileStat) == 0) 
+
+        if (stat(fullPath.c_str(), &fileStat) == 0)
         {
             std::string size = "-";
 
@@ -221,9 +222,9 @@ std::string HttpHandler::generateAutoIndexHTML(const std::string& path) {
     html += "    </table>\n";
     html += "</body>\n";
     html += "</html>\n";
-    
-    std::cout << "->" + html + "END" << std::endl; 
-    
+
+    std::cout << "->" + html + "END" << std::endl;
+
     return html;
 }
 
