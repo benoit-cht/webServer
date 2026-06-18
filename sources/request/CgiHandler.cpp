@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/17 15:32:15 by lcluzan           #+#    #+#             */
-/*   Updated: 2026/06/17 21:52:24 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/06/18 21:26:39 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,11 @@ void HttpHandler::handleCgiChild(const std::string& path, const t_httpRequest& r
     close(pipe_in[0]);
     close(pipe_out[1]);
 
+    // // brute force close all fds from parent
+    // for (int i = 3; i < 1024; ++i) {
+    //     close(i);
+    // }
+
     // Parse the path and query string
     std::string actual_path = path;
     std::string query_string = "";
@@ -159,19 +164,20 @@ t_httpResponse HttpHandler::executeCgi(const std::string& path, const t_httpRequ
     int pipe_in[2];
     int pipe_out[2];
 
-    if (pipe(pipe_in) == -1 || pipe(pipe_out) == -1) {
-        response.status = 500;
-        response.body = "<html><body>500 Internal Server Error: pipe failed</body></html>";
-        return response;
+    if (pipe(pipe_in) == -1) {
+        return HttpHandler::HandlerErrorHttp(500, request, config);
+    }
+    if (pipe(pipe_out) == -1) {
+        close(pipe_in[0]);
+        close(pipe_in[1]);
+        return HttpHandler::HandlerErrorHttp(500, request, config);
     }
 
     pid_t pid = fork();
     if (pid == -1) {
         close(pipe_in[0]); close(pipe_in[1]);
         close(pipe_out[0]); close(pipe_out[1]);
-        response.status = 500;
-        response.body = "<html><body>500 Internal Server Error: fork failed</body></html>";
-        return response;
+        return HttpHandler::HandlerErrorHttp(500, request, config);
     }
 
     if (pid == 0) {

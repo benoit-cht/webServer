@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/17 21:42:07 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/06/18 20:11:55 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,22 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
   std::map<std::string, std::string> cgi_map = current_loc.getCgiPass();
   if (!extension.empty() && cgi_map.find(extension) != cgi_map.end()) {
     std::string interpreter = cgi_map[extension]; // e.g., "/usr/bin/php-cgi"
-    return HttpHandler::executeCgi(request.path, request, config, interpreter, current_loc);
+    if (!interpreter.empty()) {
+      std::string full_script_path = current_loc.getRoot() + actual_path;
+
+      // F_OK checks if the file exists.
+      if (access(full_script_path.c_str(), F_OK) !=0) {
+        return HandlerErrorHttp(404, request, config);
+      }
+
+      // R_OK checks if we have permission to read the file.
+      if (access(full_script_path.c_str(), R_OK) != 0) {
+        return HandlerErrorHttp(403, request, config);
+      }
+
+      // If it exists and is readable, we safely execute the CGI
+      return HttpHandler::executeCgi(request.path, request, config, interpreter, current_loc);
+    }
   }
 
   else if (request.method == "GET")
@@ -162,6 +177,9 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status, t_httpRequest request, 
 
   else if (status == 501)
     body ="<html><body>501 Not Implemented</body></html>";
+
+  else if (status == 504)
+    body = "<html><body>504 Gateway Timeout</body></html>";
 
   else if (status == 204)
     body ="";

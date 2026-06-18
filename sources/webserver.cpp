@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserver.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/16 21:13:28 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/18 18:15:29 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -224,7 +224,8 @@ ssize_t readAvailableData(int fd, EventLoop& loop, std::string& data) {
 }
 
 static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& vec_config) {
-	loop.checkCgiTimeout();
+
+    loop.checkCgiTimeout();
 
     std::vector<int>	activeFds = loop.getActiveFds();
 
@@ -281,7 +282,7 @@ static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& 
                 print_http_request(request);
                 t_httpResponse response = HttpHandler::setHttpResponse(request, config);
 				if (response.is_cgi) { // CGI response
-					loop.registerCgi(fd, response);
+					loop.registerCgi(fd, response, request, config);
 					if (response.headers["Connection"] == "close") {
 						loop.markClientForDisconnect(fd);
 					}
