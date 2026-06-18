@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   EventLoop.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:01:32 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/18 21:03:54 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/06/18 22:59:48 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,14 @@ short EventLoop::getPollEvent(int i) const {
 
   return ( _poll_fds[i].revents );
 
+}
+
+std::string	EventLoop::getClientIP(int fd) const {
+	ClientInfo* client = _client_manager.getClient(fd);
+	if (client) {
+		return (client->getAdressIp());
+	}
+	return ("127.0.0.1");
 }
 
 /* ************************************************************************** */

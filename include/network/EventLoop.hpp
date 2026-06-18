@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   EventLoop.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:29:31 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/18 18:28:15 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/06/18 22:49:49 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ class EventLoop {
     ClientInfo*       acceptNewConnection(int server_fd);
     std::vector<int>  getActiveFds() const;
     short             getPollEvent(int i) const;
+	std::string			getClientIP(int fd) const;
 
   public:
     void registerCgi(int client_fd, const t_httpResponse& response, const t_httpRequest& request, const ServerConfig& config);

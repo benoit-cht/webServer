@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserver.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/18 18:15:29 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/06/18 22:52:02 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -279,6 +279,7 @@ static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& 
 
                 ServerConfig config = getConfigForHandler(vec_config, getPortServer(fd));
                 t_httpRequest request = HttpHandler::setHttpRequest(full_request);
+				request.client_ip = loop.getClientIP(fd);
                 print_http_request(request);
                 t_httpResponse response = HttpHandler::setHttpResponse(request, config);
 				if (response.is_cgi) { // CGI response
