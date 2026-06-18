@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/18 22:54:31 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/19 01:22:27 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,12 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
 	if (!location[prefix].checkMethod(request.method))
 	{
     return (HandlerErrorHttp(405, request, config));
+  }
+
+
+  // Check client max body size
+  if (request.body.size() > config.getClientMaxBodySize()) {
+	return (HandlerErrorHttp(413, request, config));
   }
 
   // New dynamic CGI location check
@@ -134,7 +140,7 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status, t_httpRequest request, 
   headers["Date"] = getCurrentHttpDate();
   headers["Connection"] = "close";
   headers["Content-Type"] = "text/html";
-  
+
   std::string open = location[prefix].getRoot() + "/" + page[status];
   std::ifstream file(open.c_str(), std::ios::binary);
   std::ostringstream oss;
@@ -173,6 +179,11 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status, t_httpRequest request, 
     if ( location[prefix].checkMethod("POST"  )) { headers["Allow"] += " POST  "; }
     if ( location[prefix].checkMethod("DELETE")) { headers["Allow"] += " DELETE"; }
   }
+
+  else if (status == 413) {
+      body = "<html><body><h1>413 Payload Too Large</h1><p>The uploaded file exceeds the maximum allowed size.</p></body></html>";
+  }
+
   else if (status == 500)
     body ="<html><body>500 Internal Server Error</body></html>";
 
