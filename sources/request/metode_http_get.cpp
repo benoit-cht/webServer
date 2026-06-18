@@ -120,7 +120,9 @@ bool HttpHandler::isStaticFile(const std::string& path)
     if (path.find("/static/") == 0 ||
         path.substr(path.find_last_of(".") + 1) == "html" ||
         path.substr(path.find_last_of(".") + 1) == "css" ||
-        path.substr(path.find_last_of(".") + 1) == "js") {
+        path.substr(path.find_last_of(".") + 1) == "js" ||
+        path.find_last_of(".") < path.size())
+    {
         return true;
     }
     return false;

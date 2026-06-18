@@ -127,14 +127,15 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status, t_httpRequest request, 
   std::string                         body;
 
   std::map<std::string, LocationConfig>	location = config.getLocationConfig();
-  std::map<int, std::string>            page = location["/"].getErrorPage();
+  std::string prefix = find_location(location, request.path);
+  std::map<int, std::string>            page = location[prefix].getErrorPage();
   //std::set<std::string>                 allow = location["/"].getMethods();
 
   headers["Date"] = getCurrentHttpDate();
   headers["Connection"] = "close";
   headers["Content-Type"] = "text/html";
-
-  std::string open = location["/"].getRoot() + "/" + page[status];
+  
+  std::string open = location[prefix].getRoot() + "/" + page[status];
   std::ifstream file(open.c_str(), std::ios::binary);
   std::ostringstream oss;
 
@@ -168,9 +169,9 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status, t_httpRequest request, 
 
   else if (status == 405) {
     body = def_405;
-    if ( location["/"].checkMethod("GET"))  { headers["Allow"] += " GET   "; }
-    if ( location["/"].checkMethod("POST")) { headers["Allow"] += " POST  "; }
-    if ( location["/"].checkMethod("POST")) { headers["Allow"] += " DELETE"; }
+    if ( location[prefix].checkMethod("GET"   )) { headers["Allow"] += " GET   "; }
+    if ( location[prefix].checkMethod("POST"  )) { headers["Allow"] += " POST  "; }
+    if ( location[prefix].checkMethod("DELETE")) { headers["Allow"] += " DELETE"; }
   }
   else if (status == 500)
     body ="<html><body>500 Internal Server Error</body></html>";
@@ -183,7 +184,7 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status, t_httpRequest request, 
 
   else if (status == 204)
     body ="";
-    else if (status == 201)
+  else if (status == 201)
     body ="";
   oss << body.size();
   headers["Content-Length"] = oss.str();
