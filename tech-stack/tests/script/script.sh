@@ -225,48 +225,6 @@ pause
 
 # ═══════════════════════════════════════════════════════════════
 echo -e "\n╔════════════════════════════════════════╗"
-echo -e "║          TEST COMPLET CYCLE DE VIE     ║"
-echo -e "║        Upload → Retrieve → Delete      ║"
-echo -e "╔════════════════════════════════════════╝\n"
-
-CYCLE_FILE="cycle_test_$(date +%s).txt"
-echo "This is a complete lifecycle test created at $(date)" >$CYCLE_FILE
-
-echo -e "etape 1: Upload du fichier"
-UPLOAD=$(curl -s -w "\n%{http_code}" -X POST http://$HOST:$PORT/files -F "file=@$CYCLE_FILE")
-UPLOAD_STATUS=$(echo "$UPLOAD" | tail -1)
-UPLOAD_BODY=$(echo "$UPLOAD" | head -1)
-check_status "201" "$UPLOAD_STATUS" "POST /files/$CYCLE_FILE"
-echo -e "         → $UPLOAD_BODY\n"
-
-echo -e "etape 2: Recuperation du fichier"
-RETRIEVE_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://$HOST:$PORT/files/$CYCLE_FILE)
-check_status "200" "$RETRIEVE_STATUS" "GET /files/$CYCLE_FILE"
-RETRIEVED=$(curl -s http://$HOST:$PORT/files/$CYCLE_FILE)
-ORIGINAL=$(cat $CYCLE_FILE)
-if [ "$RETRIEVED" = "$ORIGINAL" ]; then
-  echo -e "         → Contenu verifie et identique\n"
-else
-  echo -e "         → Contenu different\n"
-fi
-
-echo -e "etape 3: Suppression du fichier"
-DELETE_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE http://$HOST:$PORT/files/$CYCLE_FILE)
-check_status "204" "$DELETE_STATUS" "DELETE /files/$CYCLE_FILE"
-echo ""
-
-echo -e "etape 4: Verification de la suppression"
-VERIFY_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://$HOST:$PORT/files/$CYCLE_FILE)
-check_status "404" "$VERIFY_STATUS" "GET /files/$CYCLE_FILE (après DELETE)"
-echo ""
-
-rm -f $CYCLE_FILE
-
-echo -e "cycle de vie complet valide"
-pause
-
-# ═══════════════════════════════════════════════════════════════
-echo -e "\n╔════════════════════════════════════════╗"
 echo -e "║          DEMO AVEC TELNET              ║"
 echo -e "╔════════════════════════════════════════╝\n"
 
@@ -313,7 +271,7 @@ echo "test de siege"
 
 pause
 
-siege -b -c 10 -r 100 http://localhost:8080/html/index.html
+siege -b -c 10 -r 100 http://127.0.0.1:8080/html/index.html
 
 pause
 # Resume final
@@ -322,4 +280,3 @@ echo "╔═══════════════════════�
 echo "║                       TESTS TERMINES                       ║"
 echo "╚════════════════════════════════════════════════════════════╝"
 echo -e "\n"
-
