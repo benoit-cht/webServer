@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/19 16:27:52 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/19 16:30:14 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,18 +153,12 @@ std::string   HttpHandler::findAndOpenBody(int status, t_httpRequest request, co
   return (body);
 }
 
-/*
-
-void unitt-HandlerErrorHttp(int status, t_httpRequest request, const ServerConfig& config)
-*/
-
 void HttpHandler::setStructConfig(t_config directiv, const ServerConfig& serv, std::string path)
 {
   directiv.location = serv.getLocationConfig();
   directiv.prefix = find_location(directiv.location, path);
   directiv.config = directiv.location[directiv.prefix]; 
 }
-/* ================================ ~CODE ====================================== */
 
 t_httpResponse HttpHandler::HandlerErrorHttp(int status, t_httpRequest request, const ServerConfig& serv)
 {
