@@ -106,11 +106,11 @@ t_httpResponse  HttpHandler::checkRequestIsLegit(t_VarOfsetResponse& var, t_http
 
 t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerConfig& config)
 { 
-  t_VarOfsetResponse                    var;
-  t_config                              directiv;
-  t_httpResponse                         response;
-  directiv.location = config.getLocationConfig();
+  t_config            directiv;
+  t_httpResponse      response;
+  t_VarOfsetResponse  var;
 
+  directiv.location = config.getLocationConfig();
   response = checkRequestIsLegit(var, request, directiv, config);
   if (!response.status == 0) {
 
