@@ -1,4 +1,4 @@
-*This project has been created as part of the curriculum by <bchallat> <tjacquel>, <lcluzan>.*
+*This project has been created as part of the curriculum by bchallat, tjacquel, lcluzan.*
 
 # Webserv
 
