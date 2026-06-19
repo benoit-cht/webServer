@@ -25,7 +25,7 @@ t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request)
 	if (HttpHandler::descending_deriv(lexer))
   {
 	  request = HttpHandler::struct_http_request(lexer);
-    std::cout << COLOR_GREEN << "Success : request is valid " << COLOR_RESET << std::endl;
+    std::cout << COLOR_GREEN << "Success : descending deriv " << COLOR_RESET << std::endl;
   }
   else
   {
@@ -166,13 +166,6 @@ std::string   HttpHandler::findAndOpenBody(int status, t_httpRequest request, co
 
   }
   return (body);
-}
-
-void HttpHandler::setStructConfig(t_config& directiv, const ServerConfig& serv, std::string path)
-{
-  directiv.location = serv.getLocationConfig();
-  directiv.prefix = find_location(directiv.location, path);
-  directiv.config = directiv.location[directiv.prefix]; 
 }
 
 t_httpResponse HttpHandler::HandlerErrorHttp(int status, t_httpRequest request, const ServerConfig& serv)
