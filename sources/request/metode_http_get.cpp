@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/11 16:27:56 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/19 22:33:31 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/20 01:54:07 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,10 +160,10 @@ t_httpResponse	HttpHandler::handler_methode_get(t_httpRequest& request, const Se
 	std::string fullPath = root;
 
 	// Remove the trailing slash from root if it has one (e.g., "sources/www/" -> "sources/www")
-	// if (!fullPath.empty() && fullPath[fullPath.length() - 1] != '/') {
-	// 	// normalement !stripped_path.empty() && stripped_path.at(0) != '/'
-	// 	fullPath.erase(fullPath.length() - 1);
-	// }
+	if (!fullPath.empty() && fullPath[fullPath.length() - 1] == '/') {
+		// normalement !stripped_path.empty() && stripped_path.at(0) != '/'
+		fullPath.erase(fullPath.length() - 1);
+	}
 	// Ensure actual_path starts with a slash
 	if (!actual_path.empty() && actual_path[0] != '/') {
 		fullPath += "/";
@@ -201,7 +201,7 @@ t_httpResponse	HttpHandler::handler_methode_get(t_httpRequest& request, const Se
 			return (HttpHandler::serveStaticFile(indexPath, request, config));
 		}
 		else if (location[prefix].getAutoindex()) {
-			return (HttpHandler::serveIndex(fullPath, request, config));
+			return (HttpHandler::serveIndex(fullPath, request.path, request, config));
 		}
 		else {
 			return (HandlerErrorHttp(403, request, config));
@@ -277,7 +277,7 @@ std::string HttpHandler::readFile(const std::string& filepath)
 
 /* ========================================================================== */
 
-bool HttpHandler::isStaticFile(const std::string& path)
+/* bool HttpHandler::isStaticFile(const std::string& path)
 {
     if (path.find("/static/") == 0 ||
         path.substr(path.find_last_of(".") + 1) == "html" ||
@@ -287,20 +287,20 @@ bool HttpHandler::isStaticFile(const std::string& path)
     { return ( true ); }
 
     return ( false );
-}
+} */
 
 /* ========================================================================== */
 /*                              -- AUTO INDEX --                              */
 /* ========================================================================== */
 
-t_httpResponse HttpHandler::serveIndex(const std::string& path, t_httpRequest& request, const ServerConfig& config)
+t_httpResponse HttpHandler::serveIndex(const std::string& fullPath, const std::string& requestPath, t_httpRequest& request, const ServerConfig& config)
 {
     t_httpResponse response;
 
     response.status = 200;
     response.headers["Connection"] = "close";
     response.headers["Date"] = getCurrentHttpDate();
-    response.body = HttpHandler::generateAutoIndexHTML(path);
+    response.body = HttpHandler::generateAutoIndexHTML(fullPath, requestPath);
 
     if (response.body.empty()) {
 
@@ -312,9 +312,9 @@ t_httpResponse HttpHandler::serveIndex(const std::string& path, t_httpRequest& r
     return ( response );
 }
 
-std::string HttpHandler::generateAutoIndexHTML(const std::string& path) {
+std::string HttpHandler::generateAutoIndexHTML(const std::string& fullPath, const std::string& requestPath) {
 
-    DIR* dir = opendir(path.c_str());
+    DIR* dir = opendir(fullPath.c_str());
     if (!dir) {
         return ""; // Erreur : dossier inaccessible
     }
@@ -337,7 +337,7 @@ std::string HttpHandler::generateAutoIndexHTML(const std::string& path) {
     std::string html = "<!DOCTYPE html>\n";
     html += "<html>\n";
     html += "<head>\n";
-    html += "    <title>Index of " + path + "</title>\n";
+    html += "    <title>Index of " + requestPath + "</title>\n";
     html += "    <style>\n";
     html += "        body { font-family: Arial, sans-serif; margin: 20px; }\n";
     html += "        h1 { color: #333; }\n";
@@ -349,26 +349,44 @@ std::string HttpHandler::generateAutoIndexHTML(const std::string& path) {
     html += "    </style>\n";
     html += "</head>\n";
     html += "<body>\n";
-    html += "    <h1>Index of " + path + "</h1>\n";
+    html += "    <h1>Index of " + requestPath + "</h1>\n";
     html += "    <table>\n";
     html += "        <tr><th>Name</th><th>Size</th><th>Last Modified</th></tr>\n";
 
     // Ajouter chaque entrée
     for (size_t i = 0; i < entries.size(); i++)
     {
-        std::string fullPath = path + "/" + entries[i];
+		std::string itemSystemPath = fullPath;
+		if (itemSystemPath[itemSystemPath.length() - 1] != '/') {
+			itemSystemPath += "/";
+		}
+		itemSystemPath += entries[i];
+
         struct stat fileStat;
 
-        if (stat(fullPath.c_str(), &fileStat) == 0)
+        if (stat(itemSystemPath.c_str(), &fileStat) == 0)
         {
-            std::string size = "-";
+			std::string sizeStr;
+			std::string displayName = entries[i];
+			std::string hrefName = entries[i];
+
+			if (S_ISDIR(fileStat.st_mode)) {
+				sizeStr = "-";
+                displayName += "/";
+                hrefName += "/";
+			}
+			else {
+				std::ostringstream iss;
+				iss << fileStat.st_size;
+				sizeStr = iss.str();
+			}
 
             std::string date = ctime(&fileStat.st_mtime);
             date.erase(date.size() - 1); // Supprimer le saut de ligne de ctime()
 
             html += "        <tr>\n";
-            html += "            <td><a href=\"" + entries[i] + "\">" + entries[i] + "</a></td>\n";
-            html += "            <td>" + size + "</td>\n";
+            html += "            <td><a href=\"" + hrefName + "\">" + displayName + "</a></td>\n";
+            html += "            <td>" + sizeStr + "</td>\n";
             html += "            <td>" + date + "</td>\n";
             html += "        </tr>\n";
         }
