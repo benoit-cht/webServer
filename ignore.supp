@@ -1,11 +1,14 @@
 {
     ignore_bin_leaks
     Memcheck:Leak
+    match-leak-kinds: all
+    ...
     obj:/bin/*
 }
 {
     ignore_usr_bin_leaks
     Memcheck:Leak
+    match-leak-kinds: all
     ...
     obj:/usr/bin/*
 }

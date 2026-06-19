@@ -1,0 +1,492 @@
+token[0]=`server`
+token[1]=`{`
+token[2]=`listen`
+token[3]=`8080`
+token[4]=`;`
+token[5]=`client_max_body_size`
+token[6]=`10`
+token[7]=`;`
+token[8]=`location`
+token[9]=`/`
+token[10]=`{`
+token[11]=`root`
+token[12]=`./sources/www`
+token[13]=`;`
+token[14]=`methods`
+token[15]=`POST`
+token[16]=`GET`
+token[17]=`;`
+token[18]=`autoindex`
+token[19]=`on`
+token[20]=`;`
+token[21]=`index`
+token[22]=`index.html`
+token[23]=`;`
+token[24]=`error_page`
+token[25]=`404`
+token[26]=`404.html`
+token[27]=`;`
+token[28]=`error_page`
+token[29]=`504`
+token[30]=`504.html`
+token[31]=`;`
+token[32]=`cgi_pass`
+token[33]=`.sh`
+token[34]=`/usr/bin/bash`
+token[35]=`;`
+token[36]=`}`
+token[37]=`location`
+token[38]=`upload/`
+token[39]=`{`
+token[40]=`root`
+token[41]=`sources/www/`
+token[42]=`;`
+token[43]=`methods`
+token[44]=`GET`
+token[45]=`POST`
+token[46]=`DELETE`
+token[47]=`;`
+token[48]=`cgi_pass`
+token[49]=`.py`
+token[50]=`/usr/bin/python3`
+token[51]=`;`
+token[52]=`}`
+token[53]=`location`
+token[54]=`cgi-bin`
+token[55]=`{`
+token[56]=`root`
+token[57]=`sources/www/`
+token[58]=`;`
+token[59]=`methods`
+token[60]=`POST`
+token[61]=`GET`
+token[62]=`;`
+token[63]=`autoindex`
+token[64]=`on`
+token[65]=`;`
+token[66]=`cgi_pass`
+token[67]=`.py`
+token[68]=`/usr/bin/python3`
+token[69]=`;`
+token[70]=`cgi_pass`
+token[71]=`.php`
+token[72]=`/usr/bin/php-cgi`
+token[73]=`;`
+token[74]=`}`
+token[75]=`location`
+token[76]=`repo`
+token[77]=`{`
+token[78]=`root`
+token[79]=`sources/www/`
+token[80]=`;`
+token[81]=`autoindex`
+token[82]=`off`
+token[83]=`;`
+token[84]=`methods`
+token[85]=`GET`
+token[86]=`;`
+token[87]=`}`
+token[88]=`}`
+token[89]=`server`
+token[90]=`{`
+token[91]=`listen`
+token[92]=`9292`
+token[93]=`;`
+token[94]=`client_max_body_size`
+token[95]=`10`
+token[96]=`;`
+token[97]=`location`
+token[98]=`/`
+token[99]=`{`
+token[100]=`root`
+token[101]=`sources/www`
+token[102]=`;`
+token[103]=`methods`
+token[104]=`GET`
+token[105]=`;`
+token[106]=`index`
+token[107]=`index.html`
+token[108]=`;`
+token[109]=`error_page`
+token[110]=`404`
+token[111]=`404.html`
+token[112]=`;`
+token[113]=`}`
+token[114]=`location`
+token[115]=`upload/`
+token[116]=`{`
+token[117]=`root`
+token[118]=`sources/www`
+token[119]=`;`
+token[120]=`methods`
+token[121]=`GET`
+token[122]=`POST`
+token[123]=`;`
+token[124]=`autoindex`
+token[125]=`on`
+token[126]=`;`
+token[127]=`error_page`
+token[128]=`404`
+token[129]=`404.html`
+token[130]=`;`
+token[131]=`}`
+token[132]=`}`
+token[133]=`server`
+token[134]=`{`
+token[135]=`listen`
+token[136]=`8081`
+token[137]=`;`
+token[138]=`location`
+token[139]=`/`
+token[140]=`{`
+token[141]=`root`
+token[142]=`tech-stack/www`
+token[143]=`;`
+token[144]=`methods`
+token[145]=`GET`
+token[146]=`;`
+token[147]=`error_page`
+token[148]=`404`
+token[149]=`404.html`
+token[150]=`;`
+token[151]=`}`
+token[152]=`}`
+token[153]=`server`
+token[154]=`{`
+token[155]=`listen`
+token[156]=`4242`
+token[157]=`;`
+token[158]=`client_max_body_size`
+token[159]=`100`
+token[160]=`;`
+token[161]=`location`
+token[162]=`/`
+token[163]=`{`
+token[164]=`root`
+token[165]=`sources/www`
+token[166]=`;`
+token[167]=`methods`
+token[168]=`GET`
+token[169]=`;`
+token[170]=`index`
+token[171]=`index.html`
+token[172]=`;`
+token[173]=`}`
+token[174]=`location`
+token[175]=`.bla`
+token[176]=`{`
+token[177]=`methods`
+token[178]=`POST`
+token[179]=`;`
+token[180]=`cgi_pass`
+token[181]=`.bla`
+token[182]=`./tech-stack/tests/script/cgi_tester`
+token[183]=`;`
+token[184]=`}`
+token[185]=`location`
+token[186]=`post_body/`
+token[187]=`{`
+token[188]=`methods`
+token[189]=`POST`
+token[190]=`;`
+token[191]=`root`
+token[192]=`sources/www`
+token[193]=`;`
+token[194]=`}`
+token[195]=`location`
+token[196]=`directory/`
+token[197]=`{`
+token[198]=`methods`
+token[199]=`GET`
+token[200]=`;`
+token[201]=`root`
+token[202]=`.`
+token[203]=`;`
+token[204]=`index`
+token[205]=`youpi.bad_extension`
+token[206]=`;`
+token[207]=`}`
+token[208]=`}`
+
+virtual_servers[0].host=0.0.0.0
+virtual_servers[0].port=8080
+virtual_servers[0].clients_max_body_size=10
+virtual_servers[0].location.KEY=/
+    root=./sources/www
+    methods=GET, POST
+    index=index.html
+    autoindex=on
+    error_page 404=404.html
+    error_page 504=504.html
+    cgi_pass[.sh]=/usr/bin/bash
+virtual_servers[0].location.KEY=cgi-bin
+    root=sources/www/
+    methods=GET, POST
+    index=index.html
+    autoindex=on
+    cgi_pass[.php]=/usr/bin/php-cgi
+    cgi_pass[.py]=/usr/bin/python3
+virtual_servers[0].location.KEY=repo
+    root=sources/www/
+    methods=GET
+    index=index.html
+virtual_servers[0].location.KEY=upload/
+    root=sources/www/
+    methods=DELETE, GET, POST
+    index=index.html
+    cgi_pass[.py]=/usr/bin/python3
+
+virtual_servers[1].host=0.0.0.0
+virtual_servers[1].port=9292
+virtual_servers[1].clients_max_body_size=10
+virtual_servers[1].location.KEY=/
+    root=sources/www
+    methods=GET
+    index=index.html
+    error_page 404=404.html
+virtual_servers[1].location.KEY=upload/
+    root=sources/www
+    methods=GET, POST
+    index=index.html
+    autoindex=on
+    error_page 404=404.html
+
+virtual_servers[2].host=0.0.0.0
+virtual_servers[2].port=8081
+virtual_servers[2].clients_max_body_size=8000000
+virtual_servers[2].location.KEY=/
+    root=tech-stack/www
+    methods=GET
+    index=index.html
+    error_page 404=404.html
+
+virtual_servers[3].host=0.0.0.0
+virtual_servers[3].port=4242
+virtual_servers[3].clients_max_body_size=100
+virtual_servers[3].location.KEY=.bla
+    root=.
+    methods=POST
+    index=index.html
+    cgi_pass[.bla]=./tech-stack/tests/script/cgi_tester
+virtual_servers[3].location.KEY=/
+    root=sources/www
+    methods=GET
+    index=index.html
+virtual_servers[3].location.KEY=directory/
+    root=.
+    methods=GET
+    index=youpi.bad_extension
+virtual_servers[3].location.KEY=post_body/
+    root=sources/www
+    methods=POST
+    index=index.html
+[1;32mSuccess : open socket to a port: 8080[0m
+[1;32mSuccess : open socket to a port: 9292[0m
+[1;32mSuccess : open socket to a port: 8081[0m
+[1;32mSuccess : open socket to a port: 4242[0m
+[1;32mSuccess : new connetion accept to 127.0.0.1:33060[0m
+[1;36m(Log Server) : add new client: fd=7, IP=127.0.0.1, Port=33060[0m
+[1;36m(Log Client) : new connection accepted (fd=7, IP=127.0.0.1, Port client=33060)[0m
+[1;34mDonnées reçues de 127.0.0.1:33060 (446 octets)[0m
+[1;32mSuccess : request is valid [0m
+[1;36m
+=== HTTP Request ===[0m
+Method: [1;33mGET[0m
+Path: [1;33m/cgi-bin/[0m
+Version: [1;33mHTTP/1.1[0m
+[1;36m
+--- Headers ---[0m
+Accept: [1;32mtext/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8[0m
+Accept-Encoding: [1;32mgzip, deflate, br, zstd[0m
+Accept-Language: [1;32men-US,en;q=0.9[0m
+Connection: [1;32mkeep-alive[0m
+Host: [1;32mlocalhost:8080[0m
+Priority: [1;32mu=0, i[0m
+Sec-Fetch-Dest: [1;32mdocument[0m
+Sec-Fetch-Mode: [1;32mnavigate[0m
+Sec-Fetch-Site: [1;32mnone[0m
+Sec-Fetch-User: [1;32m?1[0m
+Upgrade-Insecure-Requests: [1;32m1[0m
+User-Agent: [1;32mMozilla/5.0 (X11; Linux x86_64; rv:151.0) Gecko/20100101 Firefox/151.0[0m
+[1;36m===================
+[0m
+actual_path=/cgi-bin/
+prefix=cgi-bin
+root=sources/www/
+fullPath=sources/www//cgi-bin/
+indexPath=sources/www//cgi-bin/index.html
+-><!DOCTYPE html>
+<html>
+<head>
+    <title>Index of sources/www//cgi-bin/</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        table { border-collapse: collapse; width: 100%; }
+        th { background-color: #f2f2f2; text-align: left; padding: 8px; }
+        td { border-bottom: 1px solid #ddd; padding: 8px; }
+        a { text-decoration: none; color: #0066cc; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h1>Index of sources/www//cgi-bin/</h1>
+    <table>
+        <tr><th>Name</th><th>Size</th><th>Last Modified</th></tr>
+        <tr>
+            <td><a href="form_processor.php">form_processor.php</a></td>
+            <td>-</td>
+            <td>Tue Jun  9 14:13:33 2026</td>
+        </tr>
+        <tr>
+            <td><a href="infinite.php">infinite.php</a></td>
+            <td>-</td>
+            <td>Thu Jun 18 22:25:46 2026</td>
+        </tr>
+        <tr>
+            <td><a href="kill.sh">kill.sh</a></td>
+            <td>-</td>
+            <td>Thu Jun 18 22:25:46 2026</td>
+        </tr>
+        <tr>
+            <td><a href="leaksfull2.txt">leaksfull2.txt</a></td>
+            <td>-</td>
+            <td>Mon Jun 15 16:35:56 2026</td>
+        </tr>
+        <tr>
+            <td><a href="test.php">test.php</a></td>
+            <td>-</td>
+            <td>Tue Jun  9 14:13:33 2026</td>
+        </tr>
+        <tr>
+            <td><a href="test.py">test.py</a></td>
+            <td>-</td>
+            <td>Tue Jun  9 14:13:33 2026</td>
+        </tr>
+        <tr>
+            <td><a href="test_cgi.php">test_cgi.php</a></td>
+            <td>-</td>
+            <td>Thu Jun 18 22:25:46 2026</td>
+        </tr>
+    </table>
+</body>
+</html>
+END
+[1;36m
+=== HTTP Response ===[0m
+Status: [1;33m200[0m (OK)[0m
+[1;36m
+--- Headers ---[0m
+Connection: [1;32mclose[0m
+Content-Type: [1;32mtext/html[0m
+Date: [1;32mFri, 19 Jun 2026 16:37:46 GMT[0m
+[1;36m====================
+[0m
+[1;36m(Log Server) : close client fd=7[0m
+[1;36m(Log Server) : delete client: fd=7[0m
+[1;32mSuccess : new connetion accept to 127.0.0.1:33066[0m
+[1;36m(Log Server) : add new client: fd=7, IP=127.0.0.1, Port=33066[0m
+[1;36m(Log Client) : new connection accepted (fd=7, IP=127.0.0.1, Port client=33066)[0m
+[1;34mDonnées reçues de 127.0.0.1:33066 (446 octets)[0m
+[1;32mSuccess : request is valid [0m
+[1;36m
+=== HTTP Request ===[0m
+Method: [1;33mGET[0m
+Path: [1;33m/cgi-bin/[0m
+Version: [1;33mHTTP/1.1[0m
+[1;36m
+--- Headers ---[0m
+Accept: [1;32mtext/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8[0m
+Accept-Encoding: [1;32mgzip, deflate, br, zstd[0m
+Accept-Language: [1;32men-US,en;q=0.9[0m
+Connection: [1;32mkeep-alive[0m
+Host: [1;32mlocalhost:8080[0m
+Priority: [1;32mu=0, i[0m
+Sec-Fetch-Dest: [1;32mdocument[0m
+Sec-Fetch-Mode: [1;32mnavigate[0m
+Sec-Fetch-Site: [1;32mnone[0m
+Sec-Fetch-User: [1;32m?1[0m
+Upgrade-Insecure-Requests: [1;32m1[0m
+User-Agent: [1;32mMozilla/5.0 (X11; Linux x86_64; rv:151.0) Gecko/20100101 Firefox/151.0[0m
+[1;36m===================
+[0m
+actual_path=/cgi-bin/
+prefix=cgi-bin
+root=sources/www/
+fullPath=sources/www//cgi-bin/
+indexPath=sources/www//cgi-bin/index.html
+-><!DOCTYPE html>
+<html>
+<head>
+    <title>Index of sources/www//cgi-bin/</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        table { border-collapse: collapse; width: 100%; }
+        th { background-color: #f2f2f2; text-align: left; padding: 8px; }
+        td { border-bottom: 1px solid #ddd; padding: 8px; }
+        a { text-decoration: none; color: #0066cc; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h1>Index of sources/www//cgi-bin/</h1>
+    <table>
+        <tr><th>Name</th><th>Size</th><th>Last Modified</th></tr>
+        <tr>
+            <td><a href="form_processor.php">form_processor.php</a></td>
+            <td>-</td>
+            <td>Tue Jun  9 14:13:33 2026</td>
+        </tr>
+        <tr>
+            <td><a href="infinite.php">infinite.php</a></td>
+            <td>-</td>
+            <td>Thu Jun 18 22:25:46 2026</td>
+        </tr>
+        <tr>
+            <td><a href="kill.sh">kill.sh</a></td>
+            <td>-</td>
+            <td>Thu Jun 18 22:25:46 2026</td>
+        </tr>
+        <tr>
+            <td><a href="leaksfull2.txt">leaksfull2.txt</a></td>
+            <td>-</td>
+            <td>Mon Jun 15 16:35:56 2026</td>
+        </tr>
+        <tr>
+            <td><a href="test.php">test.php</a></td>
+            <td>-</td>
+            <td>Tue Jun  9 14:13:33 2026</td>
+        </tr>
+        <tr>
+            <td><a href="test.py">test.py</a></td>
+            <td>-</td>
+            <td>Tue Jun  9 14:13:33 2026</td>
+        </tr>
+        <tr>
+            <td><a href="test_cgi.php">test_cgi.php</a></td>
+            <td>-</td>
+            <td>Thu Jun 18 22:25:46 2026</td>
+        </tr>
+    </table>
+</body>
+</html>
+END
+[1;36m
+=== HTTP Response ===[0m
+Status: [1;33m200[0m (OK)[0m
+[1;36m
+--- Headers ---[0m
+Connection: [1;32mclose[0m
+Content-Type: [1;32mtext/html[0m
+Date: [1;32mFri, 19 Jun 2026 16:37:48 GMT[0m
+[1;36m====================
+[0m
+[1;36m(Log Server) : close client fd=7[0m
+[1;36m(Log Server) : delete client: fd=7[0m
+[1;33m 
+Warning : Reçu SIGINT (Ctrl+C), arrêt du serveur... [0m
+[1;32mSuccess : close socket 3[0m
+[1;32mSuccess : close socket 4[0m
+[1;32mSuccess : close socket 5[0m
+[1;32mSuccess : close socket 6[0m

@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/11 16:27:56 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/19 02:34:07 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/19 22:33:31 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,50 +16,201 @@
 /*                                                                            */
 /* ========================================================================== */
 
-t_httpResponse HttpHandler::handler_methode_get(t_httpRequest& request, const ServerConfig& config)
+
+// ANCIENNE IMPLEMENTATION
+// t_httpResponse HttpHandler::handler_methode_get(t_httpRequest& request, const ServerConfig& config)
+// {
+//   std::map<std::string, LocationConfig>	location = config.getLocationConfig();
+//   //std::cout << COLOR_MAGENTA << location["/"].getRoot() + location["/"].getIndex() << COLOR_RESET << std::endl;
+//   std::string prefix = find_location(location, request.path);
+//   std::string fullPath = location[prefix].getRoot() + request.path ;
+//   std::cout << COLOR_MAGENTA << "full path ? " + fullPath << COLOR_RESET << std::endl;
+
+//   // Directory handling
+//   if (!request.path.empty() && request.path[request.path.size() - 1] == '/')
+//   {
+// 	std::string indexPath = fullPath + location[prefix].getIndex();
+
+// 	// 1. Check if the directory ITSELF actually exists
+// 	struct stat info;
+// 	if (stat(fullPath.c_str(), &info) != 0 || !S_ISDIR(info.st_mode)) {
+// 		// The directory does not exist
+// 		return (HandlerErrorHttp(404, request, config));
+// 	}
+
+// 	// 2. Check for the index file
+// 	if (!location[prefix].getIndex().empty() && access(indexPath.c_str(), F_OK) == 0)
+//       return (HttpHandler::serveStaticFile(indexPath, request, config));
+
+// 	// 3. Check autoindex fallback
+//     else if (location[prefix].getAutoindex())
+//       return HttpHandler::serveIndex(fullPath /* + prefix */, request, config);
+// 	  // jai retire prefixe sinon en fait un http://localhost:8080/cgi-bin/ renvoie 500 Internal Server Error avec autoindex `off`
+
+// 	// 4. Access denied 403 fallback
+//     else
+//       return (HandlerErrorHttp(403, request, config));
+//   }
+//   else if (!HttpHandler::isStaticFile(fullPath))
+//   {
+//     return (HandlerErrorHttp(301, request, config));
+//   }
+//   else if (HttpHandler::isStaticFile(fullPath))
+//   {
+//     return (HttpHandler::serveStaticFile(fullPath, request, config));
+//   }
+//   else{
+//     return (HandlerErrorHttp(404, request, config));
+//   }
+// }
+
+// methode ALIAS
+/* t_httpResponse HttpHandler::handler_methode_get(t_httpRequest& request, const ServerConfig& config)
 {
-  std::map<std::string, LocationConfig>	location = config.getLocationConfig();
-  //std::cout << COLOR_MAGENTA << location["/"].getRoot() + location["/"].getIndex() << COLOR_RESET << std::endl;
-  std::string prefix = find_location(location, request.path);
-  std::string fullPath = location[prefix].getRoot() + request.path ;
-  std::cout << COLOR_MAGENTA << "full path ? " + fullPath << COLOR_RESET << std::endl;
+	std::map<std::string, LocationConfig> location = config.getLocationConfig();
 
-  // Directory handling
-  if (!request.path.empty() && request.path[request.path.size() - 1] == '/')
-  {
-	std::string indexPath = fullPath + location[prefix].getIndex();
+	std::string actual_path = request.path;
+	size_t q_pos = actual_path.find('?');
+	if (q_pos != std::string::npos) {
+		actual_path = actual_path.substr(0, q_pos);
+	}
 
-	// 1. Check if the directory ITSELF actually exists
+	std::string prefix = find_location(location, actual_path);
+	std::string root = location[prefix].getRoot();
+
+	// 1. Strip the alias prefix (e.g., /repo -> /)
+	std::string stripped_path = actual_path;
+	if (prefix != "/" && stripped_path.find("/" + prefix) == 0) {
+		stripped_path.erase(0, prefix.length() + 1);
+	}
+
+	// 2. Build the exact system path
+	std::string fullPath = root;
+	if (!fullPath.empty() && fullPath[fullPath.length() - 1] != '/' &&
+		!stripped_path.empty() && stripped_path[0] != '/') {
+		fullPath += "/";
+	}
+	fullPath += stripped_path;
+
+	// 3. ASK THE OPERATING SYSTEM WHAT THIS IS
 	struct stat info;
-	if (stat(fullPath.c_str(), &info) != 0 || !S_ISDIR(info.st_mode)) {
-		// The directory does not exist
+	if (stat(fullPath.c_str(), &info) != 0) {
+		// A. It does not exist on the hard drive!
 		return (HandlerErrorHttp(404, request, config));
 	}
 
-	// 2. Check for the index file
-	if (!location[prefix].getIndex().empty() && access(indexPath.c_str(), F_OK) == 0)
-      return (HttpHandler::serveStaticFile(indexPath, request, config));
+	if (S_ISDIR(info.st_mode)) {
+		// B. IT IS A DIRECTORY
 
-	// 3. Check autoindex fallback
-    else if (location[prefix].getAutoindex())
-      return HttpHandler::serveIndex(fullPath /* + prefix */, request, config);
-	  // jai retire prefixe sinon en fait un http://localhost:8080/cgi-bin/ renvoie 500 Internal Server Error avec autoindex `off`
-	  
-	// 4. Access denied 403 fallback
-    else
-      return (HandlerErrorHttp(403, request, config));
-  }
-  else if (!HttpHandler::isStaticFile(fullPath))
-  {
-    return (HandlerErrorHttp(301, request, config));
-  }
-  else if (HttpHandler::isStaticFile(fullPath))
-  {
-    return (HttpHandler::serveStaticFile(fullPath, request, config));
-  }
-  else{
-    return (HandlerErrorHttp(404, request, config));
-  }
+		// If the user forgot the trailing slash, redirect them! (NGINX Standard)
+		if (actual_path[actual_path.length() - 1] != '/') {
+			t_httpResponse redirect_resp;
+			redirect_resp.status = 301;
+			redirect_resp.headers["Location"] = "http://" + request.headers["Host"] + actual_path + "/";
+			redirect_resp.headers["Connection"] = "close";
+			redirect_resp.body = "<html><body><h1>301 Moved Permanently</h1></body></html>";
+			return redirect_resp;
+		}
+
+		// It has a trailing slash, do index/autoindex logic
+		std::string indexPath = fullPath;
+		if (fullPath[fullPath.length() - 1] != '/') indexPath += "/";
+		indexPath += location[prefix].getIndex();
+
+		if (!location[prefix].getIndex().empty() && access(indexPath.c_str(), F_OK) == 0) {
+			return (HttpHandler::serveStaticFile(indexPath, request, config));
+		}
+		else if (location[prefix].getAutoindex()) {
+			return HttpHandler::serveIndex(fullPath, request, config);
+		}
+		else {
+			return (HandlerErrorHttp(403, request, config));
+		}
+	}
+	else {
+		// C. IT IS A FILE! Serve it directly.
+		return (HttpHandler::serveStaticFile(fullPath, request, config));
+	}
+} */
+
+t_httpResponse	HttpHandler::handler_methode_get(t_httpRequest& request, const ServerConfig& config) {
+	std::map<std::string, LocationConfig> location = config.getLocationConfig();
+
+	std::string actual_path = request.path;
+	size_t q_pos = actual_path.find('?');
+	if (q_pos != std::string::npos) {
+		actual_path = actual_path.substr(0, q_pos);
+	}
+
+	std::string prefix = find_location(location, actual_path);
+	std::string root = location[prefix].getRoot();
+
+	std::cout << "actual_path=" << actual_path << std::endl;
+	std::cout << "prefix=" << prefix << std::endl;
+	std::cout << "root=" << root << std::endl;
+
+	// 1. Strip the alias prefix
+	// std::string stripped_path = actual_path;
+	// if (prefix != "/" && stripped_path.find("/" + prefix) == 0) {
+	// 	stripped_path.erase(0, prefix.length() + 1);
+	// }
+	// std::cout << "stripped_path=" << stripped_path << std::endl;
+
+	// 2. build the exact system path
+	std::string fullPath = root;
+
+	// Remove the trailing slash from root if it has one (e.g., "sources/www/" -> "sources/www")
+	// if (!fullPath.empty() && fullPath[fullPath.length() - 1] != '/') {
+	// 	// normalement !stripped_path.empty() && stripped_path.at(0) != '/'
+	// 	fullPath.erase(fullPath.length() - 1);
+	// }
+	// Ensure actual_path starts with a slash
+	if (!actual_path.empty() && actual_path[0] != '/') {
+		fullPath += "/";
+	}
+	fullPath += actual_path; // Result: "sources/www" + "/repo/" = "sources/www/repo/"
+	// fullPath += stripped_path;
+	std::cout << "fullPath=" << fullPath << std::endl;
+
+	// 3. ask the OS what the URI correspond to: file or directory
+	struct stat info;
+	if (stat(fullPath.c_str(), &info) != 0) {
+		// 3.a it does not exist on the hard drive
+		return (HandlerErrorHttp(404, request, config));
+	}
+	if (S_ISDIR(info.st_mode)) {
+		// 3.b. is a directory
+
+		// check if the user forgot the trailing slash
+		if (actual_path[actual_path.length() - 1] != '/') { // why actual_path and not fullPath
+			t_httpResponse redirect_resp;
+			redirect_resp.status = 301;
+			redirect_resp.headers["Location"] = "http://" + request.headers["Host"] + actual_path + "/";
+			redirect_resp.headers["Connection"] = "close";
+			redirect_resp.body = "<html><body><h1>301 Moved Permanently</h1></body></html>";
+			return redirect_resp;
+		}
+
+		// it has a trailing slash: do the index/autoindex logic
+		std::string indexPath = fullPath;
+		if (fullPath[fullPath.length() - 1] != '/') indexPath += "/"; // why check that
+		indexPath += location[prefix].getIndex();
+		std::cout << "indexPath=" << indexPath << std::endl;
+
+		if (!location[prefix].getIndex().empty() && access(indexPath.c_str(), F_OK) == 0) {
+			return (HttpHandler::serveStaticFile(indexPath, request, config));
+		}
+		else if (location[prefix].getAutoindex()) {
+			return (HttpHandler::serveIndex(fullPath, request, config));
+		}
+		else {
+			return (HandlerErrorHttp(403, request, config));
+		}
+	}
+	else {
+		// 3.c it is a file
+		return (HttpHandler::serveStaticFile(fullPath, request, config));
+	}
 }
 
 /* ========================================================================== */
@@ -83,16 +234,15 @@ t_httpResponse HttpHandler::serveStaticFile(const std::string& path, t_httpReque
 {
     t_httpResponse response;
 
-    if (!isSafePath(path)) 
+    if (!isSafePath(path))
       return ( HandlerErrorHttp(403, request, config) );
 
-    if (request.path.find("/") == std::string::npos) 
-      return ( HandlerErrorHttp(301, request, config) );
+    // if (request.path.find("/") == std::string::npos)
+    //   return ( HandlerErrorHttp(301, request, config) );
 
     std::ifstream file(path.c_str(), std::ios::binary);
-
-    if (!file.is_open()) 
-      return ( HandlerErrorHttp(404, request, config) );
+    if (!file.is_open())
+      return ( HandlerErrorHttp(403, request, config) ); // Exists, but permission denied
 
     std::stringstream buffer;
     buffer << file.rdbuf();
@@ -100,7 +250,7 @@ t_httpResponse HttpHandler::serveStaticFile(const std::string& path, t_httpReque
 
     response.status = 200;
     response.headers["Content-Type"] = getMimeType(path);
-    response.headers["Connection"] = "close";
+    response.headers["Connection"] = "close"; //  why keep alive and not close
     response.headers["Date"] = getCurrentHttpDate();
     response.body = content;
 
@@ -133,9 +283,9 @@ bool HttpHandler::isStaticFile(const std::string& path)
         path.substr(path.find_last_of(".") + 1) == "html" ||
         path.substr(path.find_last_of(".") + 1) == "css"  ||
         path.substr(path.find_last_of(".") + 1) == "js"   ||
-        path.find_last_of(".") < path.size()               )  
+        path.find_last_of(".") < path.size()               )
     { return ( true ); }
-    
+
     return ( false );
 }
 
@@ -173,7 +323,7 @@ std::string HttpHandler::generateAutoIndexHTML(const std::string& path) {
     struct dirent* entry;
 
     // Lire tous les fichiers/dossiers && Ignorer "." et ".."
-    while ((entry = readdir(dir)) != NULL) 
+    while ((entry = readdir(dir)) != NULL)
     {
         if (std::string(entry->d_name) != "." && std::string(entry->d_name) != "..")
             entries.push_back(entry->d_name);

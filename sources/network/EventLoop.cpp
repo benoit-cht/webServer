@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:01:32 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/18 22:59:48 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/19 21:39:42 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -502,7 +502,6 @@ void	EventLoop::checkCgiTimeout() {
 	std::map<int, CgiState>::iterator	it = _cgi_contexts.begin();
 	while (it != _cgi_contexts.end()) {
 		if (std::difftime(currentTime, it->second.start_time) > 5.0) {
-			std::cout << "timediff=" << difftime(currentTime, it->second.start_time);
 			std::cout << COLOR_RED << "CGI Timeout: killing PID " << it->second.cgi_pid << COLOR_RESET << std::endl;
 
 			// 1. MURDER THE SCRIPT
