@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/19 16:30:14 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/19 17:02:34 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
   size_t q_pos = actual_path.find('?');
   if (q_pos != std::string::npos) {
     actual_path = actual_path.substr(0, q_pos);
-  }cgi-bin/
+  }
 
   std::string prefix = find_location(location, actual_path);
   LocationConfig current_loc = location[prefix];
