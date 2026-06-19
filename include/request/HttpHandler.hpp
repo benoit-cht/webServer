@@ -28,6 +28,7 @@
 #include <sys/stat.h> // Pour stat()
 #include <unistd.h> // Pour access()
 #include <cerrno>   // Pour errno
+#include <dirent.h>   // Pour opendir(), readdir(), closedir()
 
 #include <log/colorLog.hpp>
 #include <request/struct.hpp>
