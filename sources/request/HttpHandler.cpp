@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/19 14:04:08 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/19 16:27:52 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,83 +39,89 @@ t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request)
 /*                          -- SET RESPONSSE --                               */
 /* ========================================================================== */
 
+t_httpResponse HttpHandler::cgiConditionForExecute(const ServerConfig& config, t_httpRequest request, std::string actual_path , std::map<std::string, std::string> cgi_map, std::string extension, LocationConfig current_loc ) 
+{
+  std::string interpreter = cgi_map[extension]; // e.g., "/usr/bin/php-cgi"
+  if (!interpreter.empty()) {
+
+    std::string full_script_path = current_loc.getRoot() + actual_path;
+
+    // F_OK checks if the file exists.
+    if (access(full_script_path.c_str(), F_OK) !=0) {
+
+          return HandlerErrorHttp(404, request, config);
+    }
+    // R_OK checks if we have permission to read the file.
+    if (access(full_script_path.c_str(), R_OK) != 0) {
+
+        return HandlerErrorHttp(403, request, config);
+    }
+  }
+  // If it exists and is readable, we safely execute the CGI
+  return HttpHandler::executeCgi(request.path, request, config, interpreter, current_loc);
+}
 
 t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerConfig& config)
 {
 	t_httpResponse                        response;
   std::map<std::string, std::string>    headers;
   std::map<std::string, LocationConfig> location = config.getLocationConfig();
-  // std::string fullPath = location[prefix].getRoot() + request.path ;
-  // LocationConfig current_loc = location[prefix];
+
 
   // si ya un query ? on a quand meme besoin d'extraire le path sans le ? et ce quil y a apres
   std::string actual_path = request.path;
   size_t q_pos = actual_path.find('?');
   if (q_pos != std::string::npos) {
     actual_path = actual_path.substr(0, q_pos);
-  }
+  }cgi-bin/
 
-    std::string prefix = find_location(location, actual_path);
-    LocationConfig current_loc = location[prefix];
+  std::string prefix = find_location(location, actual_path);
+  LocationConfig current_loc = location[prefix];
 
+  if (request.headers.empty())  {
 
-  if (request.headers.empty())
-  {
     return (HandlerErrorHttp(400, request, config));
+  
   }
-	if (!location[prefix].checkMethod(request.method))
-	{
+	if (!location[prefix].checkMethod(request.method))  {
+
     return (HandlerErrorHttp(405, request, config));
+  
   }
+  if (request.body.size() > config.getClientMaxBodySize()) { // Check client max body size
 
-
-  // Check client max body size
-  if (request.body.size() > config.getClientMaxBodySize()) {
-	return (HandlerErrorHttp(413, request, config));
+	    return (HandlerErrorHttp(413, request, config));
+  
   }
 
   // New dynamic CGI location check
   std::string extension = "";
   size_t dot_pos = actual_path.find_last_of(".");
   if (dot_pos != std::string::npos) {
+
     extension = actual_path.substr(dot_pos);
   }
   std::map<std::string, std::string> cgi_map = current_loc.getCgiPass();
+
   if (!extension.empty() && cgi_map.find(extension) != cgi_map.end()) {
-    std::string interpreter = cgi_map[extension]; // e.g., "/usr/bin/php-cgi"
-    if (!interpreter.empty()) {
-      std::string full_script_path = current_loc.getRoot() + actual_path;
 
-      // F_OK checks if the file exists.
-      if (access(full_script_path.c_str(), F_OK) !=0) {
-        return HandlerErrorHttp(404, request, config);
-      }
+    return (cgiConditionForExecute(config, request, actual_path, cgi_map, extension, current_loc));
+  
+  } else if (request.method == "GET")  {
 
-      // R_OK checks if we have permission to read the file.
-      if (access(full_script_path.c_str(), R_OK) != 0) {
-        return HandlerErrorHttp(403, request, config);
-      }
+      return (HttpHandler::handler_methode_get(request, config));
+  
+  } else if (request.method == "POST") {
+   
+      return (HttpHandler::handler_methode_post(request, config));
+  
+  } else if (request.method == "DELETE")  {
 
-      // If it exists and is readable, we safely execute the CGI
-      return HttpHandler::executeCgi(request.path, request, config, interpreter, current_loc);
-    }
-  }
-
-  else if (request.method == "GET")
-  {
-    return (HttpHandler::handler_methode_get(request, config));
-  }
-  else if (request.method == "POST")
-  {
-    return (HttpHandler::handler_methode_post(request, config));
-  }
-  else if (request.method == "DELETE")
-  {
-    return (HttpHandler::handler_methode_delete(request, config));
-  }
-  else
-  {
-    return (HandlerErrorHttp(500, request, config));
+      return (HttpHandler::handler_methode_delete(request, config));
+  
+  } else  {
+    
+      return (HandlerErrorHttp(500, request, config));
   }
 	return ( response );
 }
@@ -137,14 +143,13 @@ std::string   HttpHandler::findAndOpenBody(int status, t_httpRequest request, co
   std::ifstream file(open.c_str(), std::ios::binary);
   std::ostringstream oss;
 
-  if (file.is_open() && !page[status].empty())
-  {
+  if (file.is_open() && !page[status].empty())  {
+
     std::stringstream buffer;
     buffer << file.rdbuf();
     body = buffer.str();
 
   }
-  
   return (body);
 }
 

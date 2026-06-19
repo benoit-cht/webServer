@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/11 16:27:56 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/19 02:34:07 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/19 12:34:04 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,9 +165,7 @@ t_httpResponse HttpHandler::serveIndex(const std::string& path, t_httpRequest& r
 std::string HttpHandler::generateAutoIndexHTML(const std::string& path) {
 
     DIR* dir = opendir(path.c_str());
-    if (!dir) {
-        return ""; // Erreur : dossier inaccessible
-    }
+    if (!dir) { return ( "" ); /* Erreur : dossier inaccessible */ }
 
     std::vector<std::string> entries;
     struct dirent* entry;
@@ -227,8 +225,6 @@ std::string HttpHandler::generateAutoIndexHTML(const std::string& path) {
     html += "    </table>\n";
     html += "</body>\n";
     html += "</html>\n";
-
-    std::cout << "->" + html + "END" << std::endl;
 
     return html;
 }
