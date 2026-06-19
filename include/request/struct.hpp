@@ -74,6 +74,46 @@ struct t_httpResponse {
 };
 
 /* ========================================================================== */
+/*                       -- structure for setResponse --                      */
+/* ========================================================================== */
+
+struct t_setResponseCGI {
+
+  size_t                              dot_pos ;
+  std::string                         extension;
+  std::string                         interpreter;
+  std::string                         full_script_path;
+  std::map<std::string, std::string>  cgi_map;
+
+};
+
+struct t_VarOfsetResponse {
+
+  std::string                           actual_path;
+  std::string                           prefix;
+  //LocationConfig                        current_loc;
+  t_httpResponse                        response;
+  //std::map<std::string, std::string>    headers ;
+  //std::map<std::string, LocationConfig> location;
+  
+};
+
+/* ========================================================================== */
+/*                       -- structure for setResponse --                      */
+/* ========================================================================== */
+
+struct t_ErrorHttp {
+
+  std::string                         body;
+  std::string                         prefix;
+  std::string                         open;
+  t_httpResponse                      response;
+  std::map<int, std::string>          page;
+  std::map<std::string, std::string>  headers;
+
+};
+
+/* ========================================================================== */
 /*                         -- structure parsing POST --                       */
 /* ========================================================================== */
 
