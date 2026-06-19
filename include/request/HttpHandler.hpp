@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 11:31:58 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/19 14:58:03 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/19 18:03:21 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,8 @@ class HttpHandler {
 
   private:
     static std::string    findAndOpenBody(int status, t_httpRequest request, const ServerConfig& config);
-    static void           setStructConfig(t_config directiv, const ServerConfig& serv, std::string path);
+    static void           setStructConfig(t_config& directiv, const ServerConfig& serv, std::string path);
+    static t_httpResponse  checkRequestIsLegit(t_VarOfsetResponse& var, t_httpRequest request, t_config& directiv, const ServerConfig& serve);
 
     static t_httpResponse status_201(int status, t_httpResponse response);
     static t_httpResponse status_204(int status, t_httpResponse response);

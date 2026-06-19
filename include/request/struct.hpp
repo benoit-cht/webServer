@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/27 13:55:25 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/19 16:45:29 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/19 18:47:46 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,8 +89,10 @@ struct t_setResponseCGI {
 
 struct t_VarOfsetResponse {
 
+  size_t                                q_pos;
+  size_t                                dot_pos;
+  std::string                           extension;
   std::string                           actual_path;
-  std::string                           prefix;
   t_httpResponse                        response;
   
 };

@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/19 17:02:34 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/19 18:52:12 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,51 +61,66 @@ t_httpResponse HttpHandler::cgiConditionForExecute(const ServerConfig& config, t
   return HttpHandler::executeCgi(request.path, request, config, interpreter, current_loc);
 }
 
-t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerConfig& config)
+/* ========================================================================== */
+
+t_httpResponse  HttpHandler::checkRequestIsLegit(t_VarOfsetResponse& var, t_httpRequest request, t_config& directiv, const ServerConfig& serve)
 {
-	t_httpResponse                        response;
-  std::map<std::string, std::string>    headers;
-  std::map<std::string, LocationConfig> location = config.getLocationConfig();
-
-
   // si ya un query ? on a quand meme besoin d'extraire le path sans le ? et ce quil y a apres
-  std::string actual_path = request.path;
-  size_t q_pos = actual_path.find('?');
-  if (q_pos != std::string::npos) {
-    actual_path = actual_path.substr(0, q_pos);
+  var.extension = "";
+  var.actual_path = request.path;
+  var.q_pos = var.actual_path.find('?');
+  if (var.q_pos != std::string::npos) {
+
+    var.actual_path = var.actual_path.substr(0, var.q_pos);
   }
 
-  std::string prefix = find_location(location, actual_path);
-  LocationConfig current_loc = location[prefix];
+  directiv.prefix = find_location(directiv.location, var.actual_path);
+  directiv.config = directiv.location[directiv.prefix];
 
   if (request.headers.empty())  {
 
-    return (HandlerErrorHttp(400, request, config));
+    return (HandlerErrorHttp(400, request, serve));
   
   }
-	if (!location[prefix].checkMethod(request.method))  {
+  if (!directiv.config.checkMethod(request.method))  {
 
-    return (HandlerErrorHttp(405, request, config));
+    return (HandlerErrorHttp(405, request, serve));
   
   }
-  if (request.body.size() > config.getClientMaxBodySize()) { // Check client max body size
+  if (request.body.size() > serve.getClientMaxBodySize()) {  // Check client max body size
 
-	    return (HandlerErrorHttp(413, request, config));
+	    return (HandlerErrorHttp(413, request, serve));
   
   }
 
   // New dynamic CGI location check
-  std::string extension = "";
-  size_t dot_pos = actual_path.find_last_of(".");
-  if (dot_pos != std::string::npos) {
+  var.dot_pos = var.actual_path.find_last_of(".");
+  if (var.dot_pos != std::string::npos) {
 
-    extension = actual_path.substr(dot_pos);
+    var.extension = var.actual_path.substr(var.dot_pos);
   }
-  std::map<std::string, std::string> cgi_map = current_loc.getCgiPass();
+  return (t_httpResponse(0, var.response.headers, ""));
+}
 
-  if (!extension.empty() && cgi_map.find(extension) != cgi_map.end()) {
+/* ========================================================================== */
 
-    return (cgiConditionForExecute(config, request, actual_path, cgi_map, extension, current_loc));
+t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerConfig& config)
+{ 
+  t_VarOfsetResponse                    var;
+  t_config                              directiv;
+  t_httpResponse                         response;
+  directiv.location = config.getLocationConfig();
+
+  response = checkRequestIsLegit(var, request, directiv, config);
+  if (!response.status == 0) {
+
+    return (response);
+  }
+
+  std::map<std::string, std::string> cgi_map = directiv.config.getCgiPass();
+  if (!var.extension.empty() && cgi_map.find(var.extension) != cgi_map.end()) {
+
+    return (cgiConditionForExecute(config, request, var.actual_path, cgi_map, var.extension, directiv.config));
   
   } else if (request.method == "GET")  {
 
@@ -123,7 +138,7 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
     
       return (HandlerErrorHttp(500, request, config));
   }
-	return ( response );
+	return ( var.response );
 }
 
 /* ========================================================================== */
@@ -153,7 +168,7 @@ std::string   HttpHandler::findAndOpenBody(int status, t_httpRequest request, co
   return (body);
 }
 
-void HttpHandler::setStructConfig(t_config directiv, const ServerConfig& serv, std::string path)
+void HttpHandler::setStructConfig(t_config& directiv, const ServerConfig& serv, std::string path)
 {
   directiv.location = serv.getLocationConfig();
   directiv.prefix = find_location(directiv.location, path);
