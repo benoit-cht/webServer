@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/11 16:27:56 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/19 00:57:56 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/19 02:34:07 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,13 +24,28 @@ t_httpResponse HttpHandler::handler_methode_get(t_httpRequest& request, const Se
   std::string fullPath = location[prefix].getRoot() + request.path ;
   std::cout << COLOR_MAGENTA << "full path ? " + fullPath << COLOR_RESET << std::endl;
 
+  // Directory handling
   if (!request.path.empty() && request.path[request.path.size() - 1] == '/')
   {
-    if (location[prefix].getAutoindex())
-      return HttpHandler::serveIndex( fullPath /* + prefix */, request, config);
+	std::string indexPath = fullPath + location[prefix].getIndex();
+
+	// 1. Check if the directory ITSELF actually exists
+	struct stat info;
+	if (stat(fullPath.c_str(), &info) != 0 || !S_ISDIR(info.st_mode)) {
+		// The directory does not exist
+		return (HandlerErrorHttp(404, request, config));
+	}
+
+	// 2. Check for the index file
+	if (!location[prefix].getIndex().empty() && access(indexPath.c_str(), F_OK) == 0)
+      return (HttpHandler::serveStaticFile(indexPath, request, config));
+
+	// 3. Check autoindex fallback
+    else if (location[prefix].getAutoindex())
+      return HttpHandler::serveIndex(fullPath /* + prefix */, request, config);
 	  // jai retire prefixe sinon en fait un http://localhost:8080/cgi-bin/ renvoie 500 Internal Server Error avec autoindex `off`
-    else if (!location[prefix].getIndex().empty())
-      return (HttpHandler::serveStaticFile(fullPath + location[prefix].getIndex(), request, config));
+	  
+	// 4. Access denied 403 fallback
     else
       return (HandlerErrorHttp(403, request, config));
   }
