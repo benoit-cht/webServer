@@ -1,4 +1,4 @@
-*This project has been created as part of the curriculum by <bchallat> [. <tjacquel>, <lcluzan>].*
+*This project has been created as part of the curriculum by <bchallat> <tjacquel>, <lcluzan>.*
 
 # Webserv
 
@@ -29,3 +29,18 @@ Run the server with an explicit configuration file.
 ```
 
 ### Testing the server
+You can connect to the local server in several ways:
+* Browser: `http://localhost:8080/`
+* Curl: `curl -v http://localhost:8080/`
+* Telnet: `telnet localhost 8080` (useful for manually typing HTTP request)
+
+
+### 📚 In-detph Documentation (Wiki)
+We have compiled extensive documentation, research, and architectural diagrams during the development of this project.
+👉 **[Click here to access the Project Wiki](./tech-stack/wiki)** *(Note: adjust `./tech-stack/wiki` or `./wiki` to match your exact folder structure)*.
+
+In the Wiki, you will find deep dives into:
+* TCP Socket Programming (socket, bind, listen, accept, epoll)
+* HTTP Protocol handling and parsing
+* Common Gateway Interface (CGI) architecture
+* Diagrams of our server's architecture
