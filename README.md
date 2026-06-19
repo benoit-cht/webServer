@@ -1,4 +1,4 @@
-*This project has been created as part of the curriculum by bchallat, tjacquel, lcluzan.*
+*This project has been created as part of the curriculum by bchallat, tjacquel and lcluzan.*
 
 # Webserv
 
@@ -28,16 +28,31 @@ Run the server with an explicit configuration file.
 ./webserv [path/to/config.conf]
 ```
 
-### Testing the server
-You can connect to the local server in several ways:
-* Browser: `http://localhost:8080/`
-* Curl: `curl -v http://localhost:8080/`
-* Telnet: `telnet localhost 8080` (useful for manually typing HTTP request)
+### Testing commands
 
+#### Testing the Server
+Once the server is running, you can test it using various command-line tools:
+
+- **Curl:**
+	`curl -v http://localhost:8080/`
+- **Telnet:**
+	`telnet localhost 8080` (useful for manually typing HTTP request)
+
+#### Stress Testing Commands
+To ensure the server doesn't crash under high load, you can use Siege:
+
+- **Run a basic stress test:**
+	`siege -b -c50 -t10s http://127.0.0.1:8080/index.html`
+
+#### Memory Leak Testing
+
+- `valgrind --leak-check=full --show-leak-kinds=all --track-fds=yes ./webserv`
+
+## Ressources
 
 ### 📚 In-detph Documentation (Wiki)
 We have compiled extensive documentation, research, and architectural diagrams during the development of this project.
-👉 **[Click here to access the Project Wiki](./tech-stack/wiki)** *(Note: adjust `./tech-stack/wiki` or `./wiki` to match your exact folder structure)*.
+👉 **[Click here to access the Project Wiki](./tech-stack/wiki)**
 
 In the Wiki, you will find deep dives into:
 * TCP Socket Programming (socket, bind, listen, accept, epoll)
