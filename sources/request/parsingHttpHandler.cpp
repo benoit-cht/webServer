@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parsing_HttpHandler.cpp                            :+:      :+:    :+:   */
+/*   parsingHttpHandler.cpp                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/01 11:55:55 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/20 03:54:06 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/06/20 15:08:58 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,7 +167,7 @@ static void lx_tokenizer(std::vector<t_token>& lexer)
         t_token& token = lexer[i];
 
         // --- Typage de la Request Line (ex: "GET / HTTP/1.1\r\n")
-        if (i == 0 && (token.value == "GET" || token.value == "POST" || token.value == "DELETE"))
+        if (i == 0 && !token.value.empty())
         {
             token.type = METHOD;
         }
@@ -251,6 +251,7 @@ std::vector<t_token> HttpHandler::lexing(const std::string raw_request)
   }
 
   lexer.push_back(t_token(BODY, extract_body(raw_request)));
+//   printTokens(lexer);
   return ( lexer );
 }
 
