@@ -282,9 +282,13 @@ void print_http_response(const t_httpResponse& response) {
     std::cout << "Status: " << COLOR_YELLOW << response.status << COLOR_RESET;
     switch (response.status) {
         case 200: std::cout << " (OK)"; break;
+        case 201: std::cout << " (Created)"; break;
+        case 204: std::cout << " (No Content)"; break;
         case 400: std::cout << " (Bad Request)"; break;
         case 403: std::cout << " (Forbidden)"; break;
         case 404: std::cout << " (Not Found)"; break;
+        case 405: std::cout << " (Method Not Allowed)"; break;
+        case 413: std::cout << " (Payload Too Large)"; break;
         case 501: std::cout << " (Not Implemented)"; break;
         default: std::cout << " (Unknown Status)"; break;
     }
