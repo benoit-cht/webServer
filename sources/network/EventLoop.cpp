@@ -6,7 +6,7 @@
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:01:32 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/20 03:50:29 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/06/20 04:22:22 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,13 +118,6 @@ ssize_t EventLoop::readFromClient(int fd, char* buffer, size_t size)
   return bytes_read;
 }
 
-/* ************************************************************************** */
-/*
-void EventLoop::sendResponse(int fd, const std::string& response)
-{
-  return _socket_handler.writeToSocket(fd, response.c_str(), response.size());
-}
-*/
 void EventLoop::removeClient(int fd)
 {
   _client_manager.removeClient(fd);
@@ -183,16 +176,18 @@ const struct pollfd& EventLoop::getPollFd(size_t index) const {
     return _poll_fds[index];
 }
 
-// Garde cette version (celle qui utilise _pendingResponses)
 void EventLoop::sendResponse(int fd, const std::string& response) {
     queueResponse(fd, response);
 }
 
 void EventLoop::queueResponse(int fd, const std::string& response) {
+
     _pendingResponses[fd] = response;
-    // Active POLLOUT pour ce fd
+
     for (size_t i = 0; i < _poll_fds.size(); i++) {
+
         if (_poll_fds[i].fd == fd) {
+
             _poll_fds[i].events |= POLLOUT;
             break;
         }
@@ -200,32 +195,36 @@ void EventLoop::queueResponse(int fd, const std::string& response) {
 }
 
 void EventLoop::handlePendingWrites(int fd) {
+
     std::map<int, std::string>::iterator it = _pendingResponses.find(fd);
     if (it == _pendingResponses.end()) {
-        return;
+            return;
     }
 
     ssize_t sent = _socket_handler.writeToSocket(fd, it->second.c_str(), it->second.size());
-    if (sent > 0) {
+    if (sent > 0)
+    {
         it->second.erase(0, sent);
         if (it->second.empty()) {
+
             _pendingResponses.erase(it);
-            // Désactive POLLOUT
-            for (size_t i = 0; i < _poll_fds.size(); i++) {
+            for (size_t i = 0; i < _poll_fds.size(); i++)
+            {
                 if (_poll_fds[i].fd == fd) {
+
                     _poll_fds[i].events &= ~POLLOUT;
                     break;
                 }
             }
-			if (_disconnectAfterWrite.count(fd) > 0 &&  _disconnectAfterWrite[fd]) {
+			if (_disconnectAfterWrite.count(fd) > 0 &&  _disconnectAfterWrite[fd])
+            {
 				removeClient(fd);
 				_disconnectAfterWrite.erase(fd);
 			}
         }
-    } else {
-        // Erreur : fermer le client
-        removeClient(fd);
     }
+    else
+        removeClient(fd);
 }
 
 void EventLoop::markClientForDisconnect(int fd) {
@@ -244,7 +243,7 @@ std::vector<int> EventLoop::getActiveFds() const {
 
 int EventLoop::waitForActivity() {
     for (size_t i = 0; i < _poll_fds.size(); i++) {
-        _poll_fds[i].revents = 0;  // Réinitialise revents
+        _poll_fds[i].revents = 0;
     }
     return poll(&_poll_fds[0], _poll_fds.size(), 1000);
 }
@@ -379,8 +378,6 @@ void EventLoop::handleCgiRead(int fd, CgiState& CgiContext) {
         // EOF: The CGI script has finished executing!
 
         // 1. Kill the zombie process
-        // int wstatus;
-        // waitpid(CgiContext.cgi_pid, &wstatus, 0); // The 0 flag tells the Operating System: "If the child process hasn't fully terminated yet, block and wait until it does."
 		waitpid(CgiContext.cgi_pid, NULL, WNOHANG); // The WNOHANG flag tells the OS: "If the child is a zombie, reap it. If it is still doing some background cleanup, return immediately so my server can keep running."
 
         // 2. PARSE CGI OUTPUT
@@ -446,28 +443,9 @@ void	EventLoop::handleCgiEvent(int fd, short revents) {
 	}
 }
 
-void	EventLoop::printCgiState() {
-	std::map<int, CgiState>::const_iterator it = _cgi_contexts.begin();
-
-	for (; it != _cgi_contexts.end(); it++) {
-		std::stringstream ss;
-		ss << "    _cgi_contexts[ " << it->first << "]";
-		std::cout << ss << ".client_fd=" << it->second.client_fd << "\n";
-		std::cout << ss << ".cgi_pid=" << it->second.cgi_pid << "\n";
-		std::cout << ss << ".cgi_read_fd=" << it->second.cgi_read_fd << "\n";
-		std::cout << ss << ".cgi_write_fd=" << it->second.cgi_write_fd << "\n";
-		std::cout << ss << ".input_buffer=" << it->second.input_buffer << "\n";
-		std::cout << ss << ".output_buffer=" << it->second.output_buffer << "\n";
-		std::cout << ss << ".start_time=" << it->second.start_time << "\n";
-	}
-}
-
 void	EventLoop::checkCgiTimeout() {
-	time_t		currentTime = std::time(NULL);
 
-	// time(&currentTime);
-
-	// EventLoop::printCgiState();
+    time_t		currentTime = std::time(NULL);
 
 	// Iterate through _cgi_contexts.
 	std::map<int, CgiState>::iterator	it = _cgi_contexts.begin();

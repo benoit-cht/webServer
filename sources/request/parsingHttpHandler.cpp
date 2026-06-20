@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_HttpHandler.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/01 11:55:55 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/10 20:24:45 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/20 03:54:06 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -309,20 +309,6 @@ static bool dd_header_line(const std::vector<t_token>& lexer)
   return ( true );
 }
 
-/*
-static bool dd_header_body(const std::vector<t_token>& lexer)
-{
-  size_t index = 0;
-  while (index < lexer.size() && lexer[index].type != BODY)
-    index++;
-  while (index < lexer.size() && lexer[index].type == BODY)
-    index++;
-  if (index != lexer.size())
-    return (false);
-  return (true);
-}
-*/
-
 static bool dd_end_of_headers(const std::vector<t_token>& lexer)
 {
     // Vérifie que les deux derniers tokens sont des CRLF (fin des headers)
@@ -420,7 +406,7 @@ t_httpRequest HttpHandler::struct_http_request(std::vector<t_token>& lexer)
 
   init_hash_table_header(request, lexer);
   if (request.headers.empty() || request.headers["Host"].empty()) {
-    
+
     request.headers.clear();
     return (request);
   }

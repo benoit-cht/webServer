@@ -5,13 +5,10 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/01 12:20:23 by ton_utilisa       #+#    #+#             */
-/*   Updated: 2026/06/20 03:41:36 by lcluzan          ###   ########.fr       */
+/*   Created: 2026/06/20 04:00:28 by lcluzan           #+#    #+#             */
+/*   Updated: 2026/06/20 04:00:34 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include <fstream>   // Pour std::ifstream
-#include <sstream>   // Pour std::stringstream
 
 #include <request/HttpHandler.hpp>
 
