@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:23:36 by tjacquel          #+#    #+#             */
-/*   Updated: 2026/06/19 22:29:09 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/20 03:37:53 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -189,8 +189,8 @@ void	LocationConfig::redirectDirCheckAndLoad(const std::vector<std::string>& ret
 	code = ft_stoi(returnDir.at(1));
 
 	// Status code value check
-	if (code < 300 || code > 399) {
-		thw << "Config file error: redirect status code value must be within 300 and 399, found " << code;
+	if (code != 301 && code != 302) {
+		thw << "Config file error: redirect status code must be 301 or 302, found " << code;
 		throw std::logic_error(thw.str());
 	}
 

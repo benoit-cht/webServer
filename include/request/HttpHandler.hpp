@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpHandler.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 11:31:58 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/20 04:03:55 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/06/20 05:41:17 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,9 +88,9 @@ class HttpHandler {
 
     static t_httpResponse status_201(int status, t_httpResponse response);
     static t_httpResponse status_204(int status, t_httpResponse response);
-    static t_httpResponse status_301(int status, t_httpRequest request, t_httpResponse response);
-    static t_httpResponse status_302(int status, t_httpRequest request, t_httpResponse response);
-    static t_httpResponse status_304(int status, t_httpRequest request, t_httpResponse response);
+    static t_httpResponse status_301(int status, t_httpRequest request, t_httpResponse response, std::string redirURI);
+    static t_httpResponse status_302(int status, t_httpRequest request, t_httpResponse response, std::string redirURI);
+    static t_httpResponse status_304(int status, t_httpRequest request, t_httpResponse response, std::string redirURI);
     static t_httpResponse status_400(int status, t_httpResponse response);
     static t_httpResponse status_403(int status, t_httpResponse response);
     static t_httpResponse status_404(int status, t_httpResponse response);
