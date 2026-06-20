@@ -360,6 +360,7 @@ bool  HttpHandler::descending_deriv(std::vector<t_token>& lexer)
 static void   init_hash_table_header(t_httpRequest& request, std::vector<t_token>& lexer)
 {
   size_t      index = 0;
+  bool        flagHost = false;
   std::string h_key;
   std::string h_value;
 
@@ -373,10 +374,18 @@ static void   init_hash_table_header(t_httpRequest& request, std::vector<t_token
     else if (lexer[index].type == HEADER_VALUE && !h_key.empty())
     {
       h_value = lexer[index].value;
+      if (h_key == "Host" && flagHost == true)
+      {
+        return (request.headers.clear());
+      }
       request.headers[h_key] = h_value;
 
       h_key.clear();
       h_value.clear();
+    }
+    if (!request.headers["Host"].empty())
+    {
+      flagHost = true;
     }
     index++;
   }
@@ -410,6 +419,11 @@ t_httpRequest HttpHandler::struct_http_request(std::vector<t_token>& lexer)
   }
 
   init_hash_table_header(request, lexer);
+  if (request.headers.empty() || request.headers["Host"].empty()) {
+    
+    request.headers.clear();
+    return (request);
+  }
   return (request);
 }
 

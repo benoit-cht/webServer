@@ -168,6 +168,10 @@ t_httpResponse  HttpHandler::checkRequestIsLegit(t_VarOfsetResponse& var, t_http
     return (HandlerErrorHttp(405, request, serve));
   
   }
+  if (request.method != "GET" &&request.method != "POST" &&request.method != "DELETE")  {
+
+      return (HandlerErrorHttp(501, request, serve))
+  }
   if (request.body.size() > serve.getClientMaxBodySize()) {  // Check client max body size
 
 	    return (HandlerErrorHttp(413, request, serve));
