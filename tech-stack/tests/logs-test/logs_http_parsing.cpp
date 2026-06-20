@@ -1,5 +1,5 @@
 
-#include "../include/webserver_test.hpp" 
+#include "../include/webserver_test.hpp"
 
 std::string typeToString(t_type type)
 {
@@ -18,7 +18,7 @@ std::string typeToString(t_type type)
     }
 }
 
-printTokens(const std::vector<t_token>& lexer)
+void printTokens(const std::vector<t_token>& lexer)
 {
     for (std::vector<t_token>::const_iterator it = lexer.begin(); it != lexer.end(); ++it)
     {
@@ -27,7 +27,7 @@ printTokens(const std::vector<t_token>& lexer)
     }
 }
 
-print_hash(const std::vector<std::string>& hash)
+void print_hash(const std::vector<std::string>& hash)
 {
     for (size_t i = 0; i < hash.size(); ++i)
     {

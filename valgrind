@@ -1,0 +1,325 @@
+token[0]=`server`
+token[1]=`{`
+token[2]=`listen`
+token[3]=`8080`
+token[4]=`;`
+token[5]=`client_max_body_size`
+token[6]=`50`
+token[7]=`;`
+token[8]=`location`
+token[9]=`/`
+token[10]=`{`
+token[11]=`root`
+token[12]=`./sources/www`
+token[13]=`;`
+token[14]=`methods`
+token[15]=`POST`
+token[16]=`GET`
+token[17]=`;`
+token[18]=`autoindex`
+token[19]=`on`
+token[20]=`;`
+token[21]=`index`
+token[22]=`index.html`
+token[23]=`;`
+token[24]=`error_page`
+token[25]=`404`
+token[26]=`404.html`
+token[27]=`;`
+token[28]=`error_page`
+token[29]=`504`
+token[30]=`504.html`
+token[31]=`;`
+token[32]=`cgi_pass`
+token[33]=`.sh`
+token[34]=`/usr/bin/bash`
+token[35]=`;`
+token[36]=`}`
+token[37]=`location`
+token[38]=`upload/`
+token[39]=`{`
+token[40]=`root`
+token[41]=`sources/www/`
+token[42]=`;`
+token[43]=`autoindex`
+token[44]=`on`
+token[45]=`;`
+token[46]=`methods`
+token[47]=`GET`
+token[48]=`POST`
+token[49]=`DELETE`
+token[50]=`;`
+token[51]=`cgi_pass`
+token[52]=`.py`
+token[53]=`/usr/bin/python3`
+token[54]=`;`
+token[55]=`}`
+token[56]=`location`
+token[57]=`cgi-bin`
+token[58]=`{`
+token[59]=`root`
+token[60]=`sources/www/`
+token[61]=`;`
+token[62]=`methods`
+token[63]=`POST`
+token[64]=`GET`
+token[65]=`;`
+token[66]=`autoindex`
+token[67]=`on`
+token[68]=`;`
+token[69]=`cgi_pass`
+token[70]=`.py`
+token[71]=`/usr/bin/python3`
+token[72]=`;`
+token[73]=`cgi_pass`
+token[74]=`.php`
+token[75]=`/usr/bin/php-cgi`
+token[76]=`;`
+token[77]=`}`
+token[78]=`location`
+token[79]=`repo`
+token[80]=`{`
+token[81]=`root`
+token[82]=`sources/www/`
+token[83]=`;`
+token[84]=`autoindex`
+token[85]=`off`
+token[86]=`;`
+token[87]=`methods`
+token[88]=`GET`
+token[89]=`;`
+token[90]=`}`
+token[91]=`}`
+token[92]=`server`
+token[93]=`{`
+token[94]=`listen`
+token[95]=`9292`
+token[96]=`;`
+token[97]=`client_max_body_size`
+token[98]=`10`
+token[99]=`;`
+token[100]=`location`
+token[101]=`/`
+token[102]=`{`
+token[103]=`root`
+token[104]=`sources/www`
+token[105]=`;`
+token[106]=`methods`
+token[107]=`GET`
+token[108]=`;`
+token[109]=`index`
+token[110]=`index.html`
+token[111]=`;`
+token[112]=`error_page`
+token[113]=`404`
+token[114]=`404.html`
+token[115]=`;`
+token[116]=`}`
+token[117]=`location`
+token[118]=`upload/`
+token[119]=`{`
+token[120]=`root`
+token[121]=`sources/www`
+token[122]=`;`
+token[123]=`methods`
+token[124]=`GET`
+token[125]=`POST`
+token[126]=`;`
+token[127]=`autoindex`
+token[128]=`on`
+token[129]=`;`
+token[130]=`error_page`
+token[131]=`404`
+token[132]=`404.html`
+token[133]=`;`
+token[134]=`}`
+token[135]=`}`
+token[136]=`server`
+token[137]=`{`
+token[138]=`listen`
+token[139]=`8081`
+token[140]=`;`
+token[141]=`location`
+token[142]=`/`
+token[143]=`{`
+token[144]=`root`
+token[145]=`tech-stack/www`
+token[146]=`;`
+token[147]=`methods`
+token[148]=`GET`
+token[149]=`;`
+token[150]=`error_page`
+token[151]=`404`
+token[152]=`404.html`
+token[153]=`;`
+token[154]=`}`
+token[155]=`}`
+token[156]=`server`
+token[157]=`{`
+token[158]=`listen`
+token[159]=`4242`
+token[160]=`;`
+token[161]=`client_max_body_size`
+token[162]=`100`
+token[163]=`;`
+token[164]=`location`
+token[165]=`/`
+token[166]=`{`
+token[167]=`root`
+token[168]=`sources/www`
+token[169]=`;`
+token[170]=`methods`
+token[171]=`GET`
+token[172]=`;`
+token[173]=`index`
+token[174]=`index.html`
+token[175]=`;`
+token[176]=`}`
+token[177]=`location`
+token[178]=`.bla`
+token[179]=`{`
+token[180]=`methods`
+token[181]=`POST`
+token[182]=`;`
+token[183]=`cgi_pass`
+token[184]=`.bla`
+token[185]=`./tech-stack/tests/script/cgi_tester`
+token[186]=`;`
+token[187]=`}`
+token[188]=`location`
+token[189]=`post_body/`
+token[190]=`{`
+token[191]=`methods`
+token[192]=`POST`
+token[193]=`;`
+token[194]=`root`
+token[195]=`sources/www`
+token[196]=`;`
+token[197]=`}`
+token[198]=`location`
+token[199]=`directory/`
+token[200]=`{`
+token[201]=`methods`
+token[202]=`GET`
+token[203]=`;`
+token[204]=`root`
+token[205]=`.`
+token[206]=`;`
+token[207]=`index`
+token[208]=`youpi.bad_extension`
+token[209]=`;`
+token[210]=`}`
+token[211]=`}`
+
+virtual_servers[0].host=0.0.0.0
+virtual_servers[0].port=8080
+virtual_servers[0].clients_max_body_size=50
+virtual_servers[0].location.KEY=/
+    root=./sources/www
+    methods=GET, POST
+    index=index.html
+    autoindex=on
+    error_page 404=404.html
+    error_page 504=504.html
+    cgi_pass[.sh]=/usr/bin/bash
+virtual_servers[0].location.KEY=cgi-bin
+    root=sources/www/
+    methods=GET, POST
+    index=index.html
+    autoindex=on
+    cgi_pass[.php]=/usr/bin/php-cgi
+    cgi_pass[.py]=/usr/bin/python3
+virtual_servers[0].location.KEY=repo
+    root=sources/www/
+    methods=GET
+    index=index.html
+virtual_servers[0].location.KEY=upload/
+    root=sources/www/
+    methods=DELETE, GET, POST
+    index=index.html
+    autoindex=on
+    cgi_pass[.py]=/usr/bin/python3
+
+virtual_servers[1].host=0.0.0.0
+virtual_servers[1].port=9292
+virtual_servers[1].clients_max_body_size=10
+virtual_servers[1].location.KEY=/
+    root=sources/www
+    methods=GET
+    index=index.html
+    error_page 404=404.html
+virtual_servers[1].location.KEY=upload/
+    root=sources/www
+    methods=GET, POST
+    index=index.html
+    autoindex=on
+    error_page 404=404.html
+
+virtual_servers[2].host=0.0.0.0
+virtual_servers[2].port=8081
+virtual_servers[2].clients_max_body_size=8000000
+virtual_servers[2].location.KEY=/
+    root=tech-stack/www
+    methods=GET
+    index=index.html
+    error_page 404=404.html
+
+virtual_servers[3].host=0.0.0.0
+virtual_servers[3].port=4242
+virtual_servers[3].clients_max_body_size=100
+virtual_servers[3].location.KEY=.bla
+    root=.
+    methods=POST
+    index=index.html
+    cgi_pass[.bla]=./tech-stack/tests/script/cgi_tester
+virtual_servers[3].location.KEY=/
+    root=sources/www
+    methods=GET
+    index=index.html
+virtual_servers[3].location.KEY=directory/
+    root=.
+    methods=GET
+    index=youpi.bad_extension
+virtual_servers[3].location.KEY=post_body/
+    root=sources/www
+    methods=POST
+    index=index.html
+[1;32mSuccess : open socket to a port: 8080[0m
+[1;32mSuccess : open socket to a port: 9292[0m
+[1;32mSuccess : open socket to a port: 8081[0m
+[1;32mSuccess : open socket to a port: 4242[0m
+[1;32mSuccess : new connetion accept to 127.0.0.1:52856[0m
+[1;36m(Log Server) : add new client: fd=7, IP=127.0.0.1, Port=52856[0m
+[1;36m(Log Client) : new connection accepted (fd=7, IP=127.0.0.1, Port client=52856)[0m
+[1;34mDonnées reçues de 127.0.0.1:52856 (506 octets)[0m
+[1;32mSuccess : request is valid [0m
+[1;36m
+=== HTTP Request ===[0m
+Method: [1;33mGET[0m
+Path: [1;33m/cgi-bin/test_cgi.php[0m
+Version: [1;33mHTTP/1.1[0m
+[1;36m
+--- Headers ---[0m
+Accept: [1;32mtext/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8[0m
+Accept-Encoding: [1;32mgzip, deflate, br, zstd[0m
+Accept-Language: [1;32men-US,en;q=0.9[0m
+Connection: [1;32mkeep-alive[0m
+Host: [1;32mlocalhost:8080[0m
+Priority: [1;32mu=0, i[0m
+Referer: [1;32mhttp://localhost:8080/cgi-bin/[0m
+Sec-Fetch-Dest: [1;32mdocument[0m
+Sec-Fetch-Mode: [1;32mnavigate[0m
+Sec-Fetch-Site: [1;32msame-origin[0m
+Sec-Fetch-User: [1;32m?1[0m
+Upgrade-Insecure-Requests: [1;32m1[0m
+User-Agent: [1;32mMozilla/5.0 (X11; Linux x86_64; rv:151.0) Gecko/20100101 Firefox/151.0[0m
+[1;36m===================
+[0m
+[1;33m 
+Warning : Reçu SIGINT (Ctrl+C), arrêt du serveur... [0m
+[1;36m(Log Server) : close client fd=7[0m
+[1;36m(Log Server) : delete client: fd=7[0m
+[1;32mSuccess : close socket 3[0m
+[1;32mSuccess : close socket 4[0m
+[1;32mSuccess : close socket 5[0m
+[1;32mSuccess : close socket 6[0m

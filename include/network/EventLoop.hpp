@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   EventLoop.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:29:31 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/20 01:37:46 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/06/20 15:13:45 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,11 +44,12 @@ class EventLoop {
   public:
     int               waitForActivity();
     bool              isServerFd(int fd) const;
+    short             getPollEvent(int i) const;
     ssize_t           readFromClient(int fd, char* buffer, size_t size);
     ClientInfo*       acceptNewConnection(int server_fd);
     std::vector<int>  getActiveFds() const;
-    short             getPollEvent(int i) const;
-	std::string			getClientIP(int fd) const;
+
+	  std::string         getClientIP(int fd) const;
 
   public:
     void registerCgi(int client_fd, const t_httpResponse& response, const t_httpRequest& request, const ServerConfig& config);
@@ -97,7 +98,7 @@ class EventLoop {
     void queueResponse(int fd, const std::string& response);
     void handlePendingWrites(int fd);
 
-	void markClientForDisconnect(int fd);
+    void markClientForDisconnect(int fd);
 
   private:
     std::map<int, std::string> _pendingResponses;  // Buffer des réponses

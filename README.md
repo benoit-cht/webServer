@@ -1,4 +1,4 @@
-*This project has been created as part of the curriculum by bchallat, tjacquel and lcluzan.*
+*This project has been created as part of the 42 curriculum by bchallat, tjacquel and lcluzan.*
 
 # Webserv
 
