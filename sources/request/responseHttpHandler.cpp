@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   response_HttpHandler.cpp                           :+:      :+:    :+:   */
+/*   responseHttpHandler.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/20 04:00:28 by lcluzan           #+#    #+#             */
-/*   Updated: 2026/06/20 04:00:34 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/06/20 05:51:43 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,14 +160,15 @@ t_httpResponse  HttpHandler::checkRequestIsLegit(t_VarOfsetResponse& var, t_http
     return (HandlerErrorHttp(400, request, serve));
 
   }
-  if (!directiv.config.checkMethod(request.method))  {
-
-    return (HandlerErrorHttp(405, request, serve));
-
-  }
   if (request.method != "GET" &&request.method != "POST" &&request.method != "DELETE")  {
 
       return (HandlerErrorHttp(501, request, serve));
+  }
+
+  if (directiv.config.getRedirect().first == 0 && !directiv.config.checkMethod(request.method))  {
+
+    return (HandlerErrorHttp(405, request, serve));
+
   }
   if (request.body.size() > serve.getClientMaxBodySize()) {  // Check client max body size
 
