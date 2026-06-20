@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Stockage - webServ</title>
+<link href="styles/style.css" rel="stylesheet"/>
+        <style>
+        .btn-theme {
+            margin-bottom: 20px;
+            padding: 8px 12px;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+<h1>webServ</h1>
+<h2>Espace de stockage</h2>
+  <input class="search-bar" id="search-bar" placeholder="Rechercher un fichier..." type="text"/>
+
+<div class="button-container">
+  <a class="button button-upload" href="storage.html">Uploader un fichier</a>
+  <input  class="button button-upload" type="file" name="file" id="file" required>
+</div>
+<div class="file-list" id="file-list">
+<!-- Les fichiers seront affichés ici -->
+</div>
+<div class="path">Chemin actuel : <span id="current-path">/storage</span></div>
+</div>
+    <script src="scripts/theme.js"></script>
+</body>
+</html>

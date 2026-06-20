@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Connexion - webServ</title>
+    <link href="styles/style.css" rel="stylesheet"/>
+
+    <style>
+        .btn-theme {
+            margin-bottom: 20px;
+            padding: 8px 12px;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <h1>webServ</h1>
+        <h2>Connectez-vous</h2>
+        
+        <form id="loginForm" action="/login" method="POST">
+            <div class="form-group">
+                <label for="username">Prénom Utilisateur</label>
+                <input id="username" name="username" required="" type="text"/>
+            </div>
+            <div class="error-message" id="error-message"></div>
+            <button type="button" class="button" id="btn-theme" onclick="toggleDarkMode()">Activer le Mode Sombre</button>
+            <input type="submit" value="Se connecter et envoyer"/>
+            <div class="path">Chemin actuel : <span id="current-path">/</span></div>
+        </form>
+    </div>
+
+    <script>
+        // --- 1. FONCTIONS OUTILS POUR LES COOKIES ---
+        function setCookie(nom, valeur, jours) {
+            let date = new Date();
+            date.setTime(date.getTime() + (jours * 24 * 60 * 60 * 1000));
+            let expires = "expires=" + date.toUTCString();
+            document.cookie = nom + "=" + valeur + ";" + expires + ";path=/";
+        }
+
+        function getCookie(nom) {
+            let nomRecherche = nom + "=";
+            let cookies = document.cookie.split(';');
+            for(let i = 0; i < cookies.length; i++) {
+                let c = cookies[i].trim();
+                if (c.indexOf(nomRecherche) === 0) {
+                    return c.substring(nomRecherche.length, c.length);
+                }
+            }
+            return "";
+        }
+
+        // --- 2. GESTION DU DARK MODE ---
+        function toggleDarkMode() {
+            let body = document.body;
+            let btn = document.getElementById("btn-theme");
+
+            // Si le mode sombre est déjà actif, on l'enlève
+            if (body.classList.contains("dark-mode")) {
+                body.classList.remove("dark-mode");
+                setCookie("theme", "light", 30); // Sauvegarde le choix pour 30 jours
+                btn.innerText = "Activer le Mode Sombre";
+            } else {
+                // Sinon on l'active
+                body.classList.add("dark-mode");
+                setCookie("theme", "dark", 30);
+                btn.innerText = "Désactiver le Mode Sombre";
+            }
+        }
+
+        // Au chargement de la page, on vérifie si l'utilisateur avait choisi le dark mode
+        window.onload = function() {
+            if (getCookie("theme") === "dark") {
+                document.body.classList.add("dark-mode");
+                document.getElementById("btn-theme").innerText = "Désactiver le Mode Sombre";
+            }
+        }
+
+        // --- 3. GESTION DU BOUTON ENVOYER (COOKIE PRENOM) ---
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            // On récupère la valeur saisie dans le champ "username"
+            let prenom = document.getElementById("username").value;
+
+            // On crée le cookie "prenom" valable pour 1 jour
+            setCookie("prenom", prenom, 1);
+
+            // Note : On ne bloque pas l'événement "submit" (pas de event.preventDefault()), 
+            // donc le formulaire s'enverra normalement en POST vers "/login" 
+            // juste après la création du cookie.
+        });
+    </script>
+</body>
+</html>
