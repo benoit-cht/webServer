@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/11 16:27:56 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/20 01:54:07 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/20 02:14:53 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,123 +15,6 @@
 /* ========================================================================== */
 /*                                                                            */
 /* ========================================================================== */
-
-
-// ANCIENNE IMPLEMENTATION
-// t_httpResponse HttpHandler::handler_methode_get(t_httpRequest& request, const ServerConfig& config)
-// {
-//   std::map<std::string, LocationConfig>	location = config.getLocationConfig();
-//   //std::cout << COLOR_MAGENTA << location["/"].getRoot() + location["/"].getIndex() << COLOR_RESET << std::endl;
-//   std::string prefix = find_location(location, request.path);
-//   std::string fullPath = location[prefix].getRoot() + request.path ;
-//   std::cout << COLOR_MAGENTA << "full path ? " + fullPath << COLOR_RESET << std::endl;
-
-//   // Directory handling
-//   if (!request.path.empty() && request.path[request.path.size() - 1] == '/')
-//   {
-// 	std::string indexPath = fullPath + location[prefix].getIndex();
-
-// 	// 1. Check if the directory ITSELF actually exists
-// 	struct stat info;
-// 	if (stat(fullPath.c_str(), &info) != 0 || !S_ISDIR(info.st_mode)) {
-// 		// The directory does not exist
-// 		return (HandlerErrorHttp(404, request, config));
-// 	}
-
-// 	// 2. Check for the index file
-// 	if (!location[prefix].getIndex().empty() && access(indexPath.c_str(), F_OK) == 0)
-//       return (HttpHandler::serveStaticFile(indexPath, request, config));
-
-// 	// 3. Check autoindex fallback
-//     else if (location[prefix].getAutoindex())
-//       return HttpHandler::serveIndex(fullPath /* + prefix */, request, config);
-// 	  // jai retire prefixe sinon en fait un http://localhost:8080/cgi-bin/ renvoie 500 Internal Server Error avec autoindex `off`
-
-// 	// 4. Access denied 403 fallback
-//     else
-//       return (HandlerErrorHttp(403, request, config));
-//   }
-//   else if (!HttpHandler::isStaticFile(fullPath))
-//   {
-//     return (HandlerErrorHttp(301, request, config));
-//   }
-//   else if (HttpHandler::isStaticFile(fullPath))
-//   {
-//     return (HttpHandler::serveStaticFile(fullPath, request, config));
-//   }
-//   else{
-//     return (HandlerErrorHttp(404, request, config));
-//   }
-// }
-
-// methode ALIAS
-/* t_httpResponse HttpHandler::handler_methode_get(t_httpRequest& request, const ServerConfig& config)
-{
-	std::map<std::string, LocationConfig> location = config.getLocationConfig();
-
-	std::string actual_path = request.path;
-	size_t q_pos = actual_path.find('?');
-	if (q_pos != std::string::npos) {
-		actual_path = actual_path.substr(0, q_pos);
-	}
-
-	std::string prefix = find_location(location, actual_path);
-	std::string root = location[prefix].getRoot();
-
-	// 1. Strip the alias prefix (e.g., /repo -> /)
-	std::string stripped_path = actual_path;
-	if (prefix != "/" && stripped_path.find("/" + prefix) == 0) {
-		stripped_path.erase(0, prefix.length() + 1);
-	}
-
-	// 2. Build the exact system path
-	std::string fullPath = root;
-	if (!fullPath.empty() && fullPath[fullPath.length() - 1] != '/' &&
-		!stripped_path.empty() && stripped_path[0] != '/') {
-		fullPath += "/";
-	}
-	fullPath += stripped_path;
-
-	// 3. ASK THE OPERATING SYSTEM WHAT THIS IS
-	struct stat info;
-	if (stat(fullPath.c_str(), &info) != 0) {
-		// A. It does not exist on the hard drive!
-		return (HandlerErrorHttp(404, request, config));
-	}
-
-	if (S_ISDIR(info.st_mode)) {
-		// B. IT IS A DIRECTORY
-
-		// If the user forgot the trailing slash, redirect them! (NGINX Standard)
-		if (actual_path[actual_path.length() - 1] != '/') {
-			t_httpResponse redirect_resp;
-			redirect_resp.status = 301;
-			redirect_resp.headers["Location"] = "http://" + request.headers["Host"] + actual_path + "/";
-			redirect_resp.headers["Connection"] = "close";
-			redirect_resp.body = "<html><body><h1>301 Moved Permanently</h1></body></html>";
-			return redirect_resp;
-		}
-
-		// It has a trailing slash, do index/autoindex logic
-		std::string indexPath = fullPath;
-		if (fullPath[fullPath.length() - 1] != '/') indexPath += "/";
-		indexPath += location[prefix].getIndex();
-
-		if (!location[prefix].getIndex().empty() && access(indexPath.c_str(), F_OK) == 0) {
-			return (HttpHandler::serveStaticFile(indexPath, request, config));
-		}
-		else if (location[prefix].getAutoindex()) {
-			return HttpHandler::serveIndex(fullPath, request, config);
-		}
-		else {
-			return (HandlerErrorHttp(403, request, config));
-		}
-	}
-	else {
-		// C. IT IS A FILE! Serve it directly.
-		return (HttpHandler::serveStaticFile(fullPath, request, config));
-	}
-} */
 
 t_httpResponse	HttpHandler::handler_methode_get(t_httpRequest& request, const ServerConfig& config) {
 	std::map<std::string, LocationConfig> location = config.getLocationConfig();
@@ -145,16 +28,9 @@ t_httpResponse	HttpHandler::handler_methode_get(t_httpRequest& request, const Se
 	std::string prefix = find_location(location, actual_path);
 	std::string root = location[prefix].getRoot();
 
-	std::cout << "actual_path=" << actual_path << std::endl;
-	std::cout << "prefix=" << prefix << std::endl;
-	std::cout << "root=" << root << std::endl;
-
-	// 1. Strip the alias prefix
-	// std::string stripped_path = actual_path;
-	// if (prefix != "/" && stripped_path.find("/" + prefix) == 0) {
-	// 	stripped_path.erase(0, prefix.length() + 1);
-	// }
-	// std::cout << "stripped_path=" << stripped_path << std::endl;
+	// std::cout << "actual_path=" << actual_path << std::endl;
+	// std::cout << "prefix=" << prefix << std::endl;
+	// std::cout << "root=" << root << std::endl;
 
 	// 2. build the exact system path
 	std::string fullPath = root;
@@ -169,8 +45,7 @@ t_httpResponse	HttpHandler::handler_methode_get(t_httpRequest& request, const Se
 		fullPath += "/";
 	}
 	fullPath += actual_path; // Result: "sources/www" + "/repo/" = "sources/www/repo/"
-	// fullPath += stripped_path;
-	std::cout << "fullPath=" << fullPath << std::endl;
+	// std::cout << "fullPath=" << fullPath << std::endl;
 
 	// 3. ask the OS what the URI correspond to: file or directory
 	struct stat info;
@@ -182,16 +57,13 @@ t_httpResponse	HttpHandler::handler_methode_get(t_httpRequest& request, const Se
 		// 3.b. is a directory
 
 		// check if the user forgot the trailing slash
-		if (actual_path[actual_path.length() - 1] != '/') { // why actual_path and not fullPath
-			t_httpResponse redirect_resp;
-			redirect_resp.status = 301;
+		if (actual_path[actual_path.length() - 1] != '/') {
+			t_httpResponse redirect_resp = HandlerErrorHttp(301, request, config);
 			redirect_resp.headers["Location"] = "http://" + request.headers["Host"] + actual_path + "/";
-			redirect_resp.headers["Connection"] = "close";
-			redirect_resp.body = "<html><body><h1>301 Moved Permanently</h1></body></html>";
 			return redirect_resp;
 		}
 
-		// it has a trailing slash: do the index/autoindex logic
+		// it has a trailing slash: index/autoindex logic
 		std::string indexPath = fullPath;
 		if (fullPath[fullPath.length() - 1] != '/') indexPath += "/"; // why check that
 		indexPath += location[prefix].getIndex();
