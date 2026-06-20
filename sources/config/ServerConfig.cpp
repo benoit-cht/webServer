@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/20 19:42:36 by lcluzan           #+#    #+#             */
-/*   Updated: 2026/06/19 01:22:09 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/20 21:22:04 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,22 +33,22 @@ std::map<std::string, LocationConfig>	ServerConfig::getLocationConfig() const {
 }
 
 void	ServerConfig::printServerConfig(const size_t i) const {
-	std::cout << "\nvirtual_servers[" << i << "].host=" << this->host << std::endl;
-	std::cout << "virtual_servers[" << i << "].port=" << this->port << std::endl;
-	std::cout << "virtual_servers[" << i << "].clients_max_body_size=" << this->client_max_body_size << std::endl;
+	std::cout << "\nserver[" << i << "].host=" << this->host << std::endl;
+	std::cout << "server[" << i << "].port=" << this->port << std::endl;
+	std::cout << "server[" << i << "].clients_max_body_size=" << this->client_max_body_size << std::endl;
 
 	if (this->location.size() > 0) {
 		std::map<std::string, LocationConfig>::const_iterator	it;
 		for (it = location.begin();  it != location.end(); ++it) {
-			std::cout << "virtual_servers[" << i << "].location.KEY=" << it->first << std::endl;
+			std::cout << "server[" << i << "].location.KEY=" << it->first << std::endl;
 			it->second.printLocationConfig();
 		}
 	}
 
 // Usage in main
 /*
-	for (size_t i = 0; i < virtual_servers.size(); i++) {
-		virtual_servers[i].printServerConfig(i);
+	for (size_t i = 0; i < server.size(); i++) {
+		server[i].printServerConfig(i);
 	}
 */
 

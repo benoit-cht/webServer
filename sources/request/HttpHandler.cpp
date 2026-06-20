@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpHandler.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/20 18:02:29 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/06/20 21:38:30 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request)
 	  if (transEnc_pos != std::string::npos) {
 		std::stringstream ss;
 		ss << "Content-Length: " << body.size() << "\r\n";
-		std::cout << "ss.str().size()=" << ss.str().size() << std::endl;
 		headers.replace(transEnc_pos, 28, ss.str()); // 28 == "Transfer-Encoding: chunked\r\n".size()
 	  }
 
@@ -162,7 +161,7 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status, t_httpRequest request, 
 }
 
 /* ========================================================================== */
-/* -- COOKIE & SESSION --                            */
+/*                          -- COOKIE & SESSION --                            */
 /* ========================================================================== */
 
 

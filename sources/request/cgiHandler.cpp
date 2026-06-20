@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cgiHandler.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/17 15:32:15 by lcluzan           #+#    #+#             */
-/*   Updated: 2026/06/20 14:19:12 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/06/20 21:37:35 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,14 +26,14 @@ std::vector<std::string> HttpHandler::buildCgiEnv(const t_httpRequest& request, 
     env.push_back("SERVER_SOFTWARE=Webserv/1.0");
     env.push_back("QUERY_STRING=" + query_string); // Add QUERY_STRING for GET request
 
-   // 1. Set safe defaults based on the Server configuration
+   // 1. Set safe defaults based on Server configuration
     std::string server_name = config.getHost();
 
    std::stringstream ss_port;
-    ss_port << config.getPort(); // Convert the config port (int) to string
+    ss_port << config.getPort();
     std::string server_port = ss_port.str();
 
-    // 2. Try to extract the exact requested host/port from HTTP Headers
+    // 2. Extract requested host/port from HTTP Headers
     std::map<std::string, std::string>::const_iterator host_it = request.headers.find("Host");
     if (host_it == request.headers.end()) {
         host_it = request.headers.find("host"); // Fallback for lowercase
@@ -44,7 +44,7 @@ std::vector<std::string> HttpHandler::buildCgiEnv(const t_httpRequest& request, 
         size_t colon_pos = host_val.find(':');
 
         if (colon_pos != std::string::npos) {
-            // Found a port in the Host header (e.g., "localhost:8080")
+            // Found port in the Host header
             server_name = host_val.substr(0, colon_pos);
             server_port = host_val.substr(colon_pos + 1);
         } else {

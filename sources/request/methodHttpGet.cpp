@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   metode_http_get.cpp                                :+:      :+:    :+:   */
+/*   methodHttpGet.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/11 16:27:56 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/20 03:49:18 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/06/20 22:38:09 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,11 @@ bool isSafePath(const std::string& path)
 std::string getMimeType(const std::string& path)
 {
     if (path.find(".html") != std::string::npos) return ( "text/html" );
-    if (path.find(".css") != std::string::npos) return ( "text/css" );
+    if (path.find(".css")  != std::string::npos) return ( "text/css" );
+	if (path.find(".png")  != std::string::npos) return "image/png";
+    if (path.find(".jpg")  != std::string::npos || path.find(".jpeg") != std::string::npos) return "image/jpeg";
+    if (path.find(".gif")  != std::string::npos) return "image/gif";
+    if (path.find(".ico")  != std::string::npos) return "image/x-icon";
 
     return ("text/plain");
 }
@@ -165,7 +169,6 @@ t_httpResponse HttpHandler::serveIndex(const std::string& fullPath, const std::s
       std::cout << COLOR_RED << "Error: faile on serve index" << COLOR_RESET << std::endl;
       return ( HandlerErrorHttp(500, request, config) );
     }
-    //response.headers["Content-length"] = response.body.length();
 
     return ( response );
 }

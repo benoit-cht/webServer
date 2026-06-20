@@ -34,15 +34,27 @@ Once the server is running, you can test it using various command-line tools:
 - **Curl:**
 	`curl -v http://localhost:8080/`
 - **Telnet:**
+Needs toolbox because telnet is not natively installed
+	`toolbox enter`
+	`sudo dnf install telnet -y`
 	`telnet localhost 8080` (useful for manually typing HTTP request)
-
-#### Test Multiple Hostnames (Virtual Hosts):
-
-- `curl -v --resolve example.com:8080:127.0.0.1 http://example.com:8080/`
 
 #### Test Client Body Limit:
 
 -`curl -v -X POST -H "Content-Type: text/plain" --data "BODY IS HERE write something shorter or longer than body limit" http://localhost:8080/`
+
+#### Test GET Method
+
+- `curl -X GET http://localhost:8080/`
+
+#### Test POST Method
+
+- `curl -X POST http://localhost:8080/upload/ -F "file=@/home/tjacquel/Documents/web-surf/tech-stack/tests/test.txt"`
+N.B: test.txt must exist at the location otherwise POST does not create a file and will return 403
+
+#### Test DELETE Method
+
+- `curl -X DELETE http://localhost:8080/upload/test.txt`
 
 #### Test an UNKNOWN/Bad Method:
 

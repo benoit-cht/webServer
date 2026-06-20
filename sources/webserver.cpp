@@ -6,36 +6,14 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/20 16:00:06 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/20 22:34:52 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <csignal>
-#include <cstdlib>
-#include <iostream>
-
-# include "../include/webserver.hpp"
-
-
-/* ========================================================================== */
-/*                    -- definition and prototype --                          */
-/* ========================================================================== */
-#if RUN_WITH_SERVER
+# include <webserver.hpp>
 
 volatile sig_atomic_t g_should_exit = 0;
 
-static void           signal_handler(int signal);
-
-void           print_http_request(const t_httpRequest& request);
-void           print_http_response(const t_httpResponse& response);
-std::string           readFullHttpRequest(int fd, EventLoop& loop) ;
-static void           inf_loop(std::vector<int> ports, const std::vector<ServerConfig>& config);
-static int            getPortServer(int fd);
-static void           initVerctorOfPort(std::vector<int>& ports, const std::vector<ServerConfig>& virtual_servers);
-static ServerConfig  getConfigForHandler(const std::vector<ServerConfig>& vec_config, int port);
-
-#endif
-void testPatch(std::vector<int> ports, const std::vector<ServerConfig>& vec_config);
 /* ========================================================================== */
 /*                           -- main focntion --                              */
 /* ========================================================================== */
@@ -48,21 +26,15 @@ int main (int av, char *ag[])
 		return (EXIT_FAILURE);
 	}
 
-#if RUN_WITH_SERVER
 		std::signal(SIGINT, signal_handler);// Enregistrer le gestionnaire de signal
 		std::signal(SIGQUIT, SIG_IGN);
-		std::signal(SIGPIPE, SIG_IGN); // a determiner si on conserve ou non
-#endif
 
 try {
-	std::vector<ServerConfig>	virtual_servers;
-	confParsingHandler(ag[1], virtual_servers);
-#if RUN_WITH_SERVER
+	std::vector<ServerConfig>	server;
+	confParsingHandler(ag[1], server);
 	std::vector<int> ports;
-	initVerctorOfPort(ports, virtual_servers);
-	inf_loop(ports, virtual_servers);
-  //testPatch(ports, virtual_servers);
-#endif
+	initVerctorOfPort(ports, server);
+	inf_loop(ports, server);
 
     } catch (const std::exception& e) {
 
@@ -76,7 +48,6 @@ try {
 /* ========================================================================== */
 /*                           -- Loop of event --                              */
 /* ========================================================================== */
-#if RUN_WITH_SERVER
 
 /*
 
@@ -95,7 +66,7 @@ try {
 
 */
 
-static ServerConfig  getConfigForHandler(const std::vector<ServerConfig>& vec_config, int port)
+ServerConfig  getConfigForHandler(const std::vector<ServerConfig>& vec_config, int port)
 {
   ServerConfig  config;
 
@@ -122,7 +93,7 @@ ssize_t readAvailableData(int fd, EventLoop& loop, std::string& data) {
     return bytes_read;
 }
 
-static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& vec_config) {
+void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& vec_config) {
 
     loop.checkCgiTimeout();
 
@@ -155,11 +126,10 @@ static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& 
 			std::string			data;
             ssize_t bytes_read = readAvailableData(fd, loop, data);
 			if (bytes_read == 0) {
-				loop.removeClient(fd); // Graceful disconnect
+				loop.removeClient(fd); // Disconnect
 				continue;
 			}
 			else if (bytes_read == -1) {
-				// If it's EAGAIN, just continue and let poll() trigger again later
 				continue;
 			}
 			else {
@@ -172,12 +142,12 @@ static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& 
 				// FIX: Ignore leading CRLFs / Empty requests
 				size_t start = full_request.find_first_not_of("\r\n");
 				if (start == std::string::npos) {
-					continue; // It was just empty lines, ignore and go back to poll()
+					continue;
 				}
 				full_request = full_request.substr(start);
 
                 ServerConfig config = getConfigForHandler(vec_config, getPortServer(fd));
-				std::cout << COLOR_MAGENTA << "full_request=" << full_request << COLOR_RESET << std::endl;
+				std::cout << COLOR_MAGENTA << "full_request=" << full_request << COLOR_RESET << std::endl; // if we want to display raw full client request
                 t_httpRequest request = HttpHandler::setHttpRequest(full_request);
 				request.client_ip = loop.getClientIP(fd);
                 print_http_request(request);
@@ -205,7 +175,7 @@ static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& 
     }
 }
 
-static void inf_loop(std::vector<int> ports, const std::vector<ServerConfig>& vec_config)
+void inf_loop(std::vector<int> ports, const std::vector<ServerConfig>& vec_config)
 {
   int       ret = -1;
   EventLoop loop(ports);
@@ -225,7 +195,7 @@ static void inf_loop(std::vector<int> ports, const std::vector<ServerConfig>& ve
 /*                                                                            */
 /* ========================================================================== */
 
-static void signal_handler(int signal)
+void signal_handler(int signal)
 {
   if (signal == SIGINT)
   {
@@ -234,15 +204,13 @@ static void signal_handler(int signal)
   }
 }
 
-	// std::cout << "virtual_servers.size()=" << virtual_servers.size() << std::endl;
-		// std::cout << "virtual_servers[i].getPort()=" << virtual_servers[i].getPort() << std::endl;
-static void initVerctorOfPort(std::vector<int>& ports, const std::vector<ServerConfig>& virtual_servers)
+void initVerctorOfPort(std::vector<int>& ports, const std::vector<ServerConfig>& server)
 {
-	for (size_t i = 0; i < virtual_servers.size(); ++i)
-    ports.push_back(virtual_servers[i].getPort());
+	for (size_t i = 0; i < server.size(); ++i)
+    ports.push_back(server[i].getPort());
 }
 
-static int  getPortServer(int fd)
+int  getPortServer(int fd)
 {
   struct sockaddr_in server_addr;
   socklen_t server_addr_len = sizeof(server_addr);
@@ -313,7 +281,4 @@ void print_http_response(const t_httpResponse& response) {
     }
     std::cout << COLOR_CYAN << "====================\n" << COLOR_RESET << std::endl;
 }
-
-
-#endif
 

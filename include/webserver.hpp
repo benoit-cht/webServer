@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserver.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:39:42 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/20 04:13:40 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/06/20 21:34:58 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@
 #include <cstring>       // Pour memset, strerror
 #include <iostream>      // Pour les logs
 #include <arpa/inet.h>   // Pour inet_ntoa (affichage des IPs)
+#include <csignal>
+#include <cstdlib>
 
 #include <log/colorLog.hpp>
 #include <network/SocketHandler.hpp>
@@ -33,6 +35,19 @@
 #include <request/HttpHandler.hpp>
 # include <config/ServerConfig.hpp>
 # include <config/LocationConfig.hpp>
+
+/* ========================================================================== */
+/*                    -- definition and prototype --                          */
+/* ========================================================================== */
+
+void           signal_handler(int signal);
+
+void           print_http_request(const t_httpRequest& request);
+void           print_http_response(const t_httpResponse& response);
+void           inf_loop(std::vector<int> ports, const std::vector<ServerConfig>& config);
+int            getPortServer(int fd);
+void           initVerctorOfPort(std::vector<int>& ports, const std::vector<ServerConfig>& server);
+ServerConfig  getConfigForHandler(const std::vector<ServerConfig>& vec_config, int port);
 
 # endif
 

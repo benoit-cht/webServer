@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/23 18:37:03 by tjacquel          #+#    #+#             */
-/*   Updated: 2026/06/11 16:33:02 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/20 21:27:58 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,12 +61,6 @@ static void		printParserBlocks(const t_block& curr_block, const std::string& pre
 static void		printTokens(std::vector<std::string>& tokens) {
 	for (size_t i = 0; i < tokens.size(); i++) {
 		std::cout << "token[" << i << "]=" << "`" << tokens[i] << "`" << std::endl;
-	}
-}
-
-static void		printLines(std::vector<std::string>& lines) {
-	for (size_t i = 0; i < lines.size(); i++) {
-
 	}
 }
 
@@ -263,8 +257,6 @@ static void	loadTokens(std::vector<std::string>& tokens, std::vector<std::string
 		}
 	}
 
-	if (PRINT) printLines(lines);
-
 	if (tokens.empty()) {
 		std::ostringstream	thw;
 		thw << "cannot open input file `" << filepath << "`";
@@ -301,7 +293,7 @@ void	checkPortDup(const std::vector<ServerConfig>& servers) {
 	}
 }
 
-void	confParsingHandler(const char* filepath, std::vector<ServerConfig>& virtual_servers) {
+void	confParsingHandler(const char* filepath, std::vector<ServerConfig>& server) {
 	std::ostringstream	thw;
 	std::ifstream		inFile(filepath);
 	if (!inFile.is_open()) {
@@ -316,7 +308,7 @@ void	confParsingHandler(const char* filepath, std::vector<ServerConfig>& virtual
 
 	std::vector<std::string>	tokens;
 	loadTokens(tokens, lines, filepath);
-	if(PRINT) printTokens(tokens);
+	if(PRINT_TOKEN_CONFIG) printTokens(tokens);
 	syntaxLinter(tokens);
 
 
@@ -326,14 +318,16 @@ void	confParsingHandler(const char* filepath, std::vector<ServerConfig>& virtual
 	for (size_t i = 0; i < block.size(); i++) {
 		ServerConfig		new_server;
 		new_server.loadFromBlock(block.at(i));
-		virtual_servers.push_back(new_server);
+		server.push_back(new_server);
 	}
 
-	checkPortDup(virtual_servers);
+	checkPortDup(server);
 
-if (PRINT) {
-	for (size_t i = 0; i < virtual_servers.size(); i++) {
-		virtual_servers[i].printServerConfig(i);
+	if (PRINT_SERVER_CONFIG) {
+		for (size_t i = 0; i < server.size(); i++) {
+			server[i].printServerConfig(i);
+		}
+		std::cout << "\n";
+
 	}
-}
 }

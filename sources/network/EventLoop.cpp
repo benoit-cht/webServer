@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:01:32 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/20 15:16:44 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/20 22:03:15 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void EventLoop::setupServerSockets()
   {
     struct pollfd pfd;
     pfd.fd = _server_fds[index];
-    pfd.events = POLLIN; //| POLLOUT;
+    pfd.events = POLLIN;
     _poll_fds.push_back(pfd);
     index++;
   }
@@ -84,7 +84,7 @@ ClientInfo* EventLoop::acceptNewConnection(int server_fd)
 
     struct pollfd client_pollfd;
     client_pollfd.fd = client_fd;
-    client_pollfd.events = POLLIN; //| POLLOUT;
+    client_pollfd.events = POLLIN;
     _poll_fds.push_back(client_pollfd);
 
     std::cout << COLOR_CYAN << "(Log Client) : new connection accepted (fd=" << client_fd
@@ -476,7 +476,7 @@ void	EventLoop::checkCgiTimeout() {
 				_pipe_client_fds.erase(it->second.cgi_read_fd);
 				for (size_t i = 0; i < _poll_fds.size(); i++) {
 					if (_poll_fds[i].fd == it->second.cgi_read_fd) {
-						_poll_fds.erase(_poll_fds.begin() + i); // kezaoko
+						_poll_fds.erase(_poll_fds.begin() + i);
 						break ;
 					}
 				}

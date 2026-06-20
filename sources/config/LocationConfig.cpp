@@ -6,13 +6,13 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 17:23:36 by tjacquel          #+#    #+#             */
-/*   Updated: 2026/06/20 03:37:53 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/20 21:21:20 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <config/LocationConfig.hpp>
 
-LocationConfig::LocationConfig() : root("."), index("index.html"), autoindex(false), upload_enable(false), redirect(0, "") { }
+LocationConfig::LocationConfig() : root("."), index("index.html"), autoindex(false), redirect(0, "") { }
 
 LocationConfig::~LocationConfig() { }
 
@@ -30,14 +30,6 @@ std::string				LocationConfig::getIndex() const {
 
 bool					LocationConfig::getAutoindex() const {
 	return (this->autoindex);
-}
-
-bool					LocationConfig::getUploadEnable() const {
-	return (this->upload_enable);
-}
-
-std::string				LocationConfig::getUploadLoc() const {
-	return (this->upload_loc);
 }
 
 std::pair<int, std::string>	LocationConfig::getRedirect() const {
@@ -77,11 +69,6 @@ void	LocationConfig::printLocationConfig() const {
 		std::cout << "    index=" << this->index << std::endl;
 	if (this->autoindex)
 		std::cout << "    autoindex=on" << std::endl;
-	if (this->upload_enable)
-		std::cout << "    upload_enable=on" << std::endl;
-	if (this->upload_loc.size() > 0) {
-		std::cout << "    upload_loc=" << this->upload_loc << std::endl;
-	}
 
 	if (this->redirect.first != 0) {
 		std::cout << "    redirect " << redirect.first << "=" << redirect.second << std::endl;
@@ -199,33 +186,6 @@ void	LocationConfig::redirectDirCheckAndLoad(const std::vector<std::string>& ret
 	this->redirect.second = uri;
 }
 
-void	LocationConfig::uploadlocDirCheckAndLoad(const std::vector<std::string>& upload_locDir) {
-	std::ostringstream	thw;
-
-	if (upload_locDir.size() != 2) {
-		thw << "Config file error: single mandatory argument expected for upload_loc directive, found " << upload_locDir.size() - 1;
-		throw std::logic_error(thw.str());
-	}
-	this->upload_loc = upload_locDir.at(1);
-
-}
-
-void	LocationConfig::uploadenbableDirCheckAndLoad(const std::vector<std::string>& upload_enableDir) {
-	std::ostringstream	thw;
-
-	if (upload_enableDir.size() != 2) {
-		thw << "Config file error: single mandatory argument expected for upload_enable directive, found " << upload_enableDir.size() - 1;
-		throw std::logic_error(thw.str());
-	}
-
-	if		(upload_enableDir.at(1) == "on")	{ this->upload_enable = true; }
-	else if	(upload_enableDir.at(1) == "off")	{ this->upload_enable = false; }
-	else {
-		thw << "Config file error: argument `" << upload_enableDir.at(1) << "` found in upload_enable directive is unsupported";
-		throw std::logic_error(thw.str());
-	}
-}
-
 void	LocationConfig::autoindexDirCheckAndLoad(const std::vector<std::string>& autoindexDir) {
 	std::ostringstream	thw;
 
@@ -319,8 +279,6 @@ void	LocationConfig::loadFromEmbedBlock(const t_block& embed_block) {
 			indexDirCheckAndLoad(embed_block.directives[i]);
 		}
 		else if (embed_block.directives[i][0] == "autoindex") { autoindexDirCheckAndLoad(embed_block.directives[i]); }
-		else if (embed_block.directives[i][0] == "upload_enable") { uploadenbableDirCheckAndLoad(embed_block.directives[i]); }
-		else if (embed_block.directives[i][0] == "upload_loc") { uploadlocDirCheckAndLoad(embed_block.directives[i]); }
 		else if (embed_block.directives[i][0] == "redirect") { redirectDirCheckAndLoad(embed_block.directives[i]); }
 		else if (embed_block.directives[i][0] == "error_page") { errorpageDirCheckAndLoad(embed_block.directives[i]); }
 		else if (embed_block.directives[i][0] == "cgi_pass") { parseCgiPass(embed_block.directives[i]); }
