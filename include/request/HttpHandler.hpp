@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 11:31:58 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/20 01:46:23 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/20 05:24:39 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,8 +75,8 @@ class HttpHandler {
     static std::vector<std::string> buildCgiEnv(const t_httpRequest& request, const std::string& filename, const std::string& script_name, const std::string& query_string, const ServerConfig& config);
     static std::vector<char*> stringsToCharPtrs(const std::vector<std::string>& strings);
     static void handleCgiChild(const std::string& path, const t_httpRequest& request, int pipe_in[2], int pipe_out[2], const ServerConfig& config, const std::string& interpreter, const LocationConfig& location);
-  
-    static t_httpResponse cgiConditionForExecute(const ServerConfig& config, t_httpRequest request, std::string actual_path , std::map<std::string, std::string> cgi_map, std::string extension, LocationConfig current_loc ); 
+
+    static t_httpResponse cgiConditionForExecute(const ServerConfig& config, t_httpRequest request, std::string actual_path , std::map<std::string, std::string> cgi_map, std::string extension, LocationConfig current_loc );
 
   private:
     static std::string    findAndOpenBody(int status, t_httpRequest request, const ServerConfig& config);
@@ -85,9 +85,9 @@ class HttpHandler {
 
     static t_httpResponse status_201(int status, t_httpResponse response);
     static t_httpResponse status_204(int status, t_httpResponse response);
-    static t_httpResponse status_301(int status, t_httpRequest request, t_httpResponse response);
-    static t_httpResponse status_302(int status, t_httpRequest request, t_httpResponse response);
-    static t_httpResponse status_304(int status, t_httpRequest request, t_httpResponse response);
+    static t_httpResponse status_301(int status, t_httpRequest request, t_httpResponse response, std::string redirURI);
+    static t_httpResponse status_302(int status, t_httpRequest request, t_httpResponse response, std::string redirURI);
+    static t_httpResponse status_304(int status, t_httpRequest request, t_httpResponse response, std::string redirURI);
     static t_httpResponse status_400(int status, t_httpResponse response);
     static t_httpResponse status_403(int status, t_httpResponse response);
     static t_httpResponse status_404(int status, t_httpResponse response);

@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/01 12:20:23 by ton_utilisa       #+#    #+#             */
-/*   Updated: 2026/06/16 20:26:55 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/20 04:35:38 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,10 +119,10 @@ void HttpHandler::setStructConfig(t_config& directiv, const ServerConfig& serv, 
 {
   directiv.location = serv.getLocationConfig();
   directiv.prefix = find_location(directiv.location, path);
-  directiv.config = directiv.location[directiv.prefix]; 
+  directiv.config = directiv.location[directiv.prefix];
 }
 
-t_httpResponse HttpHandler::cgiConditionForExecute(const ServerConfig& config, t_httpRequest request, std::string actual_path , std::map<std::string, std::string> cgi_map, std::string extension, LocationConfig current_loc ) 
+t_httpResponse HttpHandler::cgiConditionForExecute(const ServerConfig& config, t_httpRequest request, std::string actual_path , std::map<std::string, std::string> cgi_map, std::string extension, LocationConfig current_loc )
 {
   std::string interpreter = cgi_map[extension]; // e.g., "/usr/bin/php-cgi"
   if (!interpreter.empty()) {
@@ -161,21 +161,22 @@ t_httpResponse  HttpHandler::checkRequestIsLegit(t_VarOfsetResponse& var, t_http
   if (request.headers.empty())  {
 
     return (HandlerErrorHttp(400, request, serve));
-  
-  }
-  if (!directiv.config.checkMethod(request.method))  {
 
-    return (HandlerErrorHttp(405, request, serve));
-  
   }
   if (request.method != "GET" &&request.method != "POST" &&request.method != "DELETE")  {
 
-      return (HandlerErrorHttp(501, request, serve))
+      return (HandlerErrorHttp(501, request, serve));
+  }
+
+  if (directiv.config.getRedirect().first == 0 && !directiv.config.checkMethod(request.method))  {
+
+    return (HandlerErrorHttp(405, request, serve));
+
   }
   if (request.body.size() > serve.getClientMaxBodySize()) {  // Check client max body size
 
 	    return (HandlerErrorHttp(413, request, serve));
-  
+
   }
 
   // New dynamic CGI location check
@@ -219,21 +220,21 @@ std::map<std::string, std::string>    parsingCookie(t_httpRequest request)
 {
   std::string                         value;
   std::map<std::string, std::string>  array;
-    
+
   if (request.header.empty())
         return ("");
-  
+
   value = request.headers["Cookie"];
   if (value.empty())
       return ("");
-  
+
   for (std::string::iterator itr = value.begin(); itr != value.end(); itr++)  {
 
-    
+
   }
 
   return ( array );
-} 
+}
 */
 /* ========================================================================== */
 /*                 -- SERV STATIC FILE IMPLEMENT FONCTION  --                 */
