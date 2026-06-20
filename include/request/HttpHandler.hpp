@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpHandler.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/22 11:31:58 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/19 14:03:23 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/20 01:38:16 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ class HttpHandler {
     static std::vector<std::string> buildCgiEnv(const t_httpRequest& request, const std::string& filename, const std::string& script_name, const std::string& query_string, const ServerConfig& config);
     static std::vector<char*> stringsToCharPtrs(const std::vector<std::string>& strings);
     static void handleCgiChild(const std::string& path, const t_httpRequest& request, int pipe_in[2], int pipe_out[2], const ServerConfig& config, const std::string& interpreter, const LocationConfig& location);
-  
+
   private:
     static std::string    findAndOpenBody(int status, t_httpRequest request, const ServerConfig& config);
     static void           setStructConfig(t_config directiv, const ServerConfig& serv, std::string path);
@@ -96,6 +96,9 @@ class HttpHandler {
     static t_httpResponse status_500(int status, t_httpResponse response);
     static t_httpResponse status_501(int status, t_httpResponse response);
     static t_httpResponse status_504(int status, t_httpResponse response);
+
+    static std::string unchunkBody(const std::string& chuncked_body);
+
 };
 
 # endif // !HTTPHANDLER_HPP

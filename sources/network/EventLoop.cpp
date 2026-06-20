@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   EventLoop.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 06:01:32 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/18 22:59:48 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/20 02:51:06 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -293,20 +293,31 @@ void EventLoop::appendToClientBuffer(int fd, const std::string& data) {
         size_t header_end_pos = _clientBuffers[fd].find("\r\n\r\n");
         if (header_end_pos != std::string::npos) {
             _clientHeadersEnded[fd] = true;
-            // Extraire Content-Length
-            size_t content_length_pos = _clientBuffers[fd].find("Content-Length: ");
-            if (content_length_pos != std::string::npos) {
-                size_t start = content_length_pos + 16;
-                size_t end = _clientBuffers[fd].find("\r\n", start);
-                if (end != std::string::npos) {
-                    _clientContentLength[fd] = static_cast<size_t>(
-                        std::atoi(_clientBuffers[fd].substr(start, end - start).c_str())
-                    );
+
+            // 1. Is it a chunked request? (Fixed typo: "chunked")
+            if (_clientBuffers[fd].find("Transfer-Encoding: chunked") != std::string::npos) {
+                _clientIsChunked[fd] = true;
+                _clientContentLength[fd] = 0; // We ignore Content-Length
+            }
+            // 2. If it's NOT chunked, look for Content-Length
+            else {
+                _clientIsChunked[fd] = false; // Initialize to false
+
+                size_t content_length_pos = _clientBuffers[fd].find("Content-Length: ");
+                if (content_length_pos != std::string::npos) {
+                    size_t start = content_length_pos + 16;
+                    size_t end = _clientBuffers[fd].find("\r\n", start);
+
+                    if (end != std::string::npos) {
+                        _clientContentLength[fd] = static_cast<size_t>(
+                            std::atoi(_clientBuffers[fd].substr(start, end - start).c_str())
+                        );
+                    } else {
+                        _clientContentLength[fd] = 0; // Malformed header safety
+                    }
                 } else {
-                    _clientContentLength[fd] = 0; // Pas de Content-Length
+                    _clientContentLength[fd] = 0; // Pas de Content-Length (ex: GET)
                 }
-            } else {
-                _clientContentLength[fd] = 0; // Pas de Content-Length (ex: GET)
             }
         }
     }
@@ -315,6 +326,9 @@ void EventLoop::appendToClientBuffer(int fd, const std::string& data) {
 bool EventLoop::isRequestComplete(int fd) {
     if (!_clientHeadersEnded[fd]) {
         return false; // Headers pas encore terminés
+    }
+    if (_clientIsChunked[fd]) {
+        return (_clientBuffers[fd].find("0\r\n\r\n") != std::string::npos);
     }
     // Si Content-Length = 0, la requête est complète (ex: GET)
     if (_clientContentLength[fd] == 0) {
@@ -335,6 +349,8 @@ std::string EventLoop::getFullRequest(int fd) {
     _clientBuffers.erase(fd);
     _clientContentLength.erase(fd);
     _clientHeadersEnded.erase(fd);
+    _clientIsChunked.erase(fd);
+    
     return request;
 }
 

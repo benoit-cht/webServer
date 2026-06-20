@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpHandler.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/19 14:04:08 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/20 02:49:35 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,21 @@
 
 t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request)
 {
-	t_httpRequest       request;
+	t_httpRequest          request;
 	std::vector<t_token>   lexer;
+  std::string             processed_request = raw_request;
+
+  if (processed_request.find("Transfer-Encoding: chunked") != std::string::npos) {
+    size_t header_end = processed_request.find("\r\n\r\n");
+    if (header_end != std::string::npos) {
+      std::string headers = processed_request.substr(0, header_end + 4);
+      std::string body = processed_request.substr(header_end + 4);
+
+      body = unchunkBody(body); // Strip the hex numbers and zeros
+
+      processed_request = headers + body; // Reassemble the clean request
+    }
+  }
 
 	lexer = HttpHandler::lexing(raw_request);
 	if (HttpHandler::descending_deriv(lexer))
@@ -144,7 +157,7 @@ std::string   HttpHandler::findAndOpenBody(int status, t_httpRequest request, co
     body = buffer.str();
 
   }
-  
+
   return (body);
 }
 
@@ -157,7 +170,7 @@ void HttpHandler::setStructConfig(t_config directiv, const ServerConfig& serv, s
 {
   directiv.location = serv.getLocationConfig();
   directiv.prefix = find_location(directiv.location, path);
-  directiv.config = directiv.location[directiv.prefix]; 
+  directiv.config = directiv.location[directiv.prefix];
 }
 /* ================================ ~CODE ====================================== */
 
@@ -182,19 +195,19 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status, t_httpRequest request, 
 
     case 302:
       return ( HttpHandler::status_302(status, request, stError.response) );
-    
+
     case 304:
       return ( HttpHandler::status_304(status, request, stError.response) );
 
     case 400:
       return ( HttpHandler::status_400(status, stError.response) );
-    
+
     case 403:
       return ( HttpHandler::status_403(status, stError.response) );
 
     case 404:
       return ( HttpHandler::status_404(status, stError.response) );
-    
+
     case 405:
       return ( HttpHandler::status_405(status, stError.response, directiv) );
 
@@ -207,7 +220,7 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status, t_httpRequest request, 
     case 504:
       return ( HttpHandler::status_504(status, stError.response) );
   }
-  
+
   return ( HttpHandler::status_500(status, stError.response) );
 
 }
@@ -215,3 +228,28 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status, t_httpRequest request, 
 /* ========================================================================== */
 /*                                                                            */
 /* ========================================================================== */
+
+// Decoding Function
+
+std::string HttpHandler::unchunkBody(const std::string& chuncked_body) {
+  std::string unchunked_body;
+  size_t pos = 0;
+
+  while (pos < chuncked_body.size()) {
+    size_t crtlf_pos = chuncked_body.find("\r\n", pos);
+    if (crtlf_pos == std::string::npos) break;
+
+    std::string hex_str = chuncked_body.substr(pos, crtlf_pos - pos);
+    long chunk_size = 0;
+    std::stringstream ss;
+    ss << std::hex << hex_str;
+    ss >> chunk_size;
+
+    if (chunk_size == 0) break; // Final chunk reached
+
+    pos = crtlf_pos + 2;
+    unchunked_body.append(chuncked_body, pos, chunk_size);
+    pos += chunk_size + 2;
+  }
+  return unchunked_body;
+}
