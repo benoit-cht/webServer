@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/11 16:27:56 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/20 02:20:06 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/19 12:34:04 by bchallat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -267,8 +267,6 @@ std::string HttpHandler::generateAutoIndexHTML(const std::string& fullPath, cons
     html += "    </table>\n";
     html += "</body>\n";
     html += "</html>\n";
-
-    std::cout << "->" + html + "END" << std::endl;
 
     return html;
 }
