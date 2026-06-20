@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   response_HttpHandler.cpp                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/01 12:20:23 by ton_utilisa       #+#    #+#             */
-/*   Updated: 2026/06/16 20:26:55 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/20 03:41:36 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,10 +119,10 @@ void HttpHandler::setStructConfig(t_config& directiv, const ServerConfig& serv, 
 {
   directiv.location = serv.getLocationConfig();
   directiv.prefix = find_location(directiv.location, path);
-  directiv.config = directiv.location[directiv.prefix]; 
+  directiv.config = directiv.location[directiv.prefix];
 }
 
-t_httpResponse HttpHandler::cgiConditionForExecute(const ServerConfig& config, t_httpRequest request, std::string actual_path , std::map<std::string, std::string> cgi_map, std::string extension, LocationConfig current_loc ) 
+t_httpResponse HttpHandler::cgiConditionForExecute(const ServerConfig& config, t_httpRequest request, std::string actual_path , std::map<std::string, std::string> cgi_map, std::string extension, LocationConfig current_loc )
 {
   std::string interpreter = cgi_map[extension]; // e.g., "/usr/bin/php-cgi"
   if (!interpreter.empty()) {
@@ -161,21 +161,21 @@ t_httpResponse  HttpHandler::checkRequestIsLegit(t_VarOfsetResponse& var, t_http
   if (request.headers.empty())  {
 
     return (HandlerErrorHttp(400, request, serve));
-  
+
   }
   if (!directiv.config.checkMethod(request.method))  {
 
     return (HandlerErrorHttp(405, request, serve));
-  
+
   }
   if (request.method != "GET" &&request.method != "POST" &&request.method != "DELETE")  {
 
-      return (HandlerErrorHttp(501, request, serve))
+      return (HandlerErrorHttp(501, request, serve));
   }
   if (request.body.size() > serve.getClientMaxBodySize()) {  // Check client max body size
 
 	    return (HandlerErrorHttp(413, request, serve));
-  
+
   }
 
   // New dynamic CGI location check
@@ -211,284 +211,6 @@ std::string   HttpHandler::findAndOpenBody(int status, t_httpRequest request, co
   return (body);
 }
 
-/* ========================================================================== */
-/*                               -- COOKIE  --                                */
-/* ========================================================================== */
-/*
-std::map<std::string, std::string>    parsingCookie(t_httpRequest request)
-{
-  std::string                         value;
-  std::map<std::string, std::string>  array;
-    
-  if (request.header.empty())
-        return ("");
-  
-  value = request.headers["Cookie"];
-  if (value.empty())
-      return ("");
-  
-  for (std::string::iterator itr = value.begin(); itr != value.end(); itr++)  {
-
-    
-  }
-
-  return ( array );
-} 
-*/
-/* ========================================================================== */
-/*                 -- SERV STATIC FILE IMPLEMENT FONCTION  --                 */
-/* ========================================================================== */
-/*
-bool isSafePath(const std::string& path)
-{
-  return (path.find("../") == std::string::npos); // Empêche les chemins relatifs (comme "../")
-}
-
-std::string getMimeType(const std::string& path)
-{
-    // Implémentez la logique pour déterminer le type MIME
-    if (path.find(".html") != std::string::npos) return "text/html";
-    if (path.find(".css") != std::string::npos) return "text/css";
-    // Ajoutez d'autres types MIME selon les besoins
-    return ("text/plain");
-}
-
-t_httpResponse HttpHandler::serveStaticFile(const std::string& path)
-{
-
-	std::cout << COLOR_MAGENTA << "serveStaticFile()path=" << path << COLOR_RESET << std::endl;
-    if (!isSafePath(path))
-    {
-      return (HandlerErrorHttp(403));
-    }
-
-    std::ifstream file(path.c_str(), std::ios::binary);
-    if (!file.is_open())
-    {
-      std::cout << COLOR_MAGENTA << path << ":" << COLOR_RESET << std::endl;
-      return (HandlerErrorHttp(404));
-    }
-
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    std::string content = buffer.str();
-
-    t_httpResponse response;
-    response.status = 200;
-    response.headers["Content-Type"] = getMimeType(path);
-    response.body = content;
-	response.headers["Connection"] = "keep-alive";
-
-    std::cout << COLOR_MAGENTA << "\n   ~~~~~~ METHODE END  ~~~~~~" << COLOR_RESET << std::endl;
-    return (response);
-}
-*/
-/* ========================================================================== */
-/*                              -- TOOLS --                                   */
-/* ========================================================================== */
-/*
-std::string HttpHandler::readFile(const std::string& filepath)
-{
-    std::ifstream       file(filepath.c_str());
-    std::ostringstream  ss;
-
-    if (!file.is_open())
-    {
-        return ""; // Le fichier n'existe pas ou n'a pas les droits de lecture
-    }
-    ss << file.rdbuf();
-
-    return (ss.str());
-}
-*/
-/* ========================================================================== */
-/*
-bool HttpHandler::isStaticFile(const std::string& path)
-{
-    if (path.find("/static/") == 0 ||
-        path.substr(path.find_last_of(".") + 1) == "html" ||
-        path.substr(path.find_last_of(".") + 1) == "css" ||
-        path.substr(path.find_last_of(".") + 1) == "js") {
-        return true;
-    }
-    return false;
-}
-*/
-/* ========================================================================== */
-/*                          -- tools of POST METHODE  --                      */
-/* ========================================================================== */
-/*
-
-static std::string  post_length_body(t_httpRequest request)
-{
-  std::string length;
-
-  if (!request.headers["Content-Length"].empty()) {
-
-    length = request.headers["Content-Length"];
-
-  } else {
-
-    std::cerr << COLOR_YELLOW << "[Warning] : don't find length of body" << COLOR_RESET << std::endl;
-  }
-
-  return ( length );
-}
-
-
-static std::string  post_boundary(t_httpRequest request)
-{
-  size_t      pos_boundary = 0;
-  std::string boundary;
-
-  pos_boundary = request.headers["Content-Type"].find("boundary=");
-  if (pos_boundary != std::string::npos) {
-
-    boundary = request.headers["Content-Type"].substr(pos_boundary + 9);
-  } else {
-
-    std::cerr << COLOR_YELLOW << "[Warning] : don't find a boundary in headers" << COLOR_RESET <<std::endl;
-  }
-
-  return ( boundary );
-}
-
-static std::map<std::string, std::string> post_hastable_header(t_httpRequest request)
-{
-  std::map<std::string, std::string>  headers;
-
-  for (size_t start = 0, ope_pos = 0, key_pos = 0, end = 0; start + end < request.body.size(); start = end + 1) {
-
-    if ((key_pos = request.body.find("Content-", start)) == std::string::npos)
-        return (headers);
-
-    if (( ope_pos = request.body.find(":", key_pos)) == std::string::npos)
-        return (headers);
-
-    if (( end = request.body.find("\n", key_pos)) == std::string::npos)
-        return (headers);
-
-    std::string key = request.body.substr(key_pos, ope_pos - key_pos);
-    std::string value = request.body.substr(ope_pos, end - ope_pos);
-    if (key.empty() || value.empty())
-      return(headers);
-
-    headers[key] = value;
-    //headers.insert(std::pair<std::string, std::string>(key, value));
-    std::cout << COLOR_MAGENTA << key << headers[key] << COLOR_RESET << std::endl;
-
-  }
-
-  return ( headers );
-}
-
-static std::string  post_name_file( t_post_methode parsing)
-{
-  std::string   name;
-
-  std::string str = parsing.headers["Content-Disposition"];
-  size_t filename_pos = str.find("filename=\"");
-  if (filename_pos != std::string::npos)
-  {
-
-    size_t start_quote = filename_pos + 10; // 9 = longueur de "filename=\""
-    size_t end_quote = str.find("\"", start_quote);
-    if (end_quote != std::string::npos)
-    {
-            name = str.substr(start_quote, end_quote - start_quote);
-            std::cout << COLOR_MAGENTA << "Nom du fichier : " << name << COLOR_RESET << std::endl;
-    }
-    else
-    {
-      std::cerr << COLOR_YELLOW << "[Warning] : don't find a closing quote in name file " << COLOR_RESET <<std::endl;
-    }
-
-  }
-  else {
-      std::cerr << "Erreur : 'filename=\"' non trouvé dans Content-Type." << std::endl;
-  }
-  return ( name );
-}
-
-
-
-static void cleanMultipartBody(t_post_methode* postData) {
-
-    // Vérifier si le boundary est présent
-    if (postData->boundary.empty()) {
-        // Si ce n'est pas une requête multipart, le body est déjà propre
-        std::cout << COLOR_CYAN << "-return 0" << COLOR_RESET << std::endl;
-        return;
-    }
-
-    // Construire les délimiteurs de boundary
-    std::string boundaryStart = "--" + postData->boundary;
-    std::string boundaryEnd = boundaryStart + "--";
-
-    // Trouver la première occurrence du boundary
-    size_t start = postData->body.find(boundaryStart);
-    if (start == std::string::npos) {
-      std::cout << COLOR_CYAN << "- return 1" + boundaryStart << start << COLOR_RESET << std::endl;
-        return; // Boundary non trouvé
-    }
-
-    // Trouver le début du contenu du fichier (après les headers de la partie)
-    start = postData->body.find("\r\n\r\n", start);
-    if (start == std::string::npos) {
-        return; // Headers de la partie non trouvés
-    }
-    start += 4; // Sauter "\r\n\r\n"
-
-    // Trouver la fin du contenu du fichier (prochain boundary ou boundary de fin)
-    size_t end = postData->body.find(boundaryStart, start);
-    if (end == std::string::npos) {
-        end = postData->body.find(boundaryEnd, start);
-        if (end == std::string::npos) {
-    std::cout << COLOR_CYAN << "-return 2 "<< COLOR_RESET << std::endl;
-            return; // Boundary de fin non trouvé
-        }
-    }
-
-    // Extraire le contenu du fichier
-    std::string fileContent = postData->body.substr(start, end - start);
-
-    // Nettoyer les espaces ou sauts de ligne en trop au début et à la fin
-    size_t contentStart = fileContent.find_first_not_of("\r\n");
-    if (contentStart != std::string::npos) {
-        fileContent = fileContent.substr(contentStart);
-    }
-    size_t contentEnd = fileContent.find_last_not_of("\r\n");
-    if (contentEnd != std::string::npos) {
-        fileContent = fileContent.substr(0, contentEnd + 1);
-    }
-
-    // Mettre à jour le body avec le contenu nettoyé
-    postData->body = fileContent;
-}
-*/
-/* ========================================================================== */
-/*
-t_post_methode HttpHandler::post_parse_header_request(t_httpRequest request)
-{
-  t_post_methode  parsing;
-
-  if ((parsing.bodyLength = post_length_body(request)).empty() )
-    return ( parsing );
-
-  if ((parsing.boundary = post_boundary(request)).empty() )
-    return ( parsing );
-
-  if ((parsing.headers = post_hastable_header(request)).empty())
-    return( parsing );
-
-  if ((parsing.nameFile = post_name_file( parsing)).empty())
-    return ( parsing );
-
-  parsing.body = request.body;
-  cleanMultipartBody(&parsing);
-  return (parsing);
-}
-*/
 /* ************************************************************************** */
 /*                                                                            */
 /* ************************************************************************** */

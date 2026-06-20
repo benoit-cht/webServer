@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpStatusCode.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/19 12:29:21 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/19 13:59:08 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/20 03:44:41 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,7 +171,7 @@ response.headers["Content-Length"] = oss.str();
 response.headers["Date"]           = getCurrentHttpDate();
 response.headers["Connection"]     = "close";
 response.headers["Content-Type"]   = "text/html";
-  
+
   if ( directiv.location[directiv.prefix].checkMethod("GET"   )) { response.headers["Allow"] += " GET   "; }
   if ( directiv.location[directiv.prefix].checkMethod("POST"  )) { response.headers["Allow"] += " POST  "; }
   if ( directiv.location[directiv.prefix].checkMethod("DELETE")) { response.headers["Allow"] += " DELETE"; }
@@ -234,7 +234,23 @@ response.headers["Content-Type"]   = "text/html";
 
   return (t_httpResponse(status, response.headers, response.body));
 }
+t_httpResponse HttpHandler::status_502(int status, t_httpResponse response)
+{
+  std::ostringstream oss;
 
+  if (response.body.empty()) {
+
+  response.body =  "<html><body>502 Bad Gateway</body></html>";
+  }
+  oss << response.body.size();
+response.headers["Content-Length"] = oss.str();
+
+response.headers["Date"]           = getCurrentHttpDate();
+response.headers["Connection"]     = "close";
+response.headers["Content-Type"]   = "text/html";
+
+  return (t_httpResponse(status, response.headers, response.body));
+}
 t_httpResponse HttpHandler::status_504(int status, t_httpResponse response)
 {
   std::ostringstream oss;

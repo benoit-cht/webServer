@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   metode_http_get.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/11 16:27:56 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/19 12:34:04 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/20 03:49:18 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,20 +146,6 @@ std::string HttpHandler::readFile(const std::string& filepath)
 
     return (ss.str());
 }
-
-/* ========================================================================== */
-
-/* bool HttpHandler::isStaticFile(const std::string& path)
-{
-    if (path.find("/static/") == 0 ||
-        path.substr(path.find_last_of(".") + 1) == "html" ||
-        path.substr(path.find_last_of(".") + 1) == "css"  ||
-        path.substr(path.find_last_of(".") + 1) == "js"   ||
-        path.find_last_of(".") < path.size()               )
-    { return ( true ); }
-
-    return ( false );
-} */
 
 /* ========================================================================== */
 /*                              -- AUTO INDEX --                              */
