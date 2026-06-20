@@ -9,13 +9,25 @@ DEF='\e[0m'
 PORT=8080
 HOST="localhost"
 
+# Pause pour lire
+pause() {
+  echo -e "\nAppuyer sur Entree pour continuer..."
+  read
+}
+
 echo -e ""
 echo "╔════════════════════════════════════════════════════════════╗"
 echo "║                                                            ║"
-echo "║                WEBSERV EVALUATION SUITE                    ║"
+echo "║                      WEBSERV TESTER                        ║"
 echo "║                                                            ║"
 echo "╚════════════════════════════════════════════════════════════╝"
 echo -e "\n"
+
+echo "Create a directory named file in ./sources/www/"
+echo "Usage: launch webserv executable with config/script-config.conf in one terminal"
+echo "       run this script in another terminal"
+pause
+
 
 # Fonction pour afficher les resultats
 check_status() {
@@ -30,12 +42,6 @@ check_status() {
     echo -e ${RED}"   methode: ${methode} | return of serveur: ${server} | target: ${target}" ${DEF}
     return 1
   fi
-}
-
-# Pause pour lire
-pause() {
-  echo -e "\nAppuyer sur Entree pour continuer..."
-  read
 }
 
 # Preparation des fichiers de test

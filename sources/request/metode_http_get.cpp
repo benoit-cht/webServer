@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/11 16:27:56 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/20 02:14:53 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/20 02:20:06 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,14 +19,14 @@
 t_httpResponse	HttpHandler::handler_methode_get(t_httpRequest& request, const ServerConfig& config) {
 	std::map<std::string, LocationConfig> location = config.getLocationConfig();
 
-	std::string actual_path = request.path;
+	std::string actual_path = request.path; // uri
 	size_t q_pos = actual_path.find('?');
 	if (q_pos != std::string::npos) {
 		actual_path = actual_path.substr(0, q_pos);
 	}
 
-	std::string prefix = find_location(location, actual_path);
-	std::string root = location[prefix].getRoot();
+	std::string prefix = find_location(location, actual_path); // location KEY eg. /cgi-bin
+	std::string root = location[prefix].getRoot(); // eg. sources/www
 
 	// std::cout << "actual_path=" << actual_path << std::endl;
 	// std::cout << "prefix=" << prefix << std::endl;
@@ -37,7 +37,6 @@ t_httpResponse	HttpHandler::handler_methode_get(t_httpRequest& request, const Se
 
 	// Remove the trailing slash from root if it has one (e.g., "sources/www/" -> "sources/www")
 	if (!fullPath.empty() && fullPath[fullPath.length() - 1] == '/') {
-		// normalement !stripped_path.empty() && stripped_path.at(0) != '/'
 		fullPath.erase(fullPath.length() - 1);
 	}
 	// Ensure actual_path starts with a slash
@@ -65,7 +64,8 @@ t_httpResponse	HttpHandler::handler_methode_get(t_httpRequest& request, const Se
 
 		// it has a trailing slash: index/autoindex logic
 		std::string indexPath = fullPath;
-		if (fullPath[fullPath.length() - 1] != '/') indexPath += "/"; // why check that
+		if (fullPath[fullPath.length() - 1] != '/')
+			indexPath += "/";
 		indexPath += location[prefix].getIndex();
 		std::cout << "indexPath=" << indexPath << std::endl;
 
