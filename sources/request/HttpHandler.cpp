@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/20 15:17:46 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/20 15:27:56 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,43 +102,6 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
 /* ========================================================================== */
 /*                          -- HEADLER RESPONSSE --                           */
 /* ========================================================================== */
-
-
-std::string   HttpHandler::findAndOpenBody(int status, t_httpRequest request, const ServerConfig& config)
-{
-  std::string                           body;
-  std::map<std::string, LocationConfig>	location = config.getLocationConfig();
-  std::string                           prefix = find_location(location, request.path);
-  std::map<int, std::string>            page = location[prefix].getErrorPage();
-
-
-  std::string open = location[prefix].getRoot() + "/" + page[status];
-  std::ifstream file(open.c_str(), std::ios::binary);
-  std::ostringstream oss;
-
-  if (file.is_open() && !page[status].empty())
-  {
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    body = buffer.str();
-
-  }
-
-  return (body);
-}
-
-/*
-
-void unitt-HandlerErrorHttp(int status, t_httpRequest request, const ServerConfig& config)
-*/
-
-void HttpHandler::setStructConfig(t_config directiv, const ServerConfig& serv, std::string path)
-{
-  directiv.location = serv.getLocationConfig();
-  directiv.prefix = find_location(directiv.location, path);
-  directiv.config = directiv.location[directiv.prefix];
-}
-/* ================================ ~CODE ====================================== */
 
 t_httpResponse HttpHandler::HandlerErrorHttp(int status, t_httpRequest request, const ServerConfig& serv)
 {
