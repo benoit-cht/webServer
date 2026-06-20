@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    test_status_code.sh                                :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+         #
+#    By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/06/11 14:34:50 by bchallat          #+#    #+#              #
-#    Updated: 2026/06/12 13:45:04 by bchallat         ###   ########.fr        #
+#    Updated: 2026/06/20 16:43:35 by tjacquel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -79,10 +79,10 @@ STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-redirs 0 http://$HOST:$POR
 check_status "301" "$STATUS" "GET /old-url"
 echo ""
 
-#echo -e ${YELLOW}"TEST 201 Created: POST http://$HOST:$PORT/upload/text.txt"${DEF}
-#STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST -d '{"key":"value"}' http://$HOST:$PORT/upload/text.txt)
-#check_status "201" "$STATUS" "POST /create"
-#echo ""
+echo -e ${YELLOW}"TEST 201 Created: POST http://$HOST:$PORT/upload/text.txt"${DEF}
+STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST -d '{"key":"value"}' http://$HOST:$PORT/upload/text.txt)
+check_status "201" "$STATUS" "POST /create"
+echo ""
 
 echo -e ${YELLOW}"TEST code 204 NO CONTENT: http://$HOST:$PORT/upload/exemple.txt"${DEF}
 STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE http://$HOST:$PORT/upload/exemple.txt)

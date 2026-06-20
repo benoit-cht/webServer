@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserver.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/20 03:40:09 by lcluzan          ###   ########.fr       */
+/*   Updated: 2026/06/20 16:00:06 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,6 +177,7 @@ static void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& 
 				full_request = full_request.substr(start);
 
                 ServerConfig config = getConfigForHandler(vec_config, getPortServer(fd));
+				std::cout << COLOR_MAGENTA << "full_request=" << full_request << COLOR_RESET << std::endl;
                 t_httpRequest request = HttpHandler::setHttpRequest(full_request);
 				request.client_ip = loop.getClientIP(fd);
                 print_http_request(request);

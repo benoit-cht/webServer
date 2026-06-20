@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/20 15:27:56 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/20 17:42:23 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,11 +30,20 @@ t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request)
 
       body = unchunkBody(body); // Strip the hex numbers and zeros
 
+	  // Replace Transfer-Encoding with Content-Length
+	  size_t transEnc_pos = headers.find("Transfer-Encoding: chunked\r\n");
+	  if (transEnc_pos != std::string::npos) {
+		std::stringstream ss;
+		ss << "Content-Length: " << body.size() << "\r\n";
+		std::cout << "ss.str().size()=" << ss.str().size() << std::endl;
+		headers.replace(transEnc_pos, 28, ss.str()); // 28 == "Transfer-Encoding: chunked\r\n".size()
+	  }
+
       processed_request = headers + body; // Reassemble the clean request
     }
   }
 
-	lexer = HttpHandler::lexing(raw_request);
+	lexer = HttpHandler::lexing(processed_request);
 	if (HttpHandler::descending_deriv(lexer))
   {
 	  request = HttpHandler::struct_http_request(lexer);
