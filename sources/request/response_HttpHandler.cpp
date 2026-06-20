@@ -208,6 +208,30 @@ std::string   HttpHandler::findAndOpenBody(int status, t_httpRequest request, co
 }
 
 /* ========================================================================== */
+/*                               -- COOKIE  --                                */
+/* ========================================================================== */
+/*
+std::map<std::string, std::string>    parsingCookie(t_httpRequest request)
+{
+  std::string                         value;
+  std::map<std::string, std::string>  array;
+    
+  if (request.header.empty())
+        return ("");
+  
+  value = request.headers["Cookie"];
+  if (value.empty())
+      return ("");
+  
+  for (std::string::iterator itr = value.begin(); itr != value.end(); itr++)  {
+
+    
+  }
+
+  return ( array );
+} 
+*/
+/* ========================================================================== */
 /*                 -- SERV STATIC FILE IMPLEMENT FONCTION  --                 */
 /* ========================================================================== */
 /*
