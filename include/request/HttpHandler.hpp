@@ -102,6 +102,9 @@ class HttpHandler {
     static t_httpResponse status_501(int status, t_httpResponse response);
     static t_httpResponse status_502(int status, t_httpResponse response);
     static t_httpResponse status_504(int status, t_httpResponse response);
+
+    static std::string unchunkBody(const std::string& chuncked_body);
+
     // Cookie helpers
     static std::string getCookieValue(const std::string& cookieHeader, const std::string& cookieName);
     static std::string generateSessionId();
