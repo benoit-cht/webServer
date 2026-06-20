@@ -29,14 +29,28 @@ Run the server with an explicit configuration file.
 ```
 
 ### Testing commands
-
-#### Testing the Server
 Once the server is running, you can test it using various command-line tools:
 
 - **Curl:**
 	`curl -v http://localhost:8080/`
 - **Telnet:**
 	`telnet localhost 8080` (useful for manually typing HTTP request)
+
+#### Test Multiple Hostnames (Virtual Hosts):
+
+- `curl -v --resolve example.com:8080:127.0.0.1 http://example.com:8080/`
+
+#### Test Client Body Limit:
+
+-`curl -v -X POST -H "Content-Type: text/plain" --data "BODY IS HERE write something shorter or longer than body limit" http://localhost:8080/`
+
+#### Test an UNKNOWN/Bad Method:
+
+- `curl -i -X HELLO http://localhost:8080/`
+
+#### CGI Testing
+
+- `curl -v -X POST -d "param1=value1&param2=value2" http://localhost:8080/cgi-bin/script.py`
 
 #### Stress Testing Commands
 To ensure the server doesn't crash under high load, you can use Siege:
@@ -48,6 +62,10 @@ To ensure the server doesn't crash under high load, you can use Siege:
 
 - `valgrind --leak-check=full --show-leak-kinds=all --track-fds=yes ./webserv`
 
+#### Cookies Testing
+
+- `curl -v --cookie "session_id=[sess_]" http://localhost:[PORT]`
+
 ## Ressources
 
 ### 📚 In-detph Documentation (Wiki)
@@ -55,7 +73,7 @@ We have compiled extensive documentation, research, and architectural diagrams d
 👉 **[Click here to access the Project Wiki](./tech-stack/wiki)**
 
 In the Wiki, you will find deep dives into:
-* TCP Socket Programming (socket, bind, listen, accept, epoll)
+* TCP Socket Programming (socket, bind, listen, accept, poll)
 * HTTP Protocol handling and parsing
 * Common Gateway Interface (CGI) architecture
 * Diagrams of our server's architecture

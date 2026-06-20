@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpHandler.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lcluzan <lcluzan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/20 05:36:00 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/20 18:02:29 by lcluzan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,28 +62,26 @@ t_httpResponse HttpHandler::setHttpResponse(t_httpRequest request, const ServerC
 	return (redirResp);
   }
 
+  t_httpResponse final_response;
   std::map<std::string, std::string> cgi_map = directiv.config.getCgiPass();
+
   if (!var.extension.empty() && cgi_map.find(var.extension) != cgi_map.end()) {
-
-    return (cgiConditionForExecute(config, request, var.actual_path, cgi_map, var.extension, directiv.config));
-
-  } else if (request.method == "GET")  {
-
-      return (HttpHandler::handler_methode_get(request, config));
-
-  } else if (request.method == "POST") {
-
-      return (HttpHandler::handler_methode_post(request, config));
-
-  } else if (request.method == "DELETE")  {
-
-      return (HttpHandler::handler_methode_delete(request, config));
-
-  } else  {
-
-      return (HandlerErrorHttp(500, request, config));
+      final_response = cgiConditionForExecute(config, request, var.actual_path, cgi_map, var.extension, directiv.config);
   }
-	return ( var.response );
+  else if (request.method == "GET")  {
+      final_response = HttpHandler::handler_methode_get(request, config);
+  }
+  else if (request.method == "POST") {
+      final_response = HttpHandler::handler_methode_post(request, config);
+  }
+  else if (request.method == "DELETE")  {
+      final_response = HttpHandler::handler_methode_delete(request, config);
+  }
+  else  {
+      final_response = HandlerErrorHttp(500, request, config);
+  }
+  handleSession(request, final_response);
+  return (final_response);
 }
 
 /* ========================================================================== */
@@ -139,6 +137,63 @@ t_httpResponse HttpHandler::HandlerErrorHttp(int status, t_httpRequest request, 
 
   return ( HttpHandler::status_500(status, stError.response) );
 
+}
+
+/* ========================================================================== */
+/* -- COOKIE & SESSION --                            */
+/* ========================================================================== */
+
+
+std::map<std::string, int> HttpHandler::_sessions;
+
+std::string HttpHandler::getCookieValue(const std::string& cookieHeader, const std::string& cookieName)
+{
+    size_t pos = cookieHeader.find(cookieName + "=");
+    if (pos == std::string::npos) return "";
+
+    pos += cookieName.length() + 1;
+    size_t end = cookieHeader.find(";", pos);
+    if (end == std::string::npos) end = cookieHeader.length();
+
+    return cookieHeader.substr(pos, end - pos);
+}
+
+std::string HttpHandler::generateSessionId()
+{
+    // Generate a session ID
+    std::stringstream ss;
+    ss << "sess_" << std::rand() % 1000000;
+    return ss.str();
+}
+
+void HttpHandler::handleSession(const t_httpRequest& request, t_httpResponse& response)
+{
+    std::string cookieHeader = "";
+
+    // Check if the client sent a Cookie header
+    std::map<std::string, std::string>::const_iterator it = request.headers.find("Cookie");
+    if (it != request.headers.end()) {
+        cookieHeader = it->second;
+    }
+
+    std::string sessionId = getCookieValue(cookieHeader, "session_id");
+
+    if (sessionId.empty() || _sessions.find(sessionId) == _sessions.end()) {
+        // --- NEW CLIENT ---
+        sessionId = generateSessionId();
+
+        // Browser to store the cookie
+        response.headers["Set-Cookie"] = "session_id=" + sessionId + "; Max-Age=3600; Path=/";
+
+        // Initialize session data
+        _sessions[sessionId] = 1;
+        std::cout << COLOR_GREEN << "[SESSION] New user! Assigned ID: " << sessionId << COLOR_RESET << std::endl;
+    } else {
+        // --- RETURNING CLIENT ---
+        _sessions[sessionId]++;
+        std::cout << COLOR_GREEN << "[SESSION] Welcome back " << sessionId
+                  << "! Visit count: " << _sessions[sessionId] << COLOR_RESET << std::endl;
+    }
 }
 
 /* ========================================================================== */
