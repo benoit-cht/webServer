@@ -50,6 +50,8 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request, const Se
       
       body = request.body;
       link = fullPath;
+      if (!link.empty()&& link.at(link.size() - 1) == '/')
+          link.erase(link.length() - 1);
     
     } else  {
     
@@ -58,9 +60,10 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request, const Se
 
     }
 
-
+        
     std::ofstream fichier(link.c_str());
-    if (!parsing.body.empty() || !parsing.nameFile.empty() || fichier.is_open())
+    std::cout << link << std::endl;
+    if (fichier.is_open())
     {
       fichier << body;
       fichier.close();
@@ -73,7 +76,7 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request, const Se
 
       //response.headers = parsing.headers;
       
-      std::cout << COLOR_GREEN << "Success : Created file " << fullPath <<"|"<< parsing.nameFile.empty() << COLOR_RESET << std::endl;
+      std::cout << COLOR_GREEN << "Success : Created file " << fullPath << COLOR_RESET << std::endl;
       return (HandlerErrorHttp(response.status, request, config));
     }
     else 
