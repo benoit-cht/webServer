@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 13:48:28 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/20 21:38:30 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/24 16:13:57 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,14 @@ t_httpRequest  HttpHandler::setHttpRequest(const std::string& raw_request)
   {
     std::cout << COLOR_YELLOW << "Warging : bad request " << COLOR_RESET << std::endl;
   }
+
+	std::map<std::string, std::string>::iterator it = request.headers.find("Content-Length");
+		if (it != request.headers.end()) {
+			size_t expected_len = static_cast<size_t>(std::atoi(it->second.c_str()));
+			if (request.body.length() > expected_len) {
+				request.body = request.body.substr(0, expected_len);
+			}
+		}
 
   return ( request );
 }

@@ -1,0 +1,10 @@
+# Exemple de lignes de commandes a rentrer dans le terminal pour tester une chunked request (ca fonctionne pareil avec telnet)
+nc -C localhost 8080
+POST /cgi-bin/form_processor.php HTTP/1.1
+Host: localhost:8080
+Transfer-Encoding: chunked
+Content-Type: application/x-www-form-urlencoded
+
+16
+nom=coucou&message=toi
+0

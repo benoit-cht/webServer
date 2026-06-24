@@ -6,15 +6,16 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:39:42 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/20 21:34:58 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/24 16:12:42 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # ifndef WEBSERVER_HPP
 # define WEBSERVER_HPP
 
-#define MAX_CLIENTS 10   // Nombre max de clients simultanés
 #define BUFFER_SIZE 4096  // Taille du buffer pour lire les requêtes
+
+#define PRINT_FULL_REQUEST 0
 
 #include <sys/socket.h>  // Pour les sockets
 #include <netinet/in.h>  // Pour sockaddr_in

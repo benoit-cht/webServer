@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/11 16:27:56 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/20 22:38:09 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/24 17:29:38 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ t_httpResponse	HttpHandler::handler_methode_get(t_httpRequest& request, const Se
 		if (fullPath[fullPath.length() - 1] != '/')
 			indexPath += "/";
 		indexPath += location[prefix].getIndex();
-		std::cout << "indexPath=" << indexPath << std::endl;
+		// std::cout << "indexPath=" << indexPath << std::endl;
 
 		if (!location[prefix].getIndex().empty() && access(indexPath.c_str(), F_OK) == 0) {
 			return (HttpHandler::serveStaticFile(indexPath, request, config));

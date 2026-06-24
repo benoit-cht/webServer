@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   metode_http_post.cpp                               :+:      :+:    :+:   */
+/*   methodHttpPost.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bchallat <bchallat@student.42.fr>          +#+  +:+       +#+        */
+/*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/11 16:32:30 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/12 15:12:22 by bchallat         ###   ########.fr       */
+/*   Updated: 2026/06/24 16:14:50 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,16 +23,16 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request, const Se
   t_post_methode                        parsing;
   t_httpResponse                        response;
   std::map<std::string, LocationConfig>	location;
-  
+
   location = config.getLocationConfig();
   std::string prefix = find_location(location, request.path);
   std::string fullPath = location[prefix].getRoot() + request.path ;
   std::cout << COLOR_MAGENTA << "full path ? " + fullPath << COLOR_RESET << std::endl;
 
-  if (!request.path.empty() && fullPath[request.path.size() - 1] != '/')  { 
+  if (!request.path.empty() && fullPath[request.path.size() - 1] != '/')  {
 
       std::cout << COLOR_MAGENTA << " -> " + fullPath << COLOR_RESET << std::endl;
-      fullPath += "/"; 
+      fullPath += "/";
   }
   if (request.body.empty() || location[prefix].getRoot().empty()) {
 
@@ -47,43 +47,39 @@ t_httpResponse HttpHandler::handler_methode_post(t_httpRequest request, const Se
 
     parsing = HttpHandler::post_parse_header_request(request);
     if (parsing.body.empty() && parsing.nameFile.empty())  {
-      
+
       body = request.body;
       link = fullPath;
       if (!link.empty()&& link.at(link.size() - 1) == '/')
           link.erase(link.length() - 1);
-    
+
     } else  {
-    
+
       body = parsing.body;
       link = fullPath + parsing.nameFile;
 
     }
 
-        
+
     std::ofstream fichier(link.c_str());
-    std::cout << link << std::endl;
     if (fichier.is_open())
     {
       fichier << body;
       fichier.close();
-      /*    TO DO  -- delete the gestion of responst struct */ 
       response.status = 201;
       response.headers["Date"] = HttpHandler::getCurrentHttpDate();
       response.headers["Connection"] = "close";
       response.headers["Location"] = "http://" + request.headers["Host"] ;
       response.headers["Content-Type"] = "text/html";
 
-      //response.headers = parsing.headers;
-      
       std::cout << COLOR_GREEN << "Success : Created file " << fullPath << COLOR_RESET << std::endl;
       return (HandlerErrorHttp(response.status, request, config));
     }
-    else 
+    else
       response.status = 403;
-  
+
   } else {
-    
+
     response.status = 409;
     std::cout << COLOR_YELLOW << "Warnig : Faile Created file " << location["/"].getRoot() + request.path + parsing.nameFile << COLOR_RESET << std::endl;
 
@@ -104,7 +100,7 @@ static std::string  post_length_body(t_httpRequest request)
   if (!request.headers["Content-Length"].empty()) {
 
     length = request.headers["Content-Length"];
-  
+
   } else {
 
     std::cerr << COLOR_YELLOW << "[Warning] : don't find length of body" << COLOR_RESET << std::endl;
@@ -121,11 +117,11 @@ static std::string  post_boundary(t_httpRequest request)
 
   pos_boundary = request.headers["Content-Type"].find("boundary=");
   if (pos_boundary != std::string::npos) {
-    
+
     boundary = request.headers["Content-Type"].substr(pos_boundary + 9);
   } else {
 
-    std::cerr << COLOR_YELLOW << "[Warning] : don't find a boundary in headers" << COLOR_RESET <<std::endl; 
+    std::cerr << COLOR_YELLOW << "[Warning] : don't find a boundary in headers" << COLOR_RESET <<std::endl;
   }
 
   return ( boundary );
@@ -154,7 +150,7 @@ static std::map<std::string, std::string> post_hastable_header(t_httpRequest req
     headers[key] = value;
     //headers.insert(std::pair<std::string, std::string>(key, value));
     std::cout << COLOR_MAGENTA << key << headers[key] << COLOR_RESET << std::endl;
-    
+
   }
 
   return ( headers );
@@ -163,26 +159,26 @@ static std::map<std::string, std::string> post_hastable_header(t_httpRequest req
 static std::string  post_name_file( t_post_methode parsing)
 {
   std::string   name;
-  
+
   std::string str = parsing.headers["Content-Disposition"];
   size_t filename_pos = str.find("filename=\"");
-  if (filename_pos != std::string::npos) 
+  if (filename_pos != std::string::npos)
   {
 
     size_t start_quote = filename_pos + 10; // 9 = longueur de "filename=\""
     size_t end_quote = str.find("\"", start_quote);
-    if (end_quote != std::string::npos) 
+    if (end_quote != std::string::npos)
     {
             name = str.substr(start_quote, end_quote - start_quote);
             std::cout << COLOR_MAGENTA << "Nom du fichier : " << name << COLOR_RESET << std::endl;
-    } 
-    else 
-    {    
-      std::cerr << COLOR_YELLOW << "[Warning] : don't find a closing quote in name file " << COLOR_RESET <<std::endl; 
     }
-  
-  } 
-  else {  
+    else
+    {
+      std::cerr << COLOR_YELLOW << "[Warning] : don't find a closing quote in name file " << COLOR_RESET <<std::endl;
+    }
+
+  }
+  else {
       std::cerr << "Erreur : 'filename=\"' non trouvé dans Content-Type." << std::endl;
   }
   return ( name );
@@ -191,7 +187,7 @@ static std::string  post_name_file( t_post_methode parsing)
 
 
 static void cleanMultipartBody(t_post_methode* postData) {
-    
+
     // Vérifier si le boundary est présent
     if (postData->boundary.empty()) {
         // Si ce n'est pas une requête multipart, le body est déjà propre
@@ -249,10 +245,10 @@ static void cleanMultipartBody(t_post_methode* postData) {
 t_post_methode HttpHandler::post_parse_header_request(t_httpRequest request)
 {
   t_post_methode  parsing;
-  
+
   if ((parsing.bodyLength = post_length_body(request)).empty() )
     return ( parsing );
- 
+
   if ((parsing.boundary = post_boundary(request)).empty() )
     return ( parsing );
 

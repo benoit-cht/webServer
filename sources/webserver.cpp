@@ -6,7 +6,7 @@
 /*   By: tjacquel <tjacquel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 17:24:16 by bchallat          #+#    #+#             */
-/*   Updated: 2026/06/20 22:34:52 by tjacquel         ###   ########.fr       */
+/*   Updated: 2026/06/24 16:15:09 by tjacquel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,7 +147,7 @@ void handler_conection(EventLoop &loop, const std::vector<ServerConfig>& vec_con
 				full_request = full_request.substr(start);
 
                 ServerConfig config = getConfigForHandler(vec_config, getPortServer(fd));
-				std::cout << COLOR_MAGENTA << "full_request=" << full_request << COLOR_RESET << std::endl; // if we want to display raw full client request
+				if (PRINT_FULL_REQUEST) std::cout << COLOR_MAGENTA << "full_request=" << full_request << COLOR_RESET << std::endl; // if we want to display raw full client request
                 t_httpRequest request = HttpHandler::setHttpRequest(full_request);
 				request.client_ip = loop.getClientIP(fd);
                 print_http_request(request);

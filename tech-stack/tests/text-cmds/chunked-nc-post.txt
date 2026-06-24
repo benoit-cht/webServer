@@ -1,0 +1,11 @@
+# Exemple de lignes de commandes a rentrer dans le terminal pour tester une chunked request (ca fonctionne pareil avec telnet)
+nc -C localhost 8080
+POST /upload/hello.txt HTTP/1.1
+Host: localhost:8080
+Transfer-Encoding: chunked
+
+5
+Hello
+7
+ World!
+

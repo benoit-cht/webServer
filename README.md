@@ -3,14 +3,14 @@
 # Webserv
 
 ## Description
-Webserv is a custom, non-blocking HTTP server from scratch in C++98. At its core, whenever a browser needs a file hosted on a web server, it requests the file vie HTTP. This software accepts the request via TCP sockets, finds or generates the requested document, and send it back to the client.
+Webserv is a custom, non-blocking HTTP server from scratch in C++98. At its core, whenever a browser needs a file hosted on a web server, it requests the file via HTTP. This software accepts the request via TCP sockets, finds or generates the requested document, and send it back to the client.
 
 **Key Features:**
 * Accepts connections from web browsers and CGI tools like `curl` or `telnet`.
 * Fully understands and processes core HTTP methods (`GET`, `POST` and `DELETE`).
 * Delivers accurate HTTP response status code (e.g., `200 OK`, `300 Multiple Choices`, `400 Bad Request`, `404 Not Found`, `500 Internal Server Error`).
 * Serves static content including HTML, CSS and images (handling various media types).
-* Manages complex behaviors via a custom `config.conf` file, supporting multiple virtual hosts (server delineated by IP or port).
+* Manages complex behaviors via a custom `config.conf` file.
 * Implements CGI (Common Gateway Interface) to execute external scripts (like PHP or Python) by passing environments variables and managing `execve` forks.
 
 ---
@@ -41,7 +41,7 @@ Needs toolbox because telnet is not natively installed
 
 #### Test Client Body Limit:
 
--`curl -v -X POST -H "Content-Type: text/plain" --data "BODY IS HERE write something shorter or longer than body limit" http://localhost:8080/`
+-`curl -v -X POST -H "Content-Type: text/plain" --data "BODY IS HERE write something shorter or longer than body limit" http://localhost:8080/testlimit`
 
 #### Test GET Method
 
@@ -49,8 +49,11 @@ Needs toolbox because telnet is not natively installed
 
 #### Test POST Method
 
-- `curl -X POST http://localhost:8080/upload/ -F "file=@/home/tjacquel/Documents/web-surf/tech-stack/tests/test.txt"`
+- `curl -X POST http://localhost:8080/upload/ -F "file=@$PWD/tests/test.txt"`
 N.B: test.txt must exist at the location otherwise POST does not create a file and will return 403
+
+- `curl -v -X POST -d "name=Benoit&age=26" http://localhost:8080/upload/newfile.json`
+Creates a new file based on URI
 
 #### Test DELETE Method
 
@@ -58,11 +61,18 @@ N.B: test.txt must exist at the location otherwise POST does not create a file a
 
 #### Test an UNKNOWN/Bad Method:
 
-- `curl -i -X HELLO http://localhost:8080/`
+- `curl -v -X HELLO http://localhost:8080/`
 
 #### CGI Testing
 
 - `curl -v -X POST -d "param1=value1&param2=value2" http://localhost:8080/cgi-bin/script.py`
+
+#### Chunked CGI Testing
+
+- `curl -X POST -H "Transfer-Encoding: chunked" -d "nom=coucou&message=toi" http://localhost:8080/cgi-bin/form_processor.php`
+
+- `curl -X GET -H "Tranfer-Encoding: chunked" http://localhost:8080/hello.sh`
+
 
 #### Stress Testing Commands
 To ensure the server doesn't crash under high load, you can use Siege:
@@ -78,7 +88,7 @@ To ensure the server doesn't crash under high load, you can use Siege:
 
 - `curl -v --cookie "session_id=[sess_]" http://localhost:[PORT]`
 
-## Ressources
+## Resources
 
 ### 📚 In-detph Documentation (Wiki)
 We have compiled extensive documentation, research, and architectural diagrams during the development of this project.
@@ -89,3 +99,9 @@ In the Wiki, you will find deep dives into:
 * HTTP Protocol handling and parsing
 * Common Gateway Interface (CGI) architecture
 * Diagrams of our server's architecture
+
+### Ai Usage
+
+* Concept Clarification: Breaking down dense HTTP protocol RFCs and understanding the exact mechanics of poll() for non-blocking I/O multiplexing. Understand how to pass HTTP request data via environment variables and standard imput for the CGI.
+* Testing & QA: Generating ideas for edge-case HTTP requests and suggesting parameters for stress-testing the server.
+
